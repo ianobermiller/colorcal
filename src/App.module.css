@@ -1,0 +1,14 @@
+.app {
+  font-size: 14px;
+  max-width: 624px;
+  margin: 0 auto;
+  padding: 24px 12px;
+}
+
+@media (min-width: 924px) {
+  .app {
+    font-size: 16px;
+    width: 924px;
+    max-width: 924px;
+  }
+}

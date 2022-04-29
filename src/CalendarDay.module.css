@@ -1,0 +1,9 @@
+.day {
+  border-bottom: solid 1px gray;
+  border-right: solid 1px gray;
+  box-sizing: border-box;
+  height: var(--day-size);
+  width: var(--day-size);
+  touch-action: manipulation;
+  user-select: none;
+}
