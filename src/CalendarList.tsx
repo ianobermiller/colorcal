@@ -2,6 +2,7 @@ import { useCurrentUser, useQuery } from "thin-backend/react";
 import { createRecord, query } from "thin-backend";
 import { useRef } from "preact/hooks";
 import { toISODateString } from "./dateUtils";
+import { Button } from "./Button";
 
 interface Props {
   path: string;
@@ -24,7 +25,7 @@ export function CalendarList({}: Props) {
       </ul>
       <div>
         <input type="text" ref={calendarName} />
-        <button
+        <Button
           onClick={() => {
             const startDate = new Date();
             const endDate = new Date(startDate);
@@ -38,7 +39,7 @@ export function CalendarList({}: Props) {
           }}
         >
           Add
-        </button>
+        </Button>
       </div>
     </>
   );

@@ -1,0 +1,23 @@
+.category {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.categoryColor {
+  align-items: center;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  color: white;
+  display: inline-flex;
+  font-weight: bold;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+  text-shadow: 0px 0px 2px #000;
+}
+
+.currentCategoryColor {
+  border-color: black;
+}

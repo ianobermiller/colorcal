@@ -6,6 +6,10 @@ import {
   updateRecord,
 } from "thin-backend";
 import { useStore } from "./Store";
+import styles from "./CategoryList.module.css";
+import clsx from "clsx";
+import { FiTrash2 } from "react-icons/fi";
+import { Button, IconButton } from "./Button";
 
 interface Props {
   categories: Category[];
@@ -13,48 +17,17 @@ interface Props {
 }
 
 export function CategoryList({ calendarId, categories }: Props) {
-  const selectedCategoryID = useStore((store) => store.selectedCategoryID);
-  const selectCategory = useStore((store) => store.selectCategory);
   const categoryName = useRef<HTMLInputElement>(null);
   return (
     <div>
       <h2>Categories</h2>
       <ul>
         {categories.map((category) => (
-          <li
-            style={{
-              background: category.color,
-              border: `solid 1px ${
-                selectedCategoryID === category.id ? "black" : "white"
-              }`,
-            }}
-          >
-            <button onClick={() => selectCategory(category.id)}>
-              {category.name}
-            </button>
-            <button
-              onClick={() => {
-                const color =
-                  COLORS[
-                    wrap(COLORS.length, COLORS.indexOf(category.color) + 1)
-                  ];
-                updateRecord("categories", category.id, { color });
-              }}
-            >
-              Rotate Color
-            </button>
-            <button
-              onClick={() => {
-                deleteRecord("categories", category.id);
-              }}
-            >
-              Delete
-            </button>
-          </li>
+          <CategoryRow category={category} />
         ))}
       </ul>{" "}
       <input type="text" ref={categoryName} />
-      <button
+      <Button
         onClick={() => {
           const startDate = new Date();
           const endDate = new Date(startDate);
@@ -68,7 +41,59 @@ export function CategoryList({ calendarId, categories }: Props) {
         }}
       >
         Add
+      </Button>
+    </div>
+  );
+}
+
+export default function CategoryRow({ category }: { category: Category }) {
+  const selectedCategoryID = useStore((store) => store.selectedCategoryID);
+  const selectCategory = useStore((store) => store.selectCategory);
+  const count = () => "";
+  // Object.values(store.categoryIDByDate).reduce(
+  //   (acc, id) =>
+  //     acc + (id === category.id || id?.endsWith(category.id) ? 1 : 0),
+  //   0
+  // );
+
+  return (
+    <div class={styles.category}>
+      <button
+        class={clsx({
+          [styles.categoryColor]: true,
+          [styles.currentCategoryColor]: selectedCategoryID === category.id,
+        })}
+        style={{ background: category.color }}
+        onClick={() => {
+          if (selectedCategoryID === category.id) {
+            const color =
+              COLORS[wrap(COLORS.length, COLORS.indexOf(category.color) + 1)];
+            updateRecord("categories", category.id, { color });
+          } else {
+            selectCategory(category.id);
+          }
+        }}
+      >
+        {count()}
       </button>
+
+      <input
+        class={styles.categoryName}
+        type="text"
+        value={category.name}
+        onChange={(e) => {
+          updateRecord("categories", category.id, {
+            name: e.currentTarget.value,
+          });
+        }}
+      />
+      <IconButton
+        onClick={() => {
+          deleteRecord("categories", category.id);
+        }}
+      >
+        <FiTrash2 size={20} />
+      </IconButton>
     </div>
   );
 }

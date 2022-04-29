@@ -48,7 +48,7 @@ export function CalendarDay({
           month: "short",
           timeZone: "UTC",
         })}
-      {/* <div class={styles.dayLabel}>{getCategories()[0]?.name}</div> */}
+      {topCategory && <div class={styles.dayLabel}>{topCategory.name}</div>}
       {/* <Show when={getCategories().length > 1}>
               <div
                 class={styles.halfDayBackground}

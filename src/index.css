@@ -11,21 +11,15 @@ input {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: white;
-  background: #333;
 }
 
 * {
   box-sizing: border-box;
 }
 
-a {
-  color: lightblue;
-}
-
 input[type="text"],
 input[type="date"] {
-  border: 2px solid white;
+  border: 2px solid black;
   border-radius: 8px;
   box-sizing: border-box;
   display: inline-block;
@@ -33,32 +27,4 @@ input[type="date"] {
   line-height: 32px;
   padding: 0 12px;
   font-size: 1em;
-}
-
-button {
-  align-items: center;
-  background: none;
-  border-radius: 8px;
-  border: 2px solid white;
-  box-sizing: border-box;
-  cursor: pointer;
-  display: inline-flex;
-  gap: 8px;
-  height: 32px;
-  line-height: 44px;
-  padding: 0 12px;
-}
-
-.iconButton {
-  background: none;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  height: 32px;
-  width: 32px;
-}
-
-.iconButton:hover,
-.button:hover {
-  background-color: #f0f0f0;
 }

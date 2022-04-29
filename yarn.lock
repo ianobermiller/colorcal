@@ -342,6 +342,11 @@ chalk@^2.0.0:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
+clsx@^1.1.1:
+  version "1.1.1"
+  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/clsx/-/clsx-1.1.1.tgz#98b3134f9abbdf23b2663491ace13c5c03a73188"
+  integrity sha512-6/bPho624p3S2pMyvP5kKBPXnI3ufHLObBFCfgx+LkeR5lg2XYy2hqZqUf45ypD8COn2bhgGJSUE+l5dhNBieA==
+
 color-convert@^1.9.0:
   version "1.9.3"
   resolved "https://artifacts.netflix.com/api/npm/npm-netflix/color-convert/-/color-convert-1.9.3.tgz#bb71850690e1f136567de629d2d5471deda4c1e8"
@@ -625,6 +630,11 @@ preact@^10.5.15:
   version "10.7.1"
   resolved "https://artifacts.netflix.com/api/npm/npm-netflix/preact/-/preact-10.7.1.tgz#bdd2b2dce91a5842c3b9b34dfe050e5401068c9e"
   integrity sha512-MufnRFz39aIhs9AMFisonjzTud1PK1bY+jcJLo6m2T9Uh8AqjD77w11eAAawmjUogoGOnipECq7e/1RClIKsxg==
+
+react-icons@^4.3.1:
+  version "4.3.1"
+  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/react-icons/-/react-icons-4.3.1.tgz#2fa92aebbbc71f43d2db2ed1aed07361124e91ca"
+  integrity sha512-cB10MXLTs3gVuXimblAdI71jrJx8njrJZmNMEMC+sQu5B/BIOmlsAjskdqpn81y8UBVEGuHODd7/ci5DvoSzTQ==
 
 resolve@^1.20.0, resolve@^1.22.0:
   version "1.22.0"

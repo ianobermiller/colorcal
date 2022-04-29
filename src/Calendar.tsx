@@ -5,6 +5,7 @@ import styles from "./Calendar.module.css";
 import { dateRangeAlignWeek, toISODateString } from "./dateUtils";
 import { CalendarDay, FillerDay } from "./CalendarDay";
 import { CategoryList } from "./CategoryList";
+import { Button } from "./Button";
 
 interface Props {
   path: string;
@@ -46,7 +47,7 @@ export function Calendar({ id }: Props) {
             updateRecord("calendars", id, { endDate: e.currentTarget.value })
           }
         />
-        <button
+        <Button
           onClick={() => {
             if (confirm(`Delete calendar "${calendar.title}"?`)) {
               // TODO: soft delete
@@ -56,7 +57,7 @@ export function Calendar({ id }: Props) {
           }}
         >
           Delete Calendar
-        </button>
+        </Button>
       </div>
 
       <div class={styles.calendar}>

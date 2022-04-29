@@ -1,0 +1,27 @@
+.button {
+  align-items: center;
+  background: none;
+  border-radius: 8px;
+  border: 2px solid black;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  height: 32px;
+  line-height: 44px;
+  padding: 0 12px;
+}
+
+.iconButton {
+  background: none;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  height: 32px;
+  width: 32px;
+}
+
+.iconButton:hover,
+.button:hover {
+  background-color: #f0f0f0;
+}
