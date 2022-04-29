@@ -1,6 +1,7 @@
 import { Category, createRecord, Day, updateRecord } from "thin-backend";
 import styles from "./CalendarDay.module.css";
 import { toISODateString } from "./dateUtils";
+import { useStore } from "./Store";
 
 interface Props {
   day: Day | undefined;
@@ -27,12 +28,15 @@ export function CalendarDay({
       class={styles.day}
       style={{ background: topCategory?.color }}
       onClick={() => {
+        const { selectedCategoryID } = useStore.getState();
         if (day) {
-          updateRecord("days", day.id, { categoryId: categories[0]?.id });
+          if (day.categoryId !== selectedCategoryID) {
+            updateRecord("days", day.id, { categoryId: selectedCategoryID });
+          }
         } else {
           createRecord("days", {
             calendarId,
-            categoryId: categories[0]?.id,
+            categoryId: selectedCategoryID,
             date: toISODateString(date),
           });
         }
