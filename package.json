@@ -6,10 +6,11 @@
     "start": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "upload": "yarn build --base cal && rsync -avz dist/* iano@obermillers.com:~/public_html/obermillers/cal2"
+    "upload": "yarn build --base cal2 && rsync -avz dist/* iano@obermillers.com:~/public_html/obermillers/cal2"
   },
   "dependencies": {
     "clsx": "^1.1.1",
+    "history": "^5.3.0",
     "preact": "^10.5.15",
     "preact-router": "^4.0.1",
     "react-icons": "^4.3.1",
