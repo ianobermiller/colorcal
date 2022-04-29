@@ -6,7 +6,7 @@ import { dateRangeAlignWeek, toISODateString } from "./dateUtils";
 import { CalendarDay, FillerDay } from "./CalendarDay";
 import { CategoryList } from "./CategoryList";
 import { Button, IconButton } from "./Button";
-import { FiTrash2 } from "react-icons/fi";
+import { FiHome, FiTrash2 } from "react-icons/fi";
 
 interface Props {
   path: string;
@@ -33,7 +33,12 @@ export function Calendar({ id }: Props) {
   return (
     <div class={styles.root}>
       <div class={styles.main}>
-        <h1>{calendar.title}</h1>
+        <h1>
+          {calendar.title}{" "}
+          <a href="/">
+            <FiHome />
+          </a>
+        </h1>
         <div class={styles.controls}>
           <input
             type="date"
