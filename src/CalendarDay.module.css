@@ -6,6 +6,7 @@
   width: var(--day-size);
   touch-action: manipulation;
   user-select: none;
+  padding: 2px;
 }
 
 .dayLabel {

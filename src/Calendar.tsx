@@ -5,7 +5,8 @@ import styles from "./Calendar.module.css";
 import { dateRangeAlignWeek, toISODateString } from "./dateUtils";
 import { CalendarDay, FillerDay } from "./CalendarDay";
 import { CategoryList } from "./CategoryList";
-import { Button } from "./Button";
+import { Button, IconButton } from "./Button";
+import { FiTrash2 } from "react-icons/fi";
 
 interface Props {
   path: string;
@@ -30,56 +31,60 @@ export function Calendar({ id }: Props) {
   }, {} as Record<string, Day | undefined>);
 
   return (
-    <>
-      <h1>{calendar.title}</h1>
-      <div>
-        <input
-          type="date"
-          value={calendar.startDate}
-          onChange={(e) =>
-            updateRecord("calendars", id, { startDate: e.currentTarget.value })
-          }
-        />
-        <input
-          type="date"
-          value={calendar.endDate}
-          onChange={(e) =>
-            updateRecord("calendars", id, { endDate: e.currentTarget.value })
-          }
-        />
-        <Button
-          onClick={() => {
-            if (confirm(`Delete calendar "${calendar.title}"?`)) {
-              // TODO: soft delete
-              deleteRecord("calendars", id);
-              route("/");
+    <div class={styles.root}>
+      <div class={styles.main}>
+        <h1>{calendar.title}</h1>
+        <div class={styles.controls}>
+          <input
+            type="date"
+            value={calendar.startDate}
+            onChange={(e) =>
+              updateRecord("calendars", id, {
+                startDate: e.currentTarget.value,
+              })
             }
-          }}
-        >
-          Delete Calendar
-        </Button>
-      </div>
+          />
+          <input
+            type="date"
+            value={calendar.endDate}
+            onChange={(e) =>
+              updateRecord("calendars", id, { endDate: e.currentTarget.value })
+            }
+          />
+          <IconButton
+            onClick={() => {
+              if (confirm(`Delete calendar "${calendar.title}"?`)) {
+                // TODO: soft delete
+                deleteRecord("calendars", id);
+                route("/");
+              }
+            }}
+          >
+            <FiTrash2 />
+          </IconButton>
+        </div>
 
-      <div class={styles.calendar}>
-        {dateRangeAlignWeek(
-          new Date(calendar.startDate),
-          new Date(calendar.endDate)
-        ).map((date) => {
-          return date ? (
-            <CalendarDay
-              calendarId={calendar.id}
-              day={dayByDate[toISODateString(date)]}
-              date={date}
-              categories={categories}
-              startDate={calendar.startDate}
-            />
-          ) : (
-            <FillerDay />
-          );
-        })}
+        <div class={styles.calendar}>
+          {dateRangeAlignWeek(
+            new Date(calendar.startDate),
+            new Date(calendar.endDate)
+          ).map((date) => {
+            return date ? (
+              <CalendarDay
+                calendarId={calendar.id}
+                day={dayByDate[toISODateString(date)]}
+                date={date}
+                categories={categories}
+                startDate={calendar.startDate}
+              />
+            ) : (
+              <FillerDay />
+            );
+          })}
+        </div>
       </div>
 
       <CategoryList calendarId={calendar.id} categories={categories} />
-    </>
+    </div>
   );
 }

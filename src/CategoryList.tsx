@@ -8,7 +8,7 @@ import {
 import { useStore } from "./Store";
 import styles from "./CategoryList.module.css";
 import clsx from "clsx";
-import { FiTrash2 } from "react-icons/fi";
+import { FiPlus, FiTrash2 } from "react-icons/fi";
 import { Button, IconButton } from "./Button";
 
 interface Props {
@@ -17,16 +17,15 @@ interface Props {
 }
 
 export function CategoryList({ calendarId, categories }: Props) {
-  const categoryName = useRef<HTMLInputElement>(null);
+  const selectCategory = useStore((store) => store.selectCategory);
   return (
     <div>
       <h2>Categories</h2>
-      <ul>
+      <ul class={styles.categories}>
         {categories.map((category) => (
           <CategoryRow category={category} />
         ))}
-      </ul>{" "}
-      <input type="text" ref={categoryName} />
+      </ul>
       <Button
         onClick={() => {
           const startDate = new Date();
@@ -36,10 +35,11 @@ export function CategoryList({ calendarId, categories }: Props) {
           createRecord("categories", {
             calendarId: calendarId,
             color: COLORS[Math.floor(Math.random() * COLORS.length)],
-            name: categoryName.current?.value || "",
-          });
+            name: "",
+          }).then((category) => selectCategory(category.id));
         }}
       >
+        <FiPlus size={24} />
         Add
       </Button>
     </div>

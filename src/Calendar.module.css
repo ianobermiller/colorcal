@@ -1,5 +1,17 @@
+@media (min-width: 924px) {
+  .root {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+.main {
+  flex-grow: 1;
+  margin-bottom: 24px;
+}
+
 .calendar {
-  --day-size: calc((min(624px, 100vw) - 24px) / 7 - 7px);
+  --day-size: calc((min(624px, 100vw) - 24px - 7px) / 7);
   border-left: solid 1px gray;
   border-top: solid 1px gray;
   box-sizing: border-box;
@@ -7,4 +19,9 @@
   flex-wrap: wrap;
   margin-top: 24px;
   width: calc(var(--day-size) * 7 + 1px);
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
 }
