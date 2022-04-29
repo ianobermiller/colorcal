@@ -23,20 +23,64 @@ export function CalendarDay({
     toISODateString(date) === startDate || date.getUTCDate() === 1;
 
   const topCategory = categories.find((c) => c.id === day?.categoryId);
+  const halfCategory = categories.find((c) => c.id === day?.halfCategoryId);
 
   const onClick = useCallback(() => {
     const { selectedCategoryID } = useStore.getState();
-    if (day) {
-      if (day.categoryId === selectedCategoryID) {
-        updateRecord("days", day.id, { categoryId: null });
-      } else {
-        updateRecord("days", day.id, { categoryId: selectedCategoryID });
-      }
-    } else {
-      createRecord("days", {
+    if (!day) {
+      return createRecord("days", {
         calendarId,
         categoryId: selectedCategoryID,
         date: toISODateString(date),
+      });
+    }
+
+    const top = !day.categoryId
+      ? "empty"
+      : day.categoryId === selectedCategoryID
+      ? "same"
+      : "different";
+    const half = !day.halfCategoryId
+      ? "empty"
+      : day.halfCategoryId === selectedCategoryID
+      ? "same"
+      : "different";
+
+    if (
+      (top === "same" && half === "same") ||
+      (top === "same" && half === "empty") ||
+      (top === "empty" && half === "same")
+    ) {
+      return updateRecord("days", day.id, {
+        categoryId: null,
+        halfCategoryId: null,
+      });
+    }
+
+    if (
+      (top === "empty" && half === "empty") ||
+      (top === "empty" && half === "different")
+    ) {
+      return updateRecord("days", day.id, { categoryId: selectedCategoryID });
+    }
+
+    if (top === "same" && half === "different") {
+      return updateRecord("days", day.id, { halfCategoryId: null });
+    }
+
+    if (top === "different" && half === "same") {
+      return updateRecord("days", day.id, {
+        categoryId: selectedCategoryID,
+        halfCategoryId: null,
+      });
+    }
+
+    if (
+      (top === "different" && half === "empty") ||
+      (top === "different" && half === "different")
+    ) {
+      return updateRecord("days", day.id, {
+        halfCategoryId: selectedCategoryID,
       });
     }
   }, [day]);
@@ -55,13 +99,15 @@ export function CalendarDay({
             timeZone: "UTC",
           })}
       {topCategory && <div class={styles.dayLabel}>{topCategory.name}</div>}
-      {/* <Show when={getCategories().length > 1}>
-              <div
-                class={styles.halfDayBackground}
-                style={`--color: ${getCategories()[1]?.color}`}
-              />
-              <div class={styles.halfDayLabel}>{getCategories()[1]?.name}</div>
-            </Show> */}
+      {halfCategory && (
+        <>
+          <div
+            class={styles.halfDayBackground}
+            style={`--color: ${halfCategory.color}`}
+          />
+          <div class={styles.halfDayLabel}>{halfCategory.name}</div>
+        </>
+      )}
     </div>
   );
 }

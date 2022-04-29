@@ -7,10 +7,28 @@
   touch-action: manipulation;
   user-select: none;
   padding: 2px;
+  position: relative;
 }
 
 .dayLabel {
   color: #222;
   font-size: 80%;
   margin-top: 4px;
+}
+
+.halfDayBackground {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border-bottom: solid var(--day-size) var(--color);
+  border-left: solid var(--day-size) transparent;
+}
+
+.halfDayLabel {
+  bottom: 4px;
+  color: #222;
+  font-size: 80%;
+  position: absolute;
+  right: 4px;
+  text-align: right;
 }
