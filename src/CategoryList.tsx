@@ -3,6 +3,7 @@ import {
   Category,
   createRecord,
   deleteRecord,
+  query,
   updateRecord,
 } from "thin-backend";
 import { useStore } from "./Store";
@@ -10,20 +11,29 @@ import styles from "./CategoryList.module.css";
 import clsx from "clsx";
 import { FiPlus, FiTrash2 } from "react-icons/fi";
 import { Button, IconButton } from "./Button";
+import { useQuery } from "thin-backend/react";
 
 interface Props {
   categories: Category[];
   calendarId: string;
+  countByCategory: Record<string, number | undefined>;
 }
 
-export function CategoryList({ calendarId, categories }: Props) {
+export function CategoryList({
+  calendarId,
+  categories,
+  countByCategory,
+}: Props) {
   const selectCategory = useStore((store) => store.selectCategory);
   return (
     <div>
       <h2>Categories</h2>
       <ul class={styles.categories}>
         {categories.map((category) => (
-          <CategoryRow category={category} />
+          <CategoryRow
+            category={category}
+            count={countByCategory[category.id] || 0}
+          />
         ))}
       </ul>
       <Button
@@ -46,15 +56,15 @@ export function CategoryList({ calendarId, categories }: Props) {
   );
 }
 
-export default function CategoryRow({ category }: { category: Category }) {
+export default function CategoryRow({
+  count,
+  category,
+}: {
+  category: Category;
+  count: number;
+}) {
   const selectedCategoryID = useStore((store) => store.selectedCategoryID);
   const selectCategory = useStore((store) => store.selectCategory);
-  const count = () => "";
-  // Object.values(store.categoryIDByDate).reduce(
-  //   (acc, id) =>
-  //     acc + (id === category.id || id?.endsWith(category.id) ? 1 : 0),
-  //   0
-  // );
 
   return (
     <div class={styles.category}>
@@ -74,7 +84,7 @@ export default function CategoryRow({ category }: { category: Category }) {
           }
         }}
       >
-        {count()}
+        {count}
       </button>
 
       <input

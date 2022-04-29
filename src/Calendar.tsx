@@ -30,6 +30,14 @@ export function Calendar({ id }: Props) {
     return acc;
   }, {} as Record<string, Day | undefined>);
 
+  const countByCategory = (days || []).reduce((acc, day) => {
+    if (day.categoryId) {
+      const existing = acc[day.categoryId] || 0;
+      acc[day.categoryId] = existing + 1;
+    }
+    return acc;
+  }, {} as Record<string, number | undefined>);
+
   return (
     <div class={styles.root}>
       <div class={styles.main}>
@@ -89,7 +97,11 @@ export function Calendar({ id }: Props) {
         </div>
       </div>
 
-      <CategoryList calendarId={calendar.id} categories={categories} />
+      <CategoryList
+        calendarId={calendar.id}
+        categories={categories}
+        countByCategory={countByCategory}
+      />
     </div>
   );
 }
