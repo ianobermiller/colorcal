@@ -14,8 +14,8 @@
     "preact": "^10.5.15",
     "preact-router": "^4.0.1",
     "react-icons": "^4.3.1",
-    "thin-backend": "^0.4.1",
-    "zustand": "^4.0.0-rc.0"
+    "thin-backend": "^0.4.2",
+    "zustand": "^4.0.0-rc.1"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.1.5",
