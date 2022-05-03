@@ -1,4 +1,4 @@
-import { useRef } from "preact/hooks";
+import { useCallback, useRef } from "preact/hooks";
 import {
   Category,
   createRecord,
@@ -66,6 +66,10 @@ export default function CategoryRow({
   const selectedCategoryID = useStore((store) => store.selectedCategoryID);
   const selectCategory = useStore((store) => store.selectCategory);
 
+  const onNameChange = useCallback((e: JSX.TargetedEvent<HTMLInputElement>) => {
+    updateRecord("categories", category.id, { name: e.currentTarget.value });
+  }, []);
+
   return (
     <div class={styles.category}>
       <button
@@ -91,12 +95,10 @@ export default function CategoryRow({
         class={styles.categoryName}
         type="text"
         value={category.name}
-        onChange={(e) => {
-          updateRecord("categories", category.id, {
-            name: e.currentTarget.value,
-          });
-        }}
+        onBlur={onNameChange}
+        onKeyDown={(e) => e.key === "Enter" && onNameChange(e)}
       />
+
       <IconButton
         onClick={() => {
           deleteRecord("categories", category.id);
