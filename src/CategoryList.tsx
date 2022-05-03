@@ -1,17 +1,15 @@
-import { useCallback, useRef } from "preact/hooks";
+import clsx from "clsx";
+import { useCallback } from "preact/hooks";
+import { FiPlus, FiTrash2 } from "react-icons/fi";
 import {
   Category,
   createRecord,
   deleteRecord,
-  query,
   updateRecord,
 } from "thin-backend";
-import { useStore } from "./Store";
-import styles from "./CategoryList.module.css";
-import clsx from "clsx";
-import { FiPlus, FiTrash2 } from "react-icons/fi";
 import { Button, IconButton } from "./Button";
-import { useQuery } from "thin-backend/react";
+import styles from "./CategoryList.module.css";
+import { useStore } from "./Store";
 
 interface Props {
   categories: Category[];

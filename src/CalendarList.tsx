@@ -1,9 +1,9 @@
-import { useCurrentUser, useQuery } from "thin-backend/react";
-import { Calendar, createRecord, logout, query } from "thin-backend";
 import { useCallback, useRef } from "preact/hooks";
-import { toISODateString } from "./dateUtils";
+import { createRecord, logout, query } from "thin-backend";
+import { useCurrentUser, useQuery } from "thin-backend/react";
 import { Button } from "./Button";
 import styles from "./CalendarList.module.css";
+import { toISODateString } from "./dateUtils";
 
 interface Props {
   path: string;

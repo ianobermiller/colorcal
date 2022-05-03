@@ -1,8 +1,8 @@
-import Router, { CustomHistory } from "preact-router";
-import { CalendarList } from "./CalendarList";
-import { Calendar } from "./Calendar";
-import styles from "./App.module.css";
 import { createHashHistory } from "history";
+import Router, { CustomHistory } from "preact-router";
+import styles from "./App.module.css";
+import { Calendar } from "./Calendar";
+import { CalendarList } from "./CalendarList";
 
 export function App() {
   return (

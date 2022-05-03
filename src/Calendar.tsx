@@ -1,12 +1,12 @@
-import { useQuery, useQuerySingleResult } from "thin-backend/react";
-import { Day, deleteRecord, query, updateRecord } from "thin-backend";
 import { route } from "preact-router";
+import { FiHome, FiTrash2 } from "react-icons/fi";
+import { Day, deleteRecord, query, updateRecord } from "thin-backend";
+import { useQuery, useQuerySingleResult } from "thin-backend/react";
+import { IconButton } from "./Button";
 import styles from "./Calendar.module.css";
-import { dateRangeAlignWeek, toISODateString } from "./dateUtils";
 import { CalendarDay, FillerDay } from "./CalendarDay";
 import { CategoryList } from "./CategoryList";
-import { Button, IconButton } from "./Button";
-import { FiHome, FiTrash2 } from "react-icons/fi";
+import { dateRangeAlignWeek, toISODateString } from "./dateUtils";
 
 interface Props {
   path: string;
