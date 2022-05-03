@@ -248,9 +248,9 @@
   integrity sha512-SfJxIxNVYLTsKwzB3MoOQ1yxf4w/E6MdkvTgrgAt1bfxjSrLUoHMKrDOykwN14q65waezZIdqDneUIPh4/sKxg==
 
 "@jridgewell/sourcemap-codec@^1.4.10":
-  version "1.4.11"
-  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.4.11.tgz#771a1d8d744eeb71b6adb35808e1a6c7b9b8c8ec"
-  integrity sha512-Fg32GrJo61m+VqYSdRSjRXMjQ06j8YIYfcTqndLYVAaHmroZHLJZCydsWBOTDqXS2v+mjxohBWEMfg97GXmYQg==
+  version "1.4.12"
+  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.4.12.tgz#7ed98f6fa525ffb7c56a2cbecb5f7bb91abd2baf"
+  integrity sha512-az/NhpIwP3K33ILr0T2bso+k2E/SLf8Yidd8mHl0n6sCQ4YdyC8qDhZA6kOPDNDBA56ZnIjngVl0U3jREA0BUA==
 
 "@jridgewell/trace-mapping@^0.3.9":
   version "0.3.9"
@@ -336,9 +336,9 @@ browserslist@^4.20.2:
     picocolors "^1.0.0"
 
 caniuse-lite@^1.0.30001332:
-  version "1.0.30001334"
-  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/caniuse-lite/-/caniuse-lite-1.0.30001334.tgz#892e9965b35285033fc2b8a8eff499fe02f13d8b"
-  integrity sha512-kbaCEBRRVSoeNs74sCuq92MJyGrMtjWVfhltoHUCW4t4pXFvGjUBrfo47weBRViHkiV3eBYyIsfl956NtHGazw==
+  version "1.0.30001335"
+  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/caniuse-lite/-/caniuse-lite-1.0.30001335.tgz#899254a0b70579e5a957c32dced79f0727c61f2a"
+  integrity sha512-ddP1Tgm7z2iIxu6QTtbZUv6HJxSaV/PZeSrWFZtbY4JZ69tOeNhBCl3HyRQgeNZKE5AOn1kpV7fhljigy0Ty3w==
 
 chalk@^2.0.0:
   version "2.4.2"
@@ -381,9 +381,9 @@ debug@^4.1.0, debug@^4.3.1:
     ms "2.1.2"
 
 electron-to-chromium@^1.4.118:
-  version "1.4.129"
-  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/electron-to-chromium/-/electron-to-chromium-1.4.129.tgz#c675793885721beefff99da50f57c6525c2cd238"
-  integrity sha512-GgtN6bsDtHdtXJtlMYZWGB/uOyjZWjmRDumXTas7dGBaB9zUyCjzHet1DY2KhyHN8R0GLbzZWqm4efeddqqyRQ==
+  version "1.4.131"
+  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/electron-to-chromium/-/electron-to-chromium-1.4.131.tgz#ca42d22eac0fe545860fbc636a6f4a7190ba70a9"
+  integrity sha512-oi3YPmaP87hiHn0c4ePB67tXaF+ldGhxvZnT19tW9zX6/Ej+pLN0Afja5rQ6S+TND7I9EuwQTT8JYn1k7R7rrw==
 
 esbuild-android-64@0.14.38:
   version "0.14.38"
@@ -565,9 +565,9 @@ history@^5.3.0:
   dependencies:
     "@babel/runtime" "^7.7.6"
 
-"ihp-datasync@https://gitpkg.now.sh/digitallyinduced/ihp/lib/IHP/DataSync?657cc941eff0bf4102e57b6d6880c03e06831257":
+"ihp-datasync@https://gitpkg.now.sh/digitallyinduced/ihp/lib/IHP/DataSync?70ec37513e9498424972bb12ccd90a9ba47b9779":
   version "0.1.0"
-  resolved "https://gitpkg.now.sh/digitallyinduced/ihp/lib/IHP/DataSync?657cc941eff0bf4102e57b6d6880c03e06831257#70ae7b5b246538b9e47ed1e3d32d2c641ca1293f"
+  resolved "https://gitpkg.now.sh/digitallyinduced/ihp/lib/IHP/DataSync?70ec37513e9498424972bb12ccd90a9ba47b9779#224e076312144b5272dd820a4ba98f5744b20dc0"
 
 is-core-module@^2.8.1:
   version "2.9.0"
@@ -602,9 +602,9 @@ ms@2.1.2:
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
 nanoid@^3.3.3:
-  version "3.3.3"
-  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/nanoid/-/nanoid-3.3.3.tgz#fd8e8b7aa761fe807dba2d1b98fb7241bb724a25"
-  integrity sha512-p1sjXuopFs0xg+fPASzQ28agW1oHD7xDsd9Xkf3T15H3c/cifrFHVwrh74PdoklAPi+i7MdRsE47vm2r6JoB+w==
+  version "3.3.4"
+  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/nanoid/-/nanoid-3.3.4.tgz#730b67e3cd09e2deacf03c027c81c9d9dbc5e8ab"
+  integrity sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==
 
 node-releases@^2.0.3:
   version "2.0.4"
@@ -626,7 +626,7 @@ picomatch@^2.2.2:
   resolved "https://artifacts.netflix.com/api/npm/npm-netflix/picomatch/-/picomatch-2.3.1.tgz#3ba3833733646d9d3e4995946c1365a67fb07a42"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
 
-postcss@^8.4.12:
+postcss@^8.4.13:
   version "8.4.13"
   resolved "https://artifacts.netflix.com/api/npm/npm-netflix/postcss/-/postcss-8.4.13.tgz#7c87bc268e79f7f86524235821dfdf9f73e5d575"
   integrity sha512-jtL6eTBrza5MPzy8oJLFuUscHDXTV5KcLlqAWHl5q5WYRfnNRGSmOZmOZ1T6Gy7A99mOZfqungmZMpMmCVJ8ZA==
@@ -698,12 +698,12 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://artifacts.netflix.com/api/npm/npm-netflix/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
-thin-backend@^0.4.2:
-  version "0.4.2"
-  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/thin-backend/-/thin-backend-0.4.2.tgz#40a5e0eaa55681301395baf573d2929c74ef165b"
-  integrity sha512-R8tS5Ph5yEyOUi7CGyoaZuZVwERQBvtC81CraC68CYuJo6/bUlYgShUnXxGAtVLehVKDH/gNEQORiC7oCmDFLQ==
+thin-backend@^0.5.1:
+  version "0.5.1"
+  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/thin-backend/-/thin-backend-0.5.1.tgz#a43d397f8ac1f03acda93e7550f73028da626a0c"
+  integrity sha512-LxPBaOp3tAq7KZXWXgZn8JiZBqLR+fWTdI8zKPcNQQV9olqdvymbXiakz99jJGLgufAKW0YGzuNY4iLk2iytlg==
   dependencies:
-    ihp-datasync "https://gitpkg.now.sh/digitallyinduced/ihp/lib/IHP/DataSync?657cc941eff0bf4102e57b6d6880c03e06831257"
+    ihp-datasync "https://gitpkg.now.sh/digitallyinduced/ihp/lib/IHP/DataSync?70ec37513e9498424972bb12ccd90a9ba47b9779"
 
 to-fast-properties@^2.0.0:
   version "2.0.0"
@@ -720,13 +720,13 @@ use-sync-external-store@1.1.0:
   resolved "https://artifacts.netflix.com/api/npm/npm-netflix/use-sync-external-store/-/use-sync-external-store-1.1.0.tgz#3343c3fe7f7e404db70f8c687adf5c1652d34e82"
   integrity sha512-SEnieB2FPKEVne66NpXPd1Np4R1lTNKfjuy3XdIoPQKYBAFdzbzSZlSn1KJZUiihQLQC5Znot4SBz1EOTBwQAQ==
 
-vite@^2.9.5:
-  version "2.9.6"
-  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/vite/-/vite-2.9.6.tgz#29f1b33193b0de9e155d67ba0dd097501c3c3281"
-  integrity sha512-3IffdrByHW95Yjv0a13TQOQfJs7L5dVlSPuTt432XLbRMriWbThqJN2k/IS6kXn5WY4xBLhK9XoaWay1B8VzUw==
+vite@^2.9.7:
+  version "2.9.7"
+  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/vite/-/vite-2.9.7.tgz#210c328e08ed206ab0953eb1ca00860042cd0a77"
+  integrity sha512-5hH7aNQe8rJiTTqCtPNX/6mIKlGw+1wg8UXwAxDIIN8XaSR+Zx3GT2zSu7QKa1vIaBqfUODGh3vpwY8r0AW/jw==
   dependencies:
     esbuild "^0.14.27"
-    postcss "^8.4.12"
+    postcss "^8.4.13"
     resolve "^1.22.0"
     rollup "^2.59.0"
   optionalDependencies:
