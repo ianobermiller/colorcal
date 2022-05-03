@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useCallback } from "preact/hooks";
 import { Category, createRecord, Day, updateRecord } from "thin-backend";
 import styles from "./CalendarDay.module.css";
@@ -19,6 +20,12 @@ export function CalendarDay({
   startDate,
   categories,
 }: Props) {
+  const isTopSelected = useStore(
+    (state) => state.selectedCategoryID === day?.categoryId
+  );
+  const isHalfSelected = useStore(
+    (state) => state.selectedCategoryID === day?.halfCategoryId
+  );
   const showMonth =
     toISODateString(date) === startDate || date.getUTCDate() === 1;
 
@@ -91,21 +98,37 @@ export function CalendarDay({
       style={{ background: topCategory?.color }}
       onClick={onClick}
     >
-      {date.getUTCDate()}
-      {showMonth &&
-        " " +
-          date.toLocaleDateString(undefined, {
-            month: "short",
-            timeZone: "UTC",
-          })}
-      {topCategory && <div class={styles.dayLabel}>{topCategory.name}</div>}
+      <span
+        class={clsx({ [styles.selected]: isTopSelected || isHalfSelected })}
+      >
+        {date.getUTCDate()}
+        {showMonth &&
+          " " +
+            date.toLocaleDateString(undefined, {
+              month: "short",
+              timeZone: "UTC",
+            })}
+      </span>
+      {topCategory && (
+        <div
+          class={clsx(styles.dayLabel, { [styles.selected]: isTopSelected })}
+        >
+          {topCategory.name}
+        </div>
+      )}
       {halfCategory && (
         <>
           <div
             class={styles.halfDayBackground}
             style={`--color: ${halfCategory.color}`}
           />
-          <div class={styles.halfDayLabel}>{halfCategory.name}</div>
+          <div
+            class={clsx(styles.halfDayLabel, {
+              [styles.selected]: isHalfSelected,
+            })}
+          >
+            {halfCategory.name}
+          </div>
         </>
       )}
     </div>
