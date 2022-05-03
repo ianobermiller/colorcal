@@ -1,0 +1,36 @@
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0;
+}
+
+.calendar {
+  list-style: none;
+  margin-bottom: 12px;
+}
+
+.calendar > a {
+  border-radius: 8px;
+  border: solid 2px #ccc;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 24px;
+  text-decoration: none;
+}
+
+.calendar > a:hover {
+  background: #eee;
+}
+
+.calendar > a > h2,
+.calendar > a > p {
+  margin: 0;
+}
+
+.addCalendar {
+  display: flex;
+  gap: 8px;
+}
