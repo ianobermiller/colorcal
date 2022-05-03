@@ -1,5 +1,7 @@
+import clsx from "clsx";
 import { route } from "preact-router";
-import { FiHome, FiTrash2 } from "react-icons/fi";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
+import { FiEdit, FiEdit2, FiEdit3, FiHome, FiTrash2 } from "react-icons/fi";
 import { Day, deleteRecord, query, updateRecord } from "thin-backend";
 import { useQuery, useQuerySingleResult } from "thin-backend/react";
 import { IconButton } from "./Button";
@@ -14,6 +16,7 @@ interface Props {
 }
 
 export function Calendar({ id }: Props) {
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const calendar = useQuerySingleResult(
     query("calendars").where("id", id || "")
   );
@@ -25,6 +28,23 @@ export function Calendar({ id }: Props) {
       .where("calendarId", calendar?.id!)
       .orderByAsc("createdAt")
   );
+  const updateTitle = useCallback(
+    (e: JSX.TargetedEvent<HTMLInputElement>) => {
+      setIsEditingTitle(false);
+      if (calendar) {
+        updateRecord("calendars", calendar.id, {
+          title: e.currentTarget.value,
+        });
+      }
+    },
+    [calendar?.id]
+  );
+
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    titleInputRef.current?.focus();
+    titleInputRef.current?.select();
+  });
 
   if (!id || !calendar || !days || !categories) {
     return <h1>Loading...</h1>;
@@ -52,12 +72,28 @@ export function Calendar({ id }: Props) {
   return (
     <div class={styles.root}>
       <div class={styles.main}>
-        <h1>
-          {calendar.title}{" "}
-          <a href="/">
-            <FiHome />
-          </a>
-        </h1>
+        <header>
+          <h1 class={clsx({ [styles.transparent]: isEditingTitle })}>
+            {calendar.title}{" "}
+            <IconButton
+              onClick={() => {
+                setIsEditingTitle(true);
+              }}
+            >
+              <FiEdit />
+            </IconButton>
+          </h1>
+          {isEditingTitle && (
+            <input
+              ref={titleInputRef}
+              type="text"
+              defaultValue={calendar.title}
+              onBlur={updateTitle}
+              onKeyDown={(e) => e.key === "Enter" && updateTitle(e)}
+            />
+          )}
+        </header>
+
         <div class={styles.controls}>
           <input
             type="date"

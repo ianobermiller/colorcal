@@ -10,6 +10,20 @@
   margin-bottom: 24px;
 }
 
+.main > header {
+  position: relative;
+}
+
+.main > header > input[type="text"] {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.transparent {
+  opacity: 0;
+}
+
 .calendar {
   --day-size: calc((min(624px, 100vw) - 24px - 7px) / 7);
   border-left: solid 1px gray;
