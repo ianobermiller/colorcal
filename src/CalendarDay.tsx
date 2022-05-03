@@ -21,10 +21,11 @@ export function CalendarDay({
   categories,
 }: Props) {
   const isTopSelected = useStore(
-    (state) => state.selectedCategoryID === day?.categoryId
+    (state) => day?.categoryId && state.selectedCategoryID === day?.categoryId
   );
   const isHalfSelected = useStore(
-    (state) => state.selectedCategoryID === day?.halfCategoryId
+    (state) =>
+      day?.halfCategoryId && state.selectedCategoryID === day?.halfCategoryId
   );
   const showMonth =
     toISODateString(date) === startDate || date.getUTCDate() === 1;
