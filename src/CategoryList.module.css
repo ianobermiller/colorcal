@@ -26,3 +26,8 @@
 .currentCategoryColor {
   border-color: black;
 }
+
+.buttons {
+  display: flex;
+  gap: 12px;
+}

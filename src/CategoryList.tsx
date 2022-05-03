@@ -6,6 +6,7 @@ import {
   createRecord,
   deleteRecord,
   updateRecord,
+  updateRecords,
 } from "thin-backend";
 import { Button, IconButton } from "./Button";
 import styles from "./CategoryList.module.css";
@@ -34,22 +35,36 @@ export function CategoryList({
           />
         ))}
       </ul>
-      <Button
-        onClick={() => {
-          const startDate = new Date();
-          const endDate = new Date(startDate);
-          endDate.setDate(endDate.getDate() + 7);
 
-          createRecord("categories", {
-            calendarId: calendarId,
-            color: COLORS[Math.floor(Math.random() * COLORS.length)],
-            name: "",
-          }).then((category) => selectCategory(category.id));
-        }}
-      >
-        <FiPlus size={24} />
-        Add
-      </Button>
+      <div class={styles.buttons}>
+        <Button
+          onClick={() => {
+            const startDate = new Date();
+            const endDate = new Date(startDate);
+            endDate.setDate(endDate.getDate() + 7);
+
+            createRecord("categories", {
+              calendarId: calendarId,
+              color: COLORS[Math.floor(Math.random() * COLORS.length)],
+              name: "",
+            }).then((category) => selectCategory(category.id));
+          }}
+        >
+          <FiPlus size={24} />
+          Add
+        </Button>
+        <Button
+          onClick={() => {
+            categories.forEach((cat, i) =>
+              updateRecord("categories", cat.id, {
+                color: COLORS[wrap(COLORS.length, i)],
+              })
+            );
+          }}
+        >
+          Auto-color
+        </Button>
+      </div>
     </div>
   );
 }
@@ -119,13 +134,5 @@ export const COLORS = [
 ];
 
 function wrap(length: number, index: number): number {
-  if (index < 0) {
-    return length - 1;
-  }
-
-  if (index >= length) {
-    return 0;
-  }
-
-  return index;
+  return index % length;
 }
