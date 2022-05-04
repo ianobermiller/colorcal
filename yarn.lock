@@ -381,9 +381,9 @@ debug@^4.1.0, debug@^4.3.1:
     ms "2.1.2"
 
 electron-to-chromium@^1.4.118:
-  version "1.4.131"
-  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/electron-to-chromium/-/electron-to-chromium-1.4.131.tgz#ca42d22eac0fe545860fbc636a6f4a7190ba70a9"
-  integrity sha512-oi3YPmaP87hiHn0c4ePB67tXaF+ldGhxvZnT19tW9zX6/Ej+pLN0Afja5rQ6S+TND7I9EuwQTT8JYn1k7R7rrw==
+  version "1.4.132"
+  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/electron-to-chromium/-/electron-to-chromium-1.4.132.tgz#b64599eb018221e52e2e4129de103b03a413c55d"
+  integrity sha512-JYdZUw/1068NWN+SwXQ7w6Ue0bWYGihvSUNNQwurvcDV/SM7vSiGZ3NuFvFgoEiCs4kB8xs3cX2an3wB7d4TBw==
 
 esbuild-android-64@0.14.38:
   version "0.14.38"
@@ -565,9 +565,9 @@ history@^5.3.0:
   dependencies:
     "@babel/runtime" "^7.7.6"
 
-"ihp-datasync@https://gitpkg.now.sh/digitallyinduced/ihp/lib/IHP/DataSync?70ec37513e9498424972bb12ccd90a9ba47b9779":
+"ihp-datasync@https://gitpkg.now.sh/digitallyinduced/ihp/lib/IHP/DataSync?a9a2e567790ce2c4177261c2a46d38b59cbfe593":
   version "0.1.0"
-  resolved "https://gitpkg.now.sh/digitallyinduced/ihp/lib/IHP/DataSync?70ec37513e9498424972bb12ccd90a9ba47b9779#224e076312144b5272dd820a4ba98f5744b20dc0"
+  resolved "https://gitpkg.now.sh/digitallyinduced/ihp/lib/IHP/DataSync?a9a2e567790ce2c4177261c2a46d38b59cbfe593#680595fe45148f2d88d142ee81c68e5cbafbc4be"
 
 is-core-module@^2.8.1:
   version "2.9.0"
@@ -698,12 +698,12 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://artifacts.netflix.com/api/npm/npm-netflix/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
-thin-backend@^0.5.1:
-  version "0.5.1"
-  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/thin-backend/-/thin-backend-0.5.1.tgz#a43d397f8ac1f03acda93e7550f73028da626a0c"
-  integrity sha512-LxPBaOp3tAq7KZXWXgZn8JiZBqLR+fWTdI8zKPcNQQV9olqdvymbXiakz99jJGLgufAKW0YGzuNY4iLk2iytlg==
+thin-backend@^0.6.0:
+  version "0.6.0"
+  resolved "https://artifacts.netflix.com/api/npm/npm-netflix/thin-backend/-/thin-backend-0.6.0.tgz#7e862b86a38e9c480316246a1beed974f651c978"
+  integrity sha512-fOEmivjFH3lHGjYtBftcmoCrOjn15TRV2zdzpvPnYb4sS77ThfeWcM87TwAaqeT6p4/vf93of8/A0KPMW/G+NQ==
   dependencies:
-    ihp-datasync "https://gitpkg.now.sh/digitallyinduced/ihp/lib/IHP/DataSync?70ec37513e9498424972bb12ccd90a9ba47b9779"
+    ihp-datasync "https://gitpkg.now.sh/digitallyinduced/ihp/lib/IHP/DataSync?a9a2e567790ce2c4177261c2a46d38b59cbfe593"
 
 to-fast-properties@^2.0.0:
   version "2.0.0"
@@ -719,6 +719,18 @@ use-sync-external-store@1.1.0:
   version "1.1.0"
   resolved "https://artifacts.netflix.com/api/npm/npm-netflix/use-sync-external-store/-/use-sync-external-store-1.1.0.tgz#3343c3fe7f7e404db70f8c687adf5c1652d34e82"
   integrity sha512-SEnieB2FPKEVne66NpXPd1Np4R1lTNKfjuy3XdIoPQKYBAFdzbzSZlSn1KJZUiihQLQC5Znot4SBz1EOTBwQAQ==
+
+uuid-url@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/uuid-url/-/uuid-url-0.0.4.tgz#1abe66a40a8609e3e6fa83cb0e8a888146d2afa2"
+  integrity sha512-pMvbs6TiucghSW5HtAD9UeUdUMNdr1mzY9jhWH537ErdkOJq48FOVythAT/j2tXlUtXf9PZjqj+TBtZQCmmtbA==
+  dependencies:
+    uuid "^8.3.2"
+
+uuid@^8.3.2:
+  version "8.3.2"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
+  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
 vite@^2.9.7:
   version "2.9.7"

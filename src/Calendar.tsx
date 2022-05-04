@@ -1,9 +1,10 @@
 import clsx from "clsx";
 import { route } from "preact-router";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
-import { FiEdit, FiEdit2, FiEdit3, FiHome, FiTrash2 } from "react-icons/fi";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { Day, deleteRecord, query, updateRecord } from "thin-backend";
 import { useQuery, useQuerySingleResult } from "thin-backend/react";
+import { urlToUuid } from "uuid-url";
 import { IconButton } from "./Button";
 import styles from "./Calendar.module.css";
 import { CalendarDay, FillerDay } from "./CalendarDay";
@@ -15,7 +16,8 @@ interface Props {
   id?: string;
 }
 
-export function Calendar({ id }: Props) {
+export function Calendar({ id: urlID }: Props) {
+  const id = urlID ? urlToUuid(urlID) : null;
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const calendar = useQuerySingleResult(
     query("calendars").where("id", id || "")

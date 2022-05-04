@@ -1,6 +1,7 @@
 import { useCallback, useRef } from "preact/hooks";
 import { createRecord, logout, query } from "thin-backend";
 import { useCurrentUser, useQuery } from "thin-backend/react";
+import { uuidToUrl } from "uuid-url";
 import { Button } from "./Button";
 import styles from "./CalendarList.module.css";
 import { toISODateString } from "./dateUtils";
@@ -38,7 +39,7 @@ export function CalendarList({}: Props) {
       <ul class={styles.list}>
         {calendars?.map((cal) => (
           <li class={styles.calendar}>
-            <a href={`/${cal.id}`}>
+            <a href={`/${uuidToUrl(cal.id)}`}>
               <h2>{cal.title}</h2>
               <p>
                 {formatDate(cal.startDate)} to {formatDate(cal.endDate)}
