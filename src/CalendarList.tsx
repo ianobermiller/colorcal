@@ -1,3 +1,4 @@
+import { route } from "preact-router";
 import { useCallback, useRef } from "preact/hooks";
 import { createRecord, logout, query, loginWithRedirect } from "thin-backend";
 import { useCurrentUser, useQuery } from "thin-backend/react";
@@ -26,6 +27,8 @@ export function CalendarList({}: Props) {
       endDate: toISODateString(endDate),
       startDate: toISODateString(startDate),
       title: calendarName.current?.value,
+    }).then((calendar) => {
+      route(`/${uuidToUrl(calendar.id)}`);
     });
   }, []);
 
