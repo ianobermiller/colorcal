@@ -7,7 +7,7 @@ import "./index.css";
 initThinBackend({ host: "https://color-calendar.thinbackend.app" });
 
 render(
-  <ThinBackend requireLogin>
+  <ThinBackend>
     <App />
   </ThinBackend>,
   document.body

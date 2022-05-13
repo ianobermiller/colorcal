@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.1.5",
-    "@types/thin-backend": "https://thin.dev/ShowTypescriptDeclarationFile?typescriptDeclarationFileId=68f868e8-1c67-4ec3-9371-fe220c0ffe62&accessToken=TAemMsBhxIoODziUTVquUeEUvCLKkXRU",
+    "@types/thin-backend": "https://thin.dev/ShowTypescriptDeclarationFile?typescriptDeclarationFileId=d92d1c78-1fe9-429d-832e-034aabf66670&accessToken=LAijWpIbHxkSAcUhcGOtVNotiDQBDPrd",
     "typescript": "^4.5.4",
     "vite": "^2.9.7"
   }

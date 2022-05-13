@@ -1,8 +1,7 @@
 import clsx from "clsx";
-import { route } from "preact-router";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
-import { FiEdit, FiTrash2 } from "react-icons/fi";
-import { Day, deleteRecord, query, updateRecord } from "thin-backend";
+import { FiEdit, FiSettings } from "react-icons/fi";
+import { Day, query, updateRecord } from "thin-backend";
 import { useQuery, useQuerySingleResult } from "thin-backend/react";
 import { urlToUuid } from "uuid-url";
 import { IconButton } from "./Button";
@@ -10,6 +9,7 @@ import styles from "./Calendar.module.css";
 import { CalendarDay, FillerDay } from "./CalendarDay";
 import { CategoryList } from "./CategoryList";
 import { dateRangeAlignWeek, toISODateString } from "./dateUtils";
+import { Settings } from "./Settings";
 
 interface Props {
   path: string;
@@ -19,6 +19,7 @@ interface Props {
 export function Calendar({ id: urlID }: Props) {
   const id = urlID ? urlToUuid(urlID) : null;
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isShowingSettings, setIsShowingSettings] = useState(false);
   const calendar = useQuerySingleResult(
     query("calendars").where("id", id || "")
   );
@@ -115,14 +116,10 @@ export function Calendar({ id: urlID }: Props) {
           />
           <IconButton
             onClick={() => {
-              if (confirm(`Delete calendar "${calendar.title}"?`)) {
-                // TODO: soft delete
-                deleteRecord("calendars", id);
-                route("/");
-              }
+              setIsShowingSettings(true);
             }}
           >
-            <FiTrash2 />
+            <FiSettings />
           </IconButton>
         </div>
 
@@ -151,6 +148,13 @@ export function Calendar({ id: urlID }: Props) {
         categories={sortedCategories}
         countByCategory={countByCategory}
       />
+
+      {isShowingSettings && (
+        <Settings
+          calendar={calendar}
+          onClose={() => setIsShowingSettings(false)}
+        />
+      )}
     </div>
   );
 }

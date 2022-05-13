@@ -312,6 +312,10 @@
   version "1.0.0"
   resolved "https://thin.dev/ShowTypescriptDeclarationFile?typescriptDeclarationFileId=68f868e8-1c67-4ec3-9371-fe220c0ffe62&accessToken=TAemMsBhxIoODziUTVquUeEUvCLKkXRU#3b548d9e6ae1422246b3d0ba33c5441cac0c3da8"
 
+"@types/thin-backend@https://thin.dev/ShowTypescriptDeclarationFile?typescriptDeclarationFileId=d92d1c78-1fe9-429d-832e-034aabf66670&accessToken=LAijWpIbHxkSAcUhcGOtVNotiDQBDPrd":
+  version "1.0.0"
+  resolved "https://thin.dev/ShowTypescriptDeclarationFile?typescriptDeclarationFileId=d92d1c78-1fe9-429d-832e-034aabf66670&accessToken=LAijWpIbHxkSAcUhcGOtVNotiDQBDPrd#b2956ed883246e33de66b4382896236c9977d595"
+
 ansi-styles@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-3.2.1.tgz#41fbb20243e50b12be0f04b8dedbf07520ce841d"

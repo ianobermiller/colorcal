@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "preact/hooks";
-import { createRecord, logout, query } from "thin-backend";
+import { createRecord, logout, query, loginWithRedirect } from "thin-backend";
 import { useCurrentUser, useQuery } from "thin-backend/react";
 import { uuidToUrl } from "uuid-url";
 import { Button } from "./Button";
@@ -12,7 +12,9 @@ interface Props {
 
 export function CalendarList({}: Props) {
   const user = useCurrentUser();
-  const calendars = useQuery(query("calendars").orderByDesc("updatedAt"));
+  const calendars = useQuery(
+    query("calendars").where("userId", user?.id!).orderByDesc("updatedAt")
+  );
   const calendarName = useRef<HTMLInputElement>(null);
 
   const createCalendar = useCallback(() => {
@@ -30,37 +32,50 @@ export function CalendarList({}: Props) {
   return (
     <>
       <h1>Calendars</h1>
-      <p>
-        Logged in as {user?.email}{" "}
-        <a href="javascript:;" onClick={() => logout()}>
-          Logout
-        </a>
-      </p>
-      <ul class={styles.list}>
-        {calendars?.map((cal) => (
-          <li class={styles.calendar}>
-            <a href={`/${uuidToUrl(cal.id)}`}>
-              <h2>{cal.title}</h2>
-              <p>
-                {formatDate(cal.startDate)} to {formatDate(cal.endDate)}
-              </p>
+      {user ? (
+        <>
+          <p>
+            Logged in as {user.email}{" "}
+            <a href="javascript:;" onClick={() => logout()}>
+              Logout
             </a>
-          </li>
-        ))}
-      </ul>
-      <div class={styles.addCalendar}>
-        <input
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              createCalendar();
-              e.currentTarget.value = "";
-            }
-          }}
-          ref={calendarName}
-          type="text"
-        />
-        <Button onClick={createCalendar}>Add</Button>
-      </div>
+          </p>
+
+          <ul class={styles.list}>
+            {calendars?.map((cal) => (
+              <li class={styles.calendar}>
+                <a href={`/${uuidToUrl(cal.id)}`}>
+                  <h2>{cal.title}</h2>
+                  <p>
+                    {formatDate(cal.startDate)} to {formatDate(cal.endDate)}
+                  </p>
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <div class={styles.addCalendar}>
+            <input
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  createCalendar();
+                  e.currentTarget.value = "";
+                }
+              }}
+              ref={calendarName}
+              type="text"
+            />
+
+            <Button onClick={createCalendar}>Add</Button>
+          </div>
+        </>
+      ) : (
+        <p>
+          <a href="javascript:;" onClick={() => loginWithRedirect()}>
+            Login to create a calendar
+          </a>
+        </p>
+      )}
     </>
   );
 }
