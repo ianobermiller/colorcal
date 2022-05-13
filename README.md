@@ -1,6 +1,6 @@
 # Color Calendar
 
-Demo at https://obermillers.com/cal2
+Demo at https://obermillers.com/cal
 
 A travel planning tool that lets you color code and label the days of your trip.
 
