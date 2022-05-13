@@ -20,6 +20,16 @@
   transform: translateY(-50%);
 }
 
+.home {
+  float: right;
+}
+
+@media (min-width: 924px) {
+  .home {
+    margin-right: 24px;
+  }
+}
+
 .transparent {
   opacity: 0;
 }

@@ -1,6 +1,7 @@
 import clsx from "clsx";
+import { route } from "preact-router";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
-import { FiEdit, FiSettings } from "react-icons/fi";
+import { FiEdit, FiHome, FiSettings } from "react-icons/fi";
 import { Day, query, updateRecord } from "thin-backend";
 import { useQuery, useQuerySingleResult } from "thin-backend/react";
 import { urlToUuid } from "uuid-url";
@@ -77,6 +78,9 @@ export function Calendar({ id: urlID }: Props) {
       <div class={styles.main}>
         <header>
           <h1 class={clsx({ [styles.transparent]: isEditingTitle })}>
+            <IconButton class={styles.home} onClick={() => route("/")}>
+              <FiHome />
+            </IconButton>
             {calendar.title}{" "}
             <IconButton
               onClick={() => {
