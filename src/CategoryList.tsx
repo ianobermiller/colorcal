@@ -105,7 +105,6 @@ export default function CategoryRow({
       </button>
 
       <input
-        class={styles.categoryName}
         type="text"
         value={category.name}
         onBlur={onNameChange}
