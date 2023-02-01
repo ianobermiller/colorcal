@@ -6,7 +6,6 @@ import {
   createRecord,
   deleteRecord,
   updateRecord,
-  updateRecords,
 } from "thin-backend";
 import { Button, IconButton } from "./Button";
 import styles from "./CategoryList.module.css";

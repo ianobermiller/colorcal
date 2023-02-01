@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import { ComponentChildren } from "preact";
 import styles from "./Button.module.css";
 
 type Props = JSX.HTMLAttributes<HTMLButtonElement>;
