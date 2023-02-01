@@ -60,11 +60,6 @@ export function Editor({ id: urlID }: Props) {
     (cat) => lastIfNotFound(days.findIndex((d) => d.halfCategoryId === cat.id))
   );
 
-  const dayByDate = days.reduce((acc, day) => {
-    acc[day.date] = day;
-    return acc;
-  }, {} as Record<string, Day | undefined>);
-
   const countByCategory = days.reduce((acc, day) => {
     if (day.categoryId) {
       const existing = acc[day.categoryId] || 0;
