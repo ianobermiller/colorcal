@@ -12,3 +12,19 @@
     max-width: 924px;
   }
 }
+
+@media (min-width: 924px) {
+  .header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.header > h1 > a {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  gap: 8px;
+  text-decoration: none;
+}

@@ -1,6 +1,6 @@
 import { route } from "preact-router";
 import { useCallback, useRef } from "preact/hooks";
-import { createRecord, logout, query, loginWithRedirect } from "thin-backend";
+import { createRecord, query } from "thin-backend";
 import { useCurrentUser, useQuery } from "thin-backend/react";
 import { uuidToUrl } from "uuid-url";
 import { Button } from "./Button";
@@ -8,10 +8,11 @@ import styles from "./CalendarList.module.css";
 import { toISODateString } from "./dateUtils";
 
 interface Props {
+  /** for preact-router */
   path: string;
 }
 
-export function CalendarList({}: Props) {
+export function CalendarList(_: Props) {
   const user = useCurrentUser();
   const calendars = useQuery(
     query("calendars").where("userId", user?.id!).orderByDesc("updatedAt")
@@ -34,21 +35,14 @@ export function CalendarList({}: Props) {
 
   return (
     <>
-      <h1>Calendars</h1>
-      {user ? (
+      <h2>Your Calendars</h2>
+      {user && (
         <>
-          <p>
-            Logged in as {user.email}{" "}
-            <a href="javascript:;" onClick={() => logout()}>
-              Logout
-            </a>
-          </p>
-
           <ul class={styles.list}>
             {calendars?.map((cal) => (
               <li class={styles.calendar}>
                 <a href={`/${uuidToUrl(cal.id)}`}>
-                  <h2>{cal.title}</h2>
+                  <h3>{cal.title}</h3>
                   <p>
                     {formatDate(cal.startDate)} to {formatDate(cal.endDate)}
                   </p>
@@ -65,19 +59,14 @@ export function CalendarList({}: Props) {
                   e.currentTarget.value = "";
                 }
               }}
+              placeholder="Calendar Name"
               ref={calendarName}
               type="text"
             />
 
-            <Button onClick={createCalendar}>Add</Button>
+            <Button onClick={createCalendar}>Create a Calendar</Button>
           </div>
         </>
-      ) : (
-        <p>
-          <a href="javascript:;" onClick={() => loginWithRedirect()}>
-            Login to create a calendar
-          </a>
-        </p>
       )}
     </>
   );

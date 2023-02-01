@@ -28,3 +28,9 @@ input[type="date"] {
   padding: 0 12px;
   font-size: 1em;
 }
+
+h1,
+h2,
+h3 {
+  font-weight: 900;
+}

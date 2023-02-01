@@ -25,3 +25,13 @@
 .button:hover {
   background-color: #f0f0f0;
 }
+
+.buttonLink {
+  background: none;
+  border-radius: 0;
+  border: none;
+  color: -webkit-link;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}

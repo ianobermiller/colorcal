@@ -1,0 +1,10 @@
+.calendar {
+  --day-size: calc((min(624px, 100vw) - 24px - 7px) / 7);
+  border-left: solid 1px gray;
+  border-top: solid 1px gray;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  width: calc(var(--day-size) * 7 + 1px);
+}

@@ -1,23 +1,23 @@
 import clsx from "clsx";
-import { route } from "preact-router";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
-import { FiEdit, FiHome, FiSettings } from "react-icons/fi";
-import { Day, query, updateRecord } from "thin-backend";
+import { FiEdit, FiSettings } from "react-icons/fi";
+import { createRecord, Day, query, updateRecord } from "thin-backend";
 import { useQuery, useQuerySingleResult } from "thin-backend/react";
 import { urlToUuid } from "uuid-url";
 import { IconButton } from "./Button";
-import styles from "./Calendar.module.css";
-import { CalendarDay, FillerDay } from "./CalendarDay";
+import { CalendarGrid } from "./CalendarGrid";
 import { CategoryList } from "./CategoryList";
-import { dateRangeAlignWeek, toISODateString } from "./dateUtils";
+import { toISODateString } from "./dateUtils";
+import styles from "./Editor.module.css";
 import { Settings } from "./Settings";
+import { useStore } from "./Store";
 
 interface Props {
   path: string;
   id?: string;
 }
 
-export function Calendar({ id: urlID }: Props) {
+export function Editor({ id: urlID }: Props) {
   const id = urlID ? urlToUuid(urlID) : null;
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isShowingSettings, setIsShowingSettings] = useState(false);
@@ -73,14 +73,15 @@ export function Calendar({ id: urlID }: Props) {
     return acc;
   }, {} as Record<string, number | undefined>);
 
+  const onDayClick = useCallback((date: Date, day: Day | undefined) => {
+    toggleDay(calendar.id, date, day);
+  }, []);
+
   return (
     <div class={styles.root}>
       <div class={styles.main}>
         <header>
-          <h1 class={clsx({ [styles.transparent]: isEditingTitle })}>
-            <IconButton class={styles.home} onClick={() => route("/")}>
-              <FiHome />
-            </IconButton>
+          <h2 class={clsx({ [styles.transparent]: isEditingTitle })}>
             {calendar.title}{" "}
             <IconButton
               onClick={() => {
@@ -89,7 +90,7 @@ export function Calendar({ id: urlID }: Props) {
             >
               <FiEdit />
             </IconButton>
-          </h1>
+          </h2>
           {isEditingTitle && (
             <input
               ref={titleInputRef}
@@ -127,24 +128,12 @@ export function Calendar({ id: urlID }: Props) {
           </IconButton>
         </div>
 
-        <div class={styles.calendar}>
-          {dateRangeAlignWeek(
-            new Date(calendar.startDate),
-            new Date(calendar.endDate)
-          ).map((date) => {
-            return date ? (
-              <CalendarDay
-                calendarId={calendar.id}
-                day={dayByDate[toISODateString(date)]}
-                date={date}
-                categories={sortedCategories}
-                startDate={calendar.startDate}
-              />
-            ) : (
-              <FillerDay />
-            );
-          })}
-        </div>
+        <CalendarGrid
+          calendar={calendar}
+          categories={categories}
+          days={days}
+          onDayClick={onDayClick}
+        />
       </div>
 
       <CategoryList
@@ -186,4 +175,64 @@ function sortBy<T>(
 
 function lastIfNotFound(index: number): number {
   return index >= 0 ? index : Number.POSITIVE_INFINITY;
+}
+
+async function toggleDay(calendarId: string, date: Date, day: Day | undefined) {
+  const { selectedCategoryID } = useStore.getState();
+  if (!day) {
+    return createRecord("days", {
+      calendarId: calendarId,
+      categoryId: selectedCategoryID,
+      date: toISODateString(date),
+    });
+  }
+
+  const top = !day.categoryId
+    ? "empty"
+    : day.categoryId === selectedCategoryID
+    ? "same"
+    : "different";
+  const half = !day.halfCategoryId
+    ? "empty"
+    : day.halfCategoryId === selectedCategoryID
+    ? "same"
+    : "different";
+
+  if (
+    (top === "same" && half === "same") ||
+    (top === "same" && half === "empty") ||
+    (top === "empty" && half === "same")
+  ) {
+    return updateRecord("days", day.id, {
+      categoryId: null,
+      halfCategoryId: null,
+    });
+  }
+
+  if (
+    (top === "empty" && half === "empty") ||
+    (top === "empty" && half === "different")
+  ) {
+    return updateRecord("days", day.id, { categoryId: selectedCategoryID });
+  }
+
+  if (top === "same" && half === "different") {
+    return updateRecord("days", day.id, { halfCategoryId: null });
+  }
+
+  if (top === "different" && half === "same") {
+    return updateRecord("days", day.id, {
+      categoryId: selectedCategoryID,
+      halfCategoryId: null,
+    });
+  }
+
+  if (
+    (top === "different" && half === "empty") ||
+    (top === "different" && half === "different")
+  ) {
+    return updateRecord("days", day.id, {
+      halfCategoryId: selectedCategoryID,
+    });
+  }
 }

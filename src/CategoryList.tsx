@@ -26,7 +26,7 @@ export function CategoryList({
   const selectCategory = useStore((store) => store.selectCategory);
   return (
     <div>
-      <h2>Categories</h2>
+      <h3>Categories</h3>
       <ul class={styles.categories}>
         {categories.map((category) => (
           <CategoryRow
