@@ -9,6 +9,7 @@ import { CalendarGrid } from './CalendarGrid';
 import { CategoryList } from './CategoryList';
 import { toISODateString } from './dateUtils';
 import styles from './Editor.module.css';
+import { Notes } from './Notes';
 import { Settings } from './Settings';
 import { useStore } from './Store';
 
@@ -127,7 +128,11 @@ export function Editor({ id: urlID }: Props) {
         <CalendarGrid calendar={calendar} categories={categories} days={days} onDayClick={onDayClick} />
       </div>
 
-      <CategoryList calendarId={calendar.id} categories={sortedCategories} countByCategory={countByCategory} />
+      <div>
+        <CategoryList calendarId={calendar.id} categories={sortedCategories} countByCategory={countByCategory} />
+
+        <Notes calendarId={calendar.id} notes={calendar.notes} />
+      </div>
 
       {isShowingSettings && <Settings calendar={calendar} onClose={() => setIsShowingSettings(false)} />}
     </div>

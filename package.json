@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.5.0",
-    "@types/thin-backend": "https://thin.dev/types/47c56ffc-e104-458b-953a-74436c5f269a/UfgkOzRJSlGIcgsgWzFWyCXzpvQYDCNG",
+    "@types/thin-backend": "https://thin.dev/types/4516f404-e1d2-44bb-bac5-7ccbcb11a10c/TOWklCikSVmarKVnFzJAcmXleGyjbjPr",
     "@typescript-eslint/eslint-plugin": "^5.51.0",
     "@typescript-eslint/parser": "^5.51.0",
     "eslint": "^8.34.0",

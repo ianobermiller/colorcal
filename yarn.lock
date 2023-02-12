@@ -1343,6 +1343,10 @@
   resolved "https://registry.yarnpkg.com/@types/semver/-/semver-7.3.13.tgz#da4bfd73f49bd541d28920ab0e2bf0ee80f71c91"
   integrity sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==
 
+"@types/thin-backend@https://thin.dev/types/4516f404-e1d2-44bb-bac5-7ccbcb11a10c/TOWklCikSVmarKVnFzJAcmXleGyjbjPr":
+  version "1.0.0"
+  resolved "https://thin.dev/types/4516f404-e1d2-44bb-bac5-7ccbcb11a10c/TOWklCikSVmarKVnFzJAcmXleGyjbjPr#2fee6d360b326f9024c4beddd83c736a7d5f8147"
+
 "@types/thin-backend@https://thin.dev/types/47c56ffc-e104-458b-953a-74436c5f269a/UfgkOzRJSlGIcgsgWzFWyCXzpvQYDCNG":
   version "1.0.0"
   resolved "https://thin.dev/types/47c56ffc-e104-458b-953a-74436c5f269a/UfgkOzRJSlGIcgsgWzFWyCXzpvQYDCNG#4db5a55421b723bd563bbb4708b79d6a7f7735e7"

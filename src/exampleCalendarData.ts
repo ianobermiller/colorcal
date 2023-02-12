@@ -1,6 +1,6 @@
 import { Calendar, Category, Day } from 'thin-backend';
 
-const commonFields = { createdAt: '', id: '', updatedAt: '', userId: '' };
+const commonFields = { createdAt: '', id: '', notes: '', updatedAt: '', userId: '' };
 const commonInnerFields = { ...commonFields, calendarId: '' };
 
 // prettier-ignore
@@ -14,7 +14,7 @@ export const exampleData: {
     endDate: "2023-05-22",
     isPubliclyVisible: false,
     startDate: "2023-05-01",
-    title: "Fake UK Travels",
+    title: "Fake UK Travels"
   },
   categories: [
     { ...commonInnerFields, color: "#8da0cb", id: "travel", name: "Travel" },
