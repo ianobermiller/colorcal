@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { FiEdit, FiSettings } from 'react-icons/fi';
-import { createRecord, Day, query, updateRecord } from 'thin-backend';
+import { Day, createRecord, query, updateRecord } from 'thin-backend';
 import { useQuery, useQuerySingleResult } from 'thin-backend-react';
 import { urlToUuid } from 'uuid-url';
 import { IconButton } from './Button';
@@ -21,15 +21,15 @@ export function Editor({ id: urlID }: Props) {
   const id = urlID ? urlToUuid(urlID) : null;
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isShowingSettings, setIsShowingSettings] = useState(false);
-  const calendar = useQuerySingleResult(query('calendars').where('id', id || ''));
+  const calendar = useQuerySingleResult(query('calendars').where('id', id ?? ''));
   const days = useQuery(
     query('days')
-      .where('calendarId', calendar?.id || '')
+      .where('calendarId', calendar?.id ?? '')
       .orderByAsc('date'),
   );
   const categories = useQuery(
     query('categories')
-      .where('calendarId', calendar?.id || '')
+      .where('calendarId', calendar?.id ?? '')
       .orderByAsc('createdAt'),
   );
   const updateTitle = useCallback(
@@ -67,13 +67,13 @@ export function Editor({ id: urlID }: Props) {
     (cat) => lastIfNotFound(days.findIndex((d) => d.halfCategoryId === cat.id)),
   );
 
-  const countByCategory = days.reduce((acc, day) => {
+  const countByCategory = days.reduce<Record<string, number | undefined>>((acc, day) => {
     if (day.categoryId) {
-      const existing = acc[day.categoryId] || 0;
+      const existing = acc[day.categoryId] ?? 0;
       acc[day.categoryId] = existing + 1;
     }
     return acc;
-  }, {} as Record<string, number | undefined>);
+  }, {});
 
   return (
     <div class={styles.root}>
@@ -91,29 +91,29 @@ export function Editor({ id: urlID }: Props) {
           </h2>
           {isEditingTitle && (
             <input
-              ref={titleInputRef}
-              type="text"
               defaultValue={calendar.title}
               onBlur={updateTitle}
               onKeyDown={(e) => e.key === 'Enter' && updateTitle(e)}
+              ref={titleInputRef}
+              type="text"
             />
           )}
         </header>
 
         <div class={styles.controls}>
           <input
-            type="date"
-            value={calendar.startDate}
             onChange={(e) =>
               updateRecord('calendars', id, {
                 startDate: e.currentTarget.value,
               })
             }
+            type="date"
+            value={calendar.startDate}
           />
           <input
+            onChange={(e) => updateRecord('calendars', id, { endDate: e.currentTarget.value })}
             type="date"
             value={calendar.endDate}
-            onChange={(e) => updateRecord('calendars', id, { endDate: e.currentTarget.value })}
           />
           <IconButton
             onClick={() => {
@@ -134,7 +134,7 @@ export function Editor({ id: urlID }: Props) {
   );
 }
 
-function sortBy<T>(array: T[], ...predicates: Array<(element: T) => string | number>): T[] {
+function sortBy<T>(array: T[], ...predicates: ((element: T) => number | string)[]): T[] {
   return array.slice().sort((a, b) => {
     if (a === b) {
       return 0;

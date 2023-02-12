@@ -41,7 +41,7 @@ export function Settings({ calendar, onClose }: Props) {
         </IconButton>
 
         <label>
-          <input type="checkbox" checked={calendar.isPubliclyVisible} onChange={handleVisibilityChange} /> Anyone with
+          <input checked={calendar.isPubliclyVisible} onChange={handleVisibilityChange} type="checkbox" /> Anyone with
           the link can view
         </label>
 

@@ -6,6 +6,6 @@ interface State {
 }
 
 export const useStore = create<State>((set) => ({
-  selectedCategoryID: null,
   selectCategory: (id: string) => set(() => ({ selectedCategoryID: id })),
+  selectedCategoryID: null,
 }));

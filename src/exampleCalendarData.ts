@@ -1,6 +1,6 @@
 import { Calendar, Category, Day } from 'thin-backend';
 
-const commonFields = { id: '', createdAt: '', updatedAt: '', userId: '' };
+const commonFields = { createdAt: '', id: '', updatedAt: '', userId: '' };
 const commonInnerFields = { ...commonFields, calendarId: '' };
 
 // prettier-ignore
@@ -11,20 +11,20 @@ export const exampleData: {
 } = {
   calendar: {
     ...commonFields,
-    title: "Fake UK Travels",
-    startDate: "2023-05-01",
     endDate: "2023-05-22",
     isPubliclyVisible: false,
+    startDate: "2023-05-01",
+    title: "Fake UK Travels",
   },
   categories: [
-    { ...commonInnerFields, id: "travel", color: "#8da0cb", name: "Travel" },
-    { ...commonInnerFields, id: "london", color: "#66c2a5", name: "London" },
-    { ...commonInnerFields, id: "york", color: "#fc8d62", name: "York" },
-    { ...commonInnerFields, id: "edinburgh", color: "#a6d854", name: "Edinburgh" },
-    { ...commonInnerFields, id: "leeds", color: "#ffd92f", name: "Leeds" },
-    { ...commonInnerFields, id: "inverness", color: "#e78ac3", name: "Inverness" },
-    { ...commonInnerFields, id: "glasgow", color: "#ffd92f", name: "Glasgow" },
-    { ...commonInnerFields, id: "liverpool", color: "#fc8d62", name: "Liverpool" },
+    { ...commonInnerFields, color: "#8da0cb", id: "travel", name: "Travel" },
+    { ...commonInnerFields, color: "#66c2a5", id: "london", name: "London" },
+    { ...commonInnerFields, color: "#fc8d62", id: "york", name: "York" },
+    { ...commonInnerFields, color: "#a6d854", id: "edinburgh", name: "Edinburgh" },
+    { ...commonInnerFields, color: "#ffd92f", id: "leeds", name: "Leeds" },
+    { ...commonInnerFields, color: "#e78ac3", id: "inverness", name: "Inverness" },
+    { ...commonInnerFields, color: "#ffd92f", id: "glasgow", name: "Glasgow" },
+    { ...commonInnerFields, color: "#fc8d62", id: "liverpool", name: "Liverpool" },
   ],
   days: [
     { ...commonInnerFields, categoryId: "travel", date: "2023-05-01", halfCategoryId: "london" },

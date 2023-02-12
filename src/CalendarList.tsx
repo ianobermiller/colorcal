@@ -16,7 +16,7 @@ export function CalendarList(_: Props) {
   const user = useCurrentUser();
   const calendars = useQuery(
     query('calendars')
-      .where('userId', user?.id || '')
+      .where('userId', user?.id ?? '')
       .orderByDesc('updatedAt'),
   );
   const calendarName = useRef<HTMLInputElement>(null);

@@ -19,7 +19,7 @@ export function CategoryList({ calendarId, categories, countByCategory }: Props)
       <h3>Categories</h3>
       <ul class={styles.categories}>
         {categories.map((category) => (
-          <CategoryRow category={category} count={countByCategory[category.id] || 0} />
+          <CategoryRow category={category} count={countByCategory[category.id] ?? 0} />
         ))}
       </ul>
 
@@ -56,7 +56,7 @@ export function CategoryList({ calendarId, categories, countByCategory }: Props)
   );
 }
 
-export default function CategoryRow({ count, category }: { category: Category; count: number }) {
+export default function CategoryRow({ category, count }: { category: Category; count: number }) {
   const selectedCategoryID = useStore((store) => store.selectedCategoryID);
   const selectCategory = useStore((store) => store.selectCategory);
 
@@ -74,7 +74,6 @@ export default function CategoryRow({ count, category }: { category: Category; c
           [styles.categoryColor]: true,
           [styles.currentCategoryColor]: selectedCategoryID === category.id,
         })}
-        style={{ background: category.color }}
         onClick={() => {
           if (selectedCategoryID === category.id) {
             const color = COLORS[wrap(COLORS.length, COLORS.indexOf(category.color) + 1)];
@@ -83,15 +82,16 @@ export default function CategoryRow({ count, category }: { category: Category; c
             selectCategory(category.id);
           }
         }}
+        style={{ background: category.color }}
       >
         {count}
       </button>
 
       <input
-        type="text"
-        value={category.name}
         onBlur={onNameChange}
         onKeyDown={(e) => e.key === 'Enter' && onNameChange(e)}
+        type="text"
+        value={category.name}
       />
 
       <IconButton

@@ -13,16 +13,16 @@ interface Props {
 }
 
 export function CalendarDay({ categories, date, day, onDayClick, startDate }: Props) {
-  const isTopSelected = useStore((state) => day?.categoryId && state.selectedCategoryID === day?.categoryId);
-  const isHalfSelected = useStore((state) => day?.halfCategoryId && state.selectedCategoryID === day?.halfCategoryId);
+  const isTopSelected = useStore((state) => day?.categoryId && state.selectedCategoryID === day.categoryId);
+  const isHalfSelected = useStore((state) => day?.halfCategoryId && state.selectedCategoryID === day.halfCategoryId);
   const showMonth = toISODateString(date) === startDate || date.getUTCDate() === 1;
 
   const topCategory = categories.find((c) => c.id === day?.categoryId);
   const halfCategory = categories.find((c) => c.id === day?.halfCategoryId);
 
   return (
-    <div class={styles.day} style={{ background: topCategory?.color }} onClick={() => onDayClick?.(date, day)}>
-      <span class={clsx({ [styles.selected]: isTopSelected || isHalfSelected })}>
+    <div class={styles.day} onClick={() => onDayClick?.(date, day)} style={{ background: topCategory?.color }}>
+      <span class={clsx({ [styles.selected]: isTopSelected ?? isHalfSelected })}>
         {date.getUTCDate()}
         {showMonth &&
           ' ' +
