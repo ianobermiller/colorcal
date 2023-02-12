@@ -1,7 +1,7 @@
 import { createHashHistory } from "history";
 import Router, { CustomHistory } from "preact-router";
 import { loginWithRedirect, logout } from "thin-backend";
-import { useCurrentUser } from "thin-backend/react";
+import { useCurrentUser } from "thin-backend-react";
 import styles from "./App.module.css";
 import { Editor } from "./Editor";
 import { CalendarList } from "./CalendarList";

@@ -1,7 +1,7 @@
 import { route } from "preact-router";
 import { useCallback, useRef } from "preact/hooks";
 import { createRecord, query } from "thin-backend";
-import { useCurrentUser, useQuery } from "thin-backend/react";
+import { useCurrentUser, useQuery } from "thin-backend-react";
 import { uuidToUrl } from "uuid-url";
 import { Button } from "./Button";
 import styles from "./CalendarList.module.css";

@@ -1,6 +1,6 @@
 import { render } from "preact";
 import { initThinBackend } from "thin-backend";
-import { ThinBackend } from "thin-backend/react";
+import { ThinBackend } from "thin-backend-react";
 import { App } from "./App";
 import "./index.css";
 

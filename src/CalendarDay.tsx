@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import { useCallback } from "preact/hooks";
 import { Category, Day } from "thin-backend";
 import styles from "./CalendarDay.module.css";
 import { toISODateString } from "./dateUtils";

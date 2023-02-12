@@ -32,7 +32,7 @@ export function Settings({ calendar, onClose }: Props) {
         isPubliclyVisible: e.currentTarget.checked,
       });
     },
-    []
+    [calendar.id]
   );
 
   return (
@@ -54,6 +54,7 @@ export function Settings({ calendar, onClose }: Props) {
 
         <Button
           onClick={() => {
+            // eslint-disable-next-line no-restricted-globals
             if (confirm(`Delete calendar "${calendar.title}"?`)) {
               // TODO: soft delete
               deleteRecord("calendars", calendar.id);

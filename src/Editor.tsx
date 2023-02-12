@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import { FiEdit, FiSettings } from "react-icons/fi";
 import { createRecord, Day, query, updateRecord } from "thin-backend";
-import { useQuery, useQuerySingleResult } from "thin-backend/react";
+import { useQuery, useQuerySingleResult } from "thin-backend-react";
 import { urlToUuid } from "uuid-url";
 import { IconButton } from "./Button";
 import { CalendarGrid } from "./CalendarGrid";
@@ -41,7 +41,7 @@ export function Editor({ id: urlID }: Props) {
         });
       }
     },
-    [calendar?.id]
+    [calendar]
   );
 
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -49,6 +49,13 @@ export function Editor({ id: urlID }: Props) {
     titleInputRef.current?.focus();
     titleInputRef.current?.select();
   });
+
+  const onDayClick = useCallback(
+    (date: Date, day: Day | undefined) => {
+      calendar?.id && toggleDay(calendar.id, date, day);
+    },
+    [calendar?.id]
+  );
 
   if (!id || !calendar || !days || !categories) {
     return <h1>Loading...</h1>;
@@ -67,10 +74,6 @@ export function Editor({ id: urlID }: Props) {
     }
     return acc;
   }, {} as Record<string, number | undefined>);
-
-  const onDayClick = useCallback((date: Date, day: Day | undefined) => {
-    toggleDay(calendar.id, date, day);
-  }, []);
 
   return (
     <div class={styles.root}>

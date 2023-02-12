@@ -78,9 +78,12 @@ export default function CategoryRow({
   const selectedCategoryID = useStore((store) => store.selectedCategoryID);
   const selectCategory = useStore((store) => store.selectCategory);
 
-  const onNameChange = useCallback((e: JSX.TargetedEvent<HTMLInputElement>) => {
-    updateRecord("categories", category.id, { name: e.currentTarget.value });
-  }, []);
+  const onNameChange = useCallback(
+    (e: JSX.TargetedEvent<HTMLInputElement>) => {
+      updateRecord("categories", category.id, { name: e.currentTarget.value });
+    },
+    [category.id]
+  );
 
   return (
     <div class={styles.category}>
