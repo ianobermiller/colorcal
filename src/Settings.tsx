@@ -1,10 +1,10 @@
-import { JSX } from "preact";
-import { route } from "preact-router";
-import { useCallback } from "preact/hooks";
-import { FiTrash2, FiX } from "react-icons/fi";
-import { Calendar, deleteRecord, updateRecord } from "thin-backend";
-import { Button, IconButton } from "./Button";
-import styles from "./Settings.module.css";
+import { JSX } from 'preact';
+import { route } from 'preact-router';
+import { useCallback } from 'preact/hooks';
+import { FiTrash2, FiX } from 'react-icons/fi';
+import { Calendar, deleteRecord, updateRecord } from 'thin-backend';
+import { Button, IconButton } from './Button';
+import styles from './Settings.module.css';
 
 interface Props {
   calendar: Calendar;
@@ -14,25 +14,22 @@ interface Props {
 export function Settings({ calendar, onClose }: Props) {
   const handleScrimClick = useCallback(
     (e: MouseEvent) => {
-      if (
-        e.target instanceof HTMLElement &&
-        e.target.closest(`.${styles.modal}`)
-      ) {
+      if (e.target instanceof HTMLElement && e.target.closest(`.${styles.modal}`)) {
         return;
       }
 
       onClose();
     },
-    [onClose]
+    [onClose],
   );
 
   const handleVisibilityChange = useCallback(
     (e: JSX.TargetedEvent<HTMLInputElement>) => {
-      updateRecord("calendars", calendar.id, {
+      updateRecord('calendars', calendar.id, {
         isPubliclyVisible: e.currentTarget.checked,
       });
     },
-    [calendar.id]
+    [calendar.id],
   );
 
   return (
@@ -44,12 +41,8 @@ export function Settings({ calendar, onClose }: Props) {
         </IconButton>
 
         <label>
-          <input
-            type="checkbox"
-            checked={calendar.isPubliclyVisible}
-            onChange={handleVisibilityChange}
-          />{" "}
-          Anyone with the link can view
+          <input type="checkbox" checked={calendar.isPubliclyVisible} onChange={handleVisibilityChange} /> Anyone with
+          the link can view
         </label>
 
         <Button
@@ -57,8 +50,8 @@ export function Settings({ calendar, onClose }: Props) {
             // eslint-disable-next-line no-restricted-globals
             if (confirm(`Delete calendar "${calendar.title}"?`)) {
               // TODO: soft delete
-              deleteRecord("calendars", calendar.id);
-              route("/");
+              deleteRecord('calendars', calendar.id);
+              route('/');
             }
           }}
         >

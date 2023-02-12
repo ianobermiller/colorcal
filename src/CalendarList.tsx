@@ -1,11 +1,11 @@
-import { route } from "preact-router";
-import { useCallback, useRef } from "preact/hooks";
-import { createRecord, query } from "thin-backend";
-import { useCurrentUser, useQuery } from "thin-backend-react";
-import { uuidToUrl } from "uuid-url";
-import { Button } from "./Button";
-import styles from "./CalendarList.module.css";
-import { toISODateString } from "./dateUtils";
+import { route } from 'preact-router';
+import { useCallback, useRef } from 'preact/hooks';
+import { createRecord, query } from 'thin-backend';
+import { useCurrentUser, useQuery } from 'thin-backend-react';
+import { uuidToUrl } from 'uuid-url';
+import { Button } from './Button';
+import styles from './CalendarList.module.css';
+import { toISODateString } from './dateUtils';
 
 interface Props {
   /** for preact-router */
@@ -15,7 +15,9 @@ interface Props {
 export function CalendarList(_: Props) {
   const user = useCurrentUser();
   const calendars = useQuery(
-    query("calendars").where("userId", user?.id!).orderByDesc("updatedAt")
+    query('calendars')
+      .where('userId', user?.id || '')
+      .orderByDesc('updatedAt'),
   );
   const calendarName = useRef<HTMLInputElement>(null);
 
@@ -24,7 +26,7 @@ export function CalendarList(_: Props) {
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 7);
 
-    createRecord("calendars", {
+    createRecord('calendars', {
       endDate: toISODateString(endDate),
       startDate: toISODateString(startDate),
       title: calendarName.current?.value,
@@ -54,9 +56,9 @@ export function CalendarList(_: Props) {
           <div class={styles.addCalendar}>
             <input
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === 'Enter') {
                   createCalendar();
-                  e.currentTarget.value = "";
+                  e.currentTarget.value = '';
                 }
               }}
               placeholder="Calendar Name"
@@ -74,7 +76,7 @@ export function CalendarList(_: Props) {
 
 function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString(undefined, {
-    dateStyle: "medium",
-    timeZone: "UTC",
+    dateStyle: 'medium',
+    timeZone: 'UTC',
   });
 }

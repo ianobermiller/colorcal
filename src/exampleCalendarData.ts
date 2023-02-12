@@ -1,7 +1,7 @@
-import { Calendar, Category, Day } from "thin-backend";
+import { Calendar, Category, Day } from 'thin-backend';
 
-const commonFields = { id: "", createdAt: "", updatedAt: "", userId: "" };
-const commonInnerFields = { ...commonFields, calendarId: "" };
+const commonFields = { id: '', createdAt: '', updatedAt: '', userId: '' };
+const commonInnerFields = { ...commonFields, calendarId: '' };
 
 // prettier-ignore
 export const exampleData: {

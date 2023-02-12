@@ -14,7 +14,7 @@
   position: relative;
 }
 
-.main > header > input[type="text"] {
+.main > header > input[type='text'] {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);

@@ -1,7 +1,7 @@
-import { Calendar, Category, Day } from "thin-backend";
-import styles from "./CalendarGrid.module.css";
-import { CalendarDay, FillerDay } from "./CalendarDay";
-import { dateRangeAlignWeek, toISODateString } from "./dateUtils";
+import { Calendar, Category, Day } from 'thin-backend';
+import styles from './CalendarGrid.module.css';
+import { CalendarDay, FillerDay } from './CalendarDay';
+import { dateRangeAlignWeek, toISODateString } from './dateUtils';
 
 interface Props {
   calendar: Calendar;
@@ -10,17 +10,9 @@ interface Props {
   onDayClick?(date: Date, day: Day | undefined): void;
 }
 
-export function CalendarGrid({
-  calendar,
-  categories,
-  days,
-  onDayClick,
-}: Props) {
+export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) {
   const dayByDate = indexArray(days, (day) => day.date);
-  const range = dateRangeAlignWeek(
-    new Date(calendar.startDate),
-    new Date(calendar.endDate)
-  );
+  const range = dateRangeAlignWeek(new Date(calendar.startDate), new Date(calendar.endDate));
 
   return (
     <div class={styles.calendar}>
@@ -35,16 +27,13 @@ export function CalendarGrid({
           />
         ) : (
           <FillerDay />
-        )
+        ),
       )}
     </div>
   );
 }
 
-function indexArray<T, K extends string>(
-  arr: T[],
-  getKey: (t: T) => K
-): Record<K, T | undefined> {
+function indexArray<T, K extends string>(arr: T[], getKey: (t: T) => K): Record<K, T | undefined> {
   const result = {} as Record<K, T | undefined>;
   for (const item of arr) {
     result[getKey(item)] = item;

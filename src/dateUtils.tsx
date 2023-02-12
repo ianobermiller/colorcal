@@ -1,7 +1,7 @@
 export function dateRangeAlignWeek(start: Date, end: Date): Array<Date | null> {
   const dates: Array<Date | null> = dateRange(start, end);
 
-  const firstDayOfWeek = dates[0]!.getUTCDay();
+  const firstDayOfWeek = dates[0]?.getUTCDay() || 0;
 
   // Filler days
   for (let i = 0; i < firstDayOfWeek; i++) {
@@ -12,8 +12,7 @@ export function dateRangeAlignWeek(start: Date, end: Date): Array<Date | null> {
 }
 
 export function dateRange(tryStart: Date, tryEnd: Date): Date[] {
-  const [start, end] =
-    tryStart < tryEnd ? [tryStart, tryEnd] : [tryEnd, tryStart];
+  const [start, end] = tryStart < tryEnd ? [tryStart, tryEnd] : [tryEnd, tryStart];
 
   const dates: Array<Date> = [];
   let current = start;

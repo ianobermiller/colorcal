@@ -1,16 +1,16 @@
-import clsx from "clsx";
-import { useCallback, useEffect, useRef, useState } from "preact/hooks";
-import { FiEdit, FiSettings } from "react-icons/fi";
-import { createRecord, Day, query, updateRecord } from "thin-backend";
-import { useQuery, useQuerySingleResult } from "thin-backend-react";
-import { urlToUuid } from "uuid-url";
-import { IconButton } from "./Button";
-import { CalendarGrid } from "./CalendarGrid";
-import { CategoryList } from "./CategoryList";
-import { toISODateString } from "./dateUtils";
-import styles from "./Editor.module.css";
-import { Settings } from "./Settings";
-import { useStore } from "./Store";
+import clsx from 'clsx';
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { FiEdit, FiSettings } from 'react-icons/fi';
+import { createRecord, Day, query, updateRecord } from 'thin-backend';
+import { useQuery, useQuerySingleResult } from 'thin-backend-react';
+import { urlToUuid } from 'uuid-url';
+import { IconButton } from './Button';
+import { CalendarGrid } from './CalendarGrid';
+import { CategoryList } from './CategoryList';
+import { toISODateString } from './dateUtils';
+import styles from './Editor.module.css';
+import { Settings } from './Settings';
+import { useStore } from './Store';
 
 interface Props {
   path: string;
@@ -21,27 +21,27 @@ export function Editor({ id: urlID }: Props) {
   const id = urlID ? urlToUuid(urlID) : null;
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isShowingSettings, setIsShowingSettings] = useState(false);
-  const calendar = useQuerySingleResult(
-    query("calendars").where("id", id || "")
-  );
+  const calendar = useQuerySingleResult(query('calendars').where('id', id || ''));
   const days = useQuery(
-    query("days").where("calendarId", calendar?.id!).orderByAsc("date")
+    query('days')
+      .where('calendarId', calendar?.id || '')
+      .orderByAsc('date'),
   );
   const categories = useQuery(
-    query("categories")
-      .where("calendarId", calendar?.id!)
-      .orderByAsc("createdAt")
+    query('categories')
+      .where('calendarId', calendar?.id || '')
+      .orderByAsc('createdAt'),
   );
   const updateTitle = useCallback(
     (e: JSX.TargetedEvent<HTMLInputElement>) => {
       setIsEditingTitle(false);
       if (calendar) {
-        updateRecord("calendars", calendar.id, {
+        updateRecord('calendars', calendar.id, {
           title: e.currentTarget.value,
         });
       }
     },
-    [calendar]
+    [calendar],
   );
 
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -54,7 +54,7 @@ export function Editor({ id: urlID }: Props) {
     (date: Date, day: Day | undefined) => {
       calendar?.id && toggleDay(calendar.id, date, day);
     },
-    [calendar?.id]
+    [calendar?.id],
   );
 
   if (!id || !calendar || !days || !categories) {
@@ -64,7 +64,7 @@ export function Editor({ id: urlID }: Props) {
   const sortedCategories = sortBy(
     categories,
     (cat) => lastIfNotFound(days.findIndex((d) => d.categoryId === cat.id)),
-    (cat) => lastIfNotFound(days.findIndex((d) => d.halfCategoryId === cat.id))
+    (cat) => lastIfNotFound(days.findIndex((d) => d.halfCategoryId === cat.id)),
   );
 
   const countByCategory = days.reduce((acc, day) => {
@@ -80,7 +80,7 @@ export function Editor({ id: urlID }: Props) {
       <div class={styles.main}>
         <header>
           <h2 class={clsx({ [styles.transparent]: isEditingTitle })}>
-            {calendar.title}{" "}
+            {calendar.title}{' '}
             <IconButton
               onClick={() => {
                 setIsEditingTitle(true);
@@ -95,7 +95,7 @@ export function Editor({ id: urlID }: Props) {
               type="text"
               defaultValue={calendar.title}
               onBlur={updateTitle}
-              onKeyDown={(e) => e.key === "Enter" && updateTitle(e)}
+              onKeyDown={(e) => e.key === 'Enter' && updateTitle(e)}
             />
           )}
         </header>
@@ -105,7 +105,7 @@ export function Editor({ id: urlID }: Props) {
             type="date"
             value={calendar.startDate}
             onChange={(e) =>
-              updateRecord("calendars", id, {
+              updateRecord('calendars', id, {
                 startDate: e.currentTarget.value,
               })
             }
@@ -113,9 +113,7 @@ export function Editor({ id: urlID }: Props) {
           <input
             type="date"
             value={calendar.endDate}
-            onChange={(e) =>
-              updateRecord("calendars", id, { endDate: e.currentTarget.value })
-            }
+            onChange={(e) => updateRecord('calendars', id, { endDate: e.currentTarget.value })}
           />
           <IconButton
             onClick={() => {
@@ -126,34 +124,17 @@ export function Editor({ id: urlID }: Props) {
           </IconButton>
         </div>
 
-        <CalendarGrid
-          calendar={calendar}
-          categories={categories}
-          days={days}
-          onDayClick={onDayClick}
-        />
+        <CalendarGrid calendar={calendar} categories={categories} days={days} onDayClick={onDayClick} />
       </div>
 
-      <CategoryList
-        calendarId={calendar.id}
-        categories={sortedCategories}
-        countByCategory={countByCategory}
-      />
+      <CategoryList calendarId={calendar.id} categories={sortedCategories} countByCategory={countByCategory} />
 
-      {isShowingSettings && (
-        <Settings
-          calendar={calendar}
-          onClose={() => setIsShowingSettings(false)}
-        />
-      )}
+      {isShowingSettings && <Settings calendar={calendar} onClose={() => setIsShowingSettings(false)} />}
     </div>
   );
 }
 
-function sortBy<T>(
-  array: T[],
-  ...predicates: Array<(element: T) => string | number>
-): T[] {
+function sortBy<T>(array: T[], ...predicates: Array<(element: T) => string | number>): T[] {
   return array.slice().sort((a, b) => {
     if (a === b) {
       return 0;
@@ -178,58 +159,44 @@ function lastIfNotFound(index: number): number {
 async function toggleDay(calendarId: string, date: Date, day: Day | undefined) {
   const { selectedCategoryID } = useStore.getState();
   if (!day) {
-    return createRecord("days", {
+    return createRecord('days', {
       calendarId: calendarId,
       categoryId: selectedCategoryID,
       date: toISODateString(date),
     });
   }
 
-  const top = !day.categoryId
-    ? "empty"
-    : day.categoryId === selectedCategoryID
-    ? "same"
-    : "different";
-  const half = !day.halfCategoryId
-    ? "empty"
-    : day.halfCategoryId === selectedCategoryID
-    ? "same"
-    : "different";
+  const top = !day.categoryId ? 'empty' : day.categoryId === selectedCategoryID ? 'same' : 'different';
+  const half = !day.halfCategoryId ? 'empty' : day.halfCategoryId === selectedCategoryID ? 'same' : 'different';
 
   if (
-    (top === "same" && half === "same") ||
-    (top === "same" && half === "empty") ||
-    (top === "empty" && half === "same")
+    (top === 'same' && half === 'same') ||
+    (top === 'same' && half === 'empty') ||
+    (top === 'empty' && half === 'same')
   ) {
-    return updateRecord("days", day.id, {
+    return updateRecord('days', day.id, {
       categoryId: null,
       halfCategoryId: null,
     });
   }
 
-  if (
-    (top === "empty" && half === "empty") ||
-    (top === "empty" && half === "different")
-  ) {
-    return updateRecord("days", day.id, { categoryId: selectedCategoryID });
+  if ((top === 'empty' && half === 'empty') || (top === 'empty' && half === 'different')) {
+    return updateRecord('days', day.id, { categoryId: selectedCategoryID });
   }
 
-  if (top === "same" && half === "different") {
-    return updateRecord("days", day.id, { halfCategoryId: null });
+  if (top === 'same' && half === 'different') {
+    return updateRecord('days', day.id, { halfCategoryId: null });
   }
 
-  if (top === "different" && half === "same") {
-    return updateRecord("days", day.id, {
+  if (top === 'different' && half === 'same') {
+    return updateRecord('days', day.id, {
       categoryId: selectedCategoryID,
       halfCategoryId: null,
     });
   }
 
-  if (
-    (top === "different" && half === "empty") ||
-    (top === "different" && half === "different")
-  ) {
-    return updateRecord("days", day.id, {
+  if ((top === 'different' && half === 'empty') || (top === 'different' && half === 'different')) {
+    return updateRecord('days', day.id, {
       halfCategoryId: selectedCategoryID,
     });
   }

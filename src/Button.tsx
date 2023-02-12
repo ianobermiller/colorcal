@@ -1,5 +1,5 @@
-import clsx from "clsx";
-import styles from "./Button.module.css";
+import clsx from 'clsx';
+import styles from './Button.module.css';
 
 type Props = JSX.HTMLAttributes<HTMLButtonElement>;
 
