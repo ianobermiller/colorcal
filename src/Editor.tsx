@@ -52,8 +52,8 @@ export function Editor({ id: urlID }: Props) {
   });
 
   const onDayClick = useCallback(
-    (date: Date, day: Day | undefined) => {
-      calendar?.id && toggleDay(calendar.id, date, day);
+    (date: Date, day: Day | undefined, isTopLeft: boolean) => {
+      calendar?.id && toggleDay(calendar.id, date, day, isTopLeft);
     },
     [calendar?.id],
   );
@@ -161,7 +161,7 @@ function lastIfNotFound(index: number): number {
   return index >= 0 ? index : Number.POSITIVE_INFINITY;
 }
 
-async function toggleDay(calendarId: string, date: Date, day: Day | undefined) {
+async function toggleDay(calendarId: string, date: Date, day: Day | undefined, isTopLeft: boolean) {
   const { selectedCategoryID } = useStore.getState();
   if (!day) {
     return createRecord('days', {
@@ -201,8 +201,15 @@ async function toggleDay(calendarId: string, date: Date, day: Day | undefined) {
   }
 
   if ((top === 'different' && half === 'empty') || (top === 'different' && half === 'different')) {
-    return updateRecord('days', day.id, {
-      halfCategoryId: selectedCategoryID,
-    });
+    if (isTopLeft) {
+      return updateRecord('days', day.id, {
+        categoryId: selectedCategoryID,
+        halfCategoryId: half === 'empty' ? day.categoryId : day.halfCategoryId,
+      });
+    } else {
+      return updateRecord('days', day.id, {
+        halfCategoryId: selectedCategoryID,
+      });
+    }
   }
 }

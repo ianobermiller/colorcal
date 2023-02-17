@@ -7,7 +7,7 @@ interface Props {
   calendar: Calendar;
   categories: Category[];
   days: Day[];
-  onDayClick?(date: Date, day: Day | undefined): void;
+  onDayClick?(date: Date, day: Day | undefined, isTopLeft: boolean): void;
 }
 
 export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) {

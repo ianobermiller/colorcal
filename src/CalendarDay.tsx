@@ -8,7 +8,7 @@ interface Props {
   categories: Category[];
   date: Date;
   day: Day | undefined;
-  onDayClick?(date: Date, day: Day | undefined): void;
+  onDayClick?(date: Date, day: Day | undefined, isTopLeft: boolean): void;
   startDate: string;
 }
 
@@ -21,7 +21,17 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
   const halfCategory = categories.find((c) => c.id === day?.halfCategoryId);
 
   return (
-    <div class={styles.day} onClick={() => onDayClick?.(date, day)} style={{ background: topCategory?.color }}>
+    <div
+      class={styles.day}
+      onClick={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const cartesianX = e.clientX - rect.left;
+        const cartesianY = rect.bottom - e.clientY;
+        const isTopLeft = cartesianY > cartesianX;
+        return onDayClick?.(date, day, isTopLeft);
+      }}
+      style={{ background: topCategory?.color }}
+    >
       <span class={clsx({ [styles.selected]: isTopSelected ?? isHalfSelected })}>
         {date.getUTCDate()}
         {showMonth &&
