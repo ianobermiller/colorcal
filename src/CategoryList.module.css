@@ -31,3 +31,12 @@
   display: flex;
   gap: 12px;
 }
+
+.refresh {
+  position: absolute;
+  opacity: 0;
+}
+
+.currentCategoryColor:hover .refresh {
+  opacity: 1;
+}

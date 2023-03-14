@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useCallback } from 'preact/hooks';
-import { FiPlus, FiTrash2 } from 'react-icons/fi';
+import { FiPlus, FiRefreshCw, FiTrash2 } from 'react-icons/fi';
 import { Category, createRecord, deleteRecord, updateRecord } from 'thin-backend';
 import { Button, IconButton } from './Button';
 import styles from './CategoryList.module.css';
@@ -56,7 +56,7 @@ export function CategoryList({ calendarId, categories, countByCategory }: Props)
   );
 }
 
-export default function CategoryRow({ category, count }: { category: Category; count: number }) {
+function CategoryRow({ category, count }: { category: Category; count: number }) {
   const selectedCategoryID = useStore((store) => store.selectedCategoryID);
   const selectCategory = useStore((store) => store.selectCategory);
 
@@ -85,6 +85,8 @@ export default function CategoryRow({ category, count }: { category: Category; c
         style={{ background: category.color }}
       >
         {count}
+        {/* @ts-expect-error class isn't typed, but does work */}
+        <FiRefreshCw class={styles.refresh} size={24} />
       </button>
 
       <input
