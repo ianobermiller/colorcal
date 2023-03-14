@@ -32,7 +32,7 @@ export function App() {
 
       <Router history={createHashHistory() as unknown as CustomHistory}>
         {user ? <CalendarList path="/" /> : <Landing path="/" />}
-        <Editor path="/:id" />
+        <Editor id="provided-by-router" path="/:id" />
       </Router>
     </div>
   );

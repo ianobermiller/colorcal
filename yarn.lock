@@ -1347,10 +1347,6 @@
   version "1.0.0"
   resolved "https://thin.dev/types/4516f404-e1d2-44bb-bac5-7ccbcb11a10c/TOWklCikSVmarKVnFzJAcmXleGyjbjPr#2fee6d360b326f9024c4beddd83c736a7d5f8147"
 
-"@types/thin-backend@https://thin.dev/types/47c56ffc-e104-458b-953a-74436c5f269a/UfgkOzRJSlGIcgsgWzFWyCXzpvQYDCNG":
-  version "1.0.0"
-  resolved "https://thin.dev/types/47c56ffc-e104-458b-953a-74436c5f269a/UfgkOzRJSlGIcgsgWzFWyCXzpvQYDCNG#4db5a55421b723bd563bbb4708b79d6a7f7735e7"
-
 "@typescript-eslint/eslint-plugin@^5.5.0", "@typescript-eslint/eslint-plugin@^5.51.0":
   version "5.51.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.51.0.tgz#da3f2819633061ced84bb82c53bba45a6fe9963a"

@@ -15,34 +15,25 @@ import { useStore } from './Store';
 
 interface Props {
   path: string;
-  id?: string;
+  id: string;
 }
 
 export function Editor({ id: urlID }: Props) {
-  const id = urlID ? urlToUuid(urlID) : null;
+  const id = urlToUuid(urlID);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isShowingSettings, setIsShowingSettings] = useState(false);
-  const calendar = useQuerySingleResult(query('calendars').where('id', id ?? ''));
-  const days = useQuery(
-    query('days')
-      .where('calendarId', calendar?.id ?? '')
-      .orderByAsc('date'),
-  );
-  const categories = useQuery(
-    query('categories')
-      .where('calendarId', calendar?.id ?? '')
-      .orderByAsc('createdAt'),
-  );
+  const calendar = useQuerySingleResult(query('calendars').where('id', id));
+
+  const days = useQuery(query('days').where('calendarId', id).orderByAsc('date'));
+  const categories = useQuery(query('categories').where('calendarId', id).orderByAsc('createdAt'));
   const updateTitle = useCallback(
     (e: JSX.TargetedEvent<HTMLInputElement>) => {
       setIsEditingTitle(false);
-      if (calendar) {
-        updateRecord('calendars', calendar.id, {
-          title: e.currentTarget.value,
-        });
-      }
+      updateRecord('calendars', id, {
+        title: e.currentTarget.value,
+      });
     },
-    [calendar],
+    [id],
   );
 
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -53,9 +44,9 @@ export function Editor({ id: urlID }: Props) {
 
   const onDayClick = useCallback(
     (date: Date, day: Day | undefined, isTopLeft: boolean) => {
-      calendar?.id && toggleDay(calendar.id, date, day, isTopLeft);
+      toggleDay(id, date, day, isTopLeft);
     },
-    [calendar?.id],
+    [id],
   );
 
   if (!id || !calendar || !days || !categories) {
