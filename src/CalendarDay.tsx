@@ -63,8 +63,10 @@ export function FillerDay() {
 }
 
 const dayOfWeekFormatter = new Intl.DateTimeFormat(undefined, { timeZone: 'UTC', weekday: 'short' });
-export function DayOfWeek({ index }: { index: number }) {
+export function DayOfWeek({ color, index }: { color: string | undefined; index: number }) {
   return (
-    <div class={styles.dayOfWeek}>{dayOfWeekFormatter.format(new Date(`2017-01-0${index + 1}T00:00:00+00:00`))}</div>
+    <div class={styles.dayOfWeek} style={{ backgroundColor: color }}>
+      {dayOfWeekFormatter.format(new Date(`2017-01-0${index + 1}T00:00:00+00:00`))}
+    </div>
   );
 }

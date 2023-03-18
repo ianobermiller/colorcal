@@ -16,9 +16,12 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
 
   return (
     <div class={styles.calendar}>
-      {Array.from({ length: 7 }, (_, index) => (
-        <DayOfWeek index={index} />
-      ))}
+      {Array.from({ length: 7 }, (_, index) => {
+        const date = range[index];
+        const day = date && dayByDate[toISODateString(date)];
+        const topCategory = categories.find((c) => c.id === day?.categoryId);
+        return <DayOfWeek color={topCategory?.color} index={index} />;
+      })}
       {range.map((date) =>
         date ? (
           <CalendarDay
