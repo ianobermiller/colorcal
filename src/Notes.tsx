@@ -13,6 +13,7 @@ export function Notes({ calendarId, notes }: Props) {
         onBlur={(e) => {
           updateRecord('calendars', calendarId, { notes: e.currentTarget.value });
         }}
+        rows={5}
       >
         {notes}
       </textarea>

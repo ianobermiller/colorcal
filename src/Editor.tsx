@@ -117,12 +117,12 @@ export function Editor({ id: urlID }: Props) {
         </div>
 
         <CalendarGrid calendar={calendar} categories={categories} days={days} onDayClick={onDayClick} />
+
+        <Notes calendarId={calendar.id} notes={calendar.notes} />
       </div>
 
       <div>
         <CategoryList calendarId={calendar.id} categories={sortedCategories} countByCategory={countByCategory} />
-
-        <Notes calendarId={calendar.id} notes={calendar.notes} />
       </div>
 
       {isShowingSettings && <Settings calendar={calendar} onClose={() => setIsShowingSettings(false)} />}
