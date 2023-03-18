@@ -40,3 +40,11 @@
 .currentCategoryColor:hover .refresh {
   opacity: 1;
 }
+
+.delete {
+  opacity: 0.5;
+}
+
+.delete:hover {
+  opacity: 1;
+}

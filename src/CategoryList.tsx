@@ -97,6 +97,7 @@ function CategoryRow({ category, count }: { category: Category; count: number })
       />
 
       <IconButton
+        class={styles.delete}
         onClick={() => {
           deleteRecord('categories', category.id);
         }}
