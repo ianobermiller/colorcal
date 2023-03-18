@@ -61,3 +61,10 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
 export function FillerDay() {
   return <div class={styles.day} />;
 }
+
+const dayOfWeekFormatter = new Intl.DateTimeFormat(undefined, { timeZone: 'UTC', weekday: 'short' });
+export function DayOfWeek({ index }: { index: number }) {
+  return (
+    <div class={styles.dayOfWeek}>{dayOfWeekFormatter.format(new Date(`2017-01-0${index + 1}T00:00:00+00:00`))}</div>
+  );
+}

@@ -1,6 +1,6 @@
 import { Calendar, Category, Day } from 'thin-backend';
 import styles from './CalendarGrid.module.css';
-import { CalendarDay, FillerDay } from './CalendarDay';
+import { CalendarDay, DayOfWeek, FillerDay } from './CalendarDay';
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';
 
 interface Props {
@@ -16,6 +16,9 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
 
   return (
     <div class={styles.calendar}>
+      {Array.from({ length: 7 }, (_, index) => (
+        <DayOfWeek index={index} />
+      ))}
       {range.map((date) =>
         date ? (
           <CalendarDay
