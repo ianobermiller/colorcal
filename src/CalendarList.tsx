@@ -1,5 +1,5 @@
 import { route } from 'preact-router';
-import { useCallback, useRef } from 'preact/hooks';
+import { useCallback, useEffect, useRef } from 'preact/hooks';
 import { createRecord, query } from 'thin-backend';
 import { useCurrentUser, useQuery } from 'thin-backend-react';
 import { uuidToUrl } from 'uuid-url';
@@ -13,6 +13,12 @@ interface Props {
 }
 
 export function CalendarList(_: Props) {
+  useEffect(() => {
+    if (window.location.search.includes('dump')) {
+      dumpData();
+    }
+  }, []);
+
   const user = useCurrentUser();
   const calendars = useQuery(
     query('calendars')
@@ -79,4 +85,16 @@ function formatDate(dateString: string): string {
     dateStyle: 'medium',
     timeZone: 'UTC',
   });
+}
+
+async function dumpData() {
+  const entries = await Promise.all(
+    (['users', 'calendars', 'categories', 'days'] as const).map((table) =>
+      query(table)
+        .fetch()
+        .then((items) => [table, items] as const),
+    ),
+  );
+  const result = Object.fromEntries(entries);
+  console.log({ result });
 }
