@@ -14,9 +14,31 @@ interface Props {
 
 export function CategoryList({ calendarId, categories, countByCategory }: Props) {
   const selectCategory = useStore((store) => store.selectCategory);
+
+  const addCategory = useCallback(() => {
+    const startDate = new Date();
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 7);
+
+    createRecord('categories', {
+      calendarId,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      name: '',
+    }).then((category) => selectCategory(category.id));
+  }, [calendarId, selectCategory]);
+
+  const autoColor = useCallback(() => {
+    categories.forEach((cat, i) =>
+      updateRecord('categories', cat.id, {
+        color: COLORS[wrap(COLORS.length, i)],
+      }),
+    );
+  }, [categories]);
+
   return (
     <div>
       <h3>Categories</h3>
+
       <ul class={styles.categories}>
         {categories.map((category) => (
           <CategoryRow category={category} count={countByCategory[category.id] ?? 0} />
@@ -24,33 +46,11 @@ export function CategoryList({ calendarId, categories, countByCategory }: Props)
       </ul>
 
       <div class={styles.buttons}>
-        <Button
-          onClick={() => {
-            const startDate = new Date();
-            const endDate = new Date(startDate);
-            endDate.setDate(endDate.getDate() + 7);
-
-            createRecord('categories', {
-              calendarId: calendarId,
-              color: COLORS[Math.floor(Math.random() * COLORS.length)],
-              name: '',
-            }).then((category) => selectCategory(category.id));
-          }}
-        >
+        <Button onClick={addCategory}>
           <FiPlus size={24} />
           Add
         </Button>
-        <Button
-          onClick={() => {
-            categories.forEach((cat, i) =>
-              updateRecord('categories', cat.id, {
-                color: COLORS[wrap(COLORS.length, i)],
-              }),
-            );
-          }}
-        >
-          Auto-color
-        </Button>
+        <Button onClick={autoColor}>Auto-color</Button>
       </div>
     </div>
   );
@@ -67,6 +67,15 @@ function CategoryRow({ category, count }: { category: Category; count: number })
     [category.id],
   );
 
+  const onColorClick = useCallback(() => {
+    if (selectedCategoryID === category.id) {
+      const color = COLORS[wrap(COLORS.length, COLORS.indexOf(category.color) + 1)];
+      updateRecord('categories', category.id, { color });
+    } else {
+      selectCategory(category.id);
+    }
+  }, [category.color, category.id, selectCategory, selectedCategoryID]);
+
   return (
     <div class={styles.category}>
       <button
@@ -74,14 +83,7 @@ function CategoryRow({ category, count }: { category: Category; count: number })
           [styles.categoryColor]: true,
           [styles.currentCategoryColor]: selectedCategoryID === category.id,
         })}
-        onClick={() => {
-          if (selectedCategoryID === category.id) {
-            const color = COLORS[wrap(COLORS.length, COLORS.indexOf(category.color) + 1)];
-            updateRecord('categories', category.id, { color });
-          } else {
-            selectCategory(category.id);
-          }
-        }}
+        onClick={onColorClick}
         style={{ background: category.color }}
       >
         {count}
