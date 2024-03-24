@@ -6,7 +6,7 @@ A travel planning tool that lets you color code and label the days of your trip.
 
 ## Built using
 
-- [Thin Backend](https://thin.dev/)
+- [InstantDB](https://www.instantdb.com/)
 - Vite
 - Preact & Preact Router
 

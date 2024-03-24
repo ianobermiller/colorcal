@@ -1,4 +1,4 @@
-import { Calendar, Category, Day } from 'thin-backend';
+import { Calendar, Category, Day } from './data';
 import styles from './CalendarGrid.module.css';
 import { CalendarDay, DayOfWeek, FillerDay } from './CalendarDay';
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';

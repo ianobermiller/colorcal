@@ -1,6 +1,6 @@
-import { Calendar, Category, Day } from 'thin-backend';
+import { Calendar, Category, Day } from './data';
 
-const commonFields = { createdAt: '', id: '', notes: '', updatedAt: '', userId: '' };
+const commonFields = { createdAt: '', id: '', notes: '', ownerId: '', updatedAt: '' };
 const commonInnerFields = { ...commonFields, calendarId: '' };
 
 // prettier-ignore

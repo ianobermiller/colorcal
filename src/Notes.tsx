@@ -1,4 +1,4 @@
-import { updateRecord } from 'thin-backend';
+import { transact, tx } from './data';
 
 interface Props {
   calendarId: string;
@@ -11,7 +11,7 @@ export function Notes({ calendarId, notes }: Props) {
       <h3>Notes</h3>
       <textarea
         onBlur={(e) => {
-          updateRecord('calendars', calendarId, { notes: e.currentTarget.value });
+          transact(tx.calendars[calendarId].update({ notes: e.currentTarget.value }));
         }}
         rows={5}
       >

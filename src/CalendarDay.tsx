@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { Category, Day } from 'thin-backend';
+import { Category, Day } from './data';
 import styles from './CalendarDay.module.css';
 import { toISODateString } from './dateUtils';
 import { useStore } from './Store';

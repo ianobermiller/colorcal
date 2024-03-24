@@ -2,9 +2,9 @@ import { JSX } from 'preact';
 import { route } from 'preact-router';
 import { useCallback } from 'preact/hooks';
 import { FiTrash2, FiX } from 'react-icons/fi';
-import { Calendar, deleteRecord, updateRecord } from 'thin-backend';
 import { Button, IconButton } from './Button';
 import styles from './Settings.module.css';
+import { Calendar, transact, tx } from './data';
 
 interface Props {
   calendar: Calendar;
@@ -25,9 +25,7 @@ export function Settings({ calendar, onClose }: Props) {
 
   const handleVisibilityChange = useCallback(
     (e: JSX.TargetedEvent<HTMLInputElement>) => {
-      updateRecord('calendars', calendar.id, {
-        isPubliclyVisible: e.currentTarget.checked,
-      });
+      transact(tx.calendars[calendar.id].update({ isPubliclyVisible: e.currentTarget.checked }));
     },
     [calendar.id],
   );
@@ -49,8 +47,7 @@ export function Settings({ calendar, onClose }: Props) {
           onClick={() => {
             // eslint-disable-next-line no-restricted-globals
             if (confirm(`Delete calendar "${calendar.title}"?`)) {
-              // TODO: soft delete
-              deleteRecord('calendars', calendar.id);
+              transact(tx.calendars[calendar.id].delete());
               route('/');
             }
           }}

@@ -11,19 +11,19 @@
     "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
+    "@instantdb/core": "^0.8.3",
+    "@instantdb/react": "^0.8.3",
     "clsx": "^1.2.1",
     "history": "^5.3.0",
     "preact": "^10.13.1",
-    "preact-router": "^4.1.0",
+    "preact-router": "^4.1.2",
     "react-icons": "^4.8.0",
-    "thin-backend": "^0.12.1",
-    "thin-backend-react": "^0.10.1",
     "uuid-url": "^0.0.11",
     "zustand": "^4.3.6"
   },
   "devDependencies": {
-    "@preact/preset-vite": "^2.5.0",
-    "@types/thin-backend": "https://thin.dev/types/4516f404-e1d2-44bb-bac5-7ccbcb11a10c/TOWklCikSVmarKVnFzJAcmXleGyjbjPr",
+    "@preact/preset-vite": "^2.8.1",
+    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^5.55.0",
     "@typescript-eslint/parser": "^5.55.0",
     "eslint": "^8.36.0",
@@ -32,9 +32,9 @@
     "eslint-plugin-sort-destructure-keys": "^1.5.0",
     "eslint-plugin-sort-keys-fix": "^1.1.2",
     "prettier": "^2.8.4",
-    "typescript": "^4.9.5",
+    "typescript": "^5.2.2",
     "typescript-plugin-css-modules": "^4.2.3",
-    "vite": "^4.1.4",
+    "vite": "^5.1.6",
     "vite-plugin-eslint": "^1.8.1"
   }
 }

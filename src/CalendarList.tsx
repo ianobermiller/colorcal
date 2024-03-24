@@ -1,10 +1,9 @@
 import { route } from 'preact-router';
-import { useCallback, useEffect, useRef } from 'preact/hooks';
-import { createRecord, query } from 'thin-backend';
-import { useCurrentUser, useQuery } from 'thin-backend-react';
+import { useCallback, useRef } from 'preact/hooks';
 import { uuidToUrl } from 'uuid-url';
 import { Button } from './Button';
 import styles from './CalendarList.module.css';
+import { id, transact, tx, useAuth, useQuery } from './data';
 import { toISODateString } from './dateUtils';
 
 interface Props {
@@ -13,18 +12,13 @@ interface Props {
 }
 
 export function CalendarList(_: Props) {
-  useEffect(() => {
-    if (window.location.search.includes('dump')) {
-      dumpData();
-    }
-  }, []);
+  const { user } = useAuth();
+  const ownerId = user?.id ?? '';
 
-  const user = useCurrentUser();
-  const calendars = useQuery(
-    query('calendars')
-      .where('userId', user?.id ?? '')
-      .orderByDesc('updatedAt'),
-  );
+  const { data } = useQuery({
+    calendars: { $: { where: { ownerId } } },
+  });
+  const calendars = data?.calendars ?? [];
   const calendarName = useRef<HTMLInputElement>(null);
 
   const createCalendar = useCallback(() => {
@@ -32,14 +26,20 @@ export function CalendarList(_: Props) {
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 7);
 
-    createRecord('calendars', {
-      endDate: toISODateString(endDate),
-      startDate: toISODateString(startDate),
-      title: calendarName.current?.value,
-    }).then((calendar) => {
-      route(`/${uuidToUrl(calendar.id)}`);
-    });
-  }, []);
+    const calendarId = id();
+    transact(
+      tx.calendars[calendarId].create({
+        endDate: toISODateString(endDate),
+        isPubliclyVisible: false,
+        notes: '',
+        ownerId,
+        startDate: toISODateString(startDate),
+        title: calendarName.current?.value ?? 'Untitled Calendar',
+        updatedAt: new Date().toISOString(),
+      }),
+    );
+    route(`/${uuidToUrl(calendarId)}`);
+  }, [ownerId]);
 
   return (
     <>
@@ -47,7 +47,7 @@ export function CalendarList(_: Props) {
       {user && (
         <>
           <ul class={styles.list}>
-            {calendars?.map((cal) => (
+            {calendars.map((cal) => (
               <li class={styles.calendar}>
                 <a href={`/${uuidToUrl(cal.id)}`}>
                   <h3>{cal.title}</h3>
@@ -85,16 +85,4 @@ function formatDate(dateString: string): string {
     dateStyle: 'medium',
     timeZone: 'UTC',
   });
-}
-
-async function dumpData() {
-  const entries = await Promise.all(
-    (['users', 'calendars', 'categories', 'days'] as const).map((table) =>
-      query(table)
-        .fetch()
-        .then((items) => [table, items] as const),
-    ),
-  );
-  const result = Object.fromEntries(entries);
-  console.log({ result });
 }

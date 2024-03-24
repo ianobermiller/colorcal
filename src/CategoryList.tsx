@@ -1,10 +1,10 @@
 import clsx from 'clsx';
 import { useCallback } from 'preact/hooks';
 import { FiPlus, FiRefreshCw, FiTrash2 } from 'react-icons/fi';
-import { Category, createRecord, deleteRecord, updateRecord } from 'thin-backend';
 import { Button, IconButton } from './Button';
 import styles from './CategoryList.module.css';
 import { useStore } from './Store';
+import { Category, id, transact, tx, useAuth } from './data';
 
 interface Props {
   categories: Category[];
@@ -13,26 +13,28 @@ interface Props {
 }
 
 export function CategoryList({ calendarId, categories, countByCategory }: Props) {
+  const { user } = useAuth();
+  const ownerId = user?.id ?? '';
+
   const selectCategory = useStore((store) => store.selectCategory);
 
   const addCategory = useCallback(() => {
-    const startDate = new Date();
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 7);
-
-    createRecord('categories', {
-      calendarId,
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      name: '',
-    }).then((category) => selectCategory(category.id));
-  }, [calendarId, selectCategory]);
+    const categoryId = id();
+    transact(
+      tx.categories[categoryId].create({
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        name: '',
+        ownerId,
+      }),
+      tx.calendars[calendarId].link({ categories: categoryId }),
+    );
+    selectCategory(categoryId);
+  }, [calendarId, ownerId, selectCategory]);
 
   const autoColor = useCallback(() => {
-    categories.forEach((cat, i) =>
-      updateRecord('categories', cat.id, {
-        color: COLORS[wrap(COLORS.length, i)],
-      }),
-    );
+    categories.forEach((cat, i) => {
+      transact(tx.categories[cat.id].update({ color: COLORS[wrap(COLORS.length, i)] }));
+    });
   }, [categories]);
 
   return (
@@ -62,7 +64,7 @@ function CategoryRow({ category, count }: { category: Category; count: number })
 
   const onNameChange = useCallback(
     (e: JSX.TargetedEvent<HTMLInputElement>) => {
-      updateRecord('categories', category.id, { name: e.currentTarget.value });
+      transact(tx.categories[category.id].update({ name: e.currentTarget.value }));
     },
     [category.id],
   );
@@ -70,7 +72,7 @@ function CategoryRow({ category, count }: { category: Category; count: number })
   const onColorClick = useCallback(() => {
     if (selectedCategoryID === category.id) {
       const color = COLORS[wrap(COLORS.length, COLORS.indexOf(category.color) + 1)];
-      updateRecord('categories', category.id, { color });
+      transact(tx.categories[category.id].update({ color }));
     } else {
       selectCategory(category.id);
     }
@@ -101,7 +103,7 @@ function CategoryRow({ category, count }: { category: Category; count: number })
       <IconButton
         class={styles.delete}
         onClick={() => {
-          deleteRecord('categories', category.id);
+          transact(tx.categories[category.id].delete());
         }}
       >
         <FiTrash2 size={20} />

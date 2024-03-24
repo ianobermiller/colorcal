@@ -1,17 +1,16 @@
 import clsx from 'clsx';
 import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
 import { FiEdit, FiSettings } from 'react-icons/fi';
-import { Day, createRecord, query, updateRecord } from 'thin-backend';
-import { useQuery, useQuerySingleResult } from 'thin-backend-react';
 import { urlToUuid } from 'uuid-url';
 import { IconButton } from './Button';
 import { CalendarGrid } from './CalendarGrid';
 import { CategoryList } from './CategoryList';
-import { toISODateString } from './dateUtils';
 import styles from './Editor.module.css';
 import { Notes } from './Notes';
 import { Settings } from './Settings';
 import { useStore } from './Store';
+import { Day, id, transact, tx, useAuth, useQuerySingle } from './data';
+import { toISODateString } from './dateUtils';
 
 interface Props {
   path: string;
@@ -19,19 +18,20 @@ interface Props {
 }
 
 export function Editor({ id: urlID }: Props) {
+  const { user } = useAuth();
+  const ownerId = user?.id ?? '';
+
   const id = urlToUuid(urlID);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isShowingSettings, setIsShowingSettings] = useState(false);
-  const calendar = useQuerySingleResult(query('calendars').where('id', id));
+  const { data: calendar } = useQuerySingle({ calendars: { $: { where: { id } }, categories: {}, days: {} } });
+  const categories = calendar?.categories;
+  const days = calendar?.days.sort((a, b) => a.date.localeCompare(b.date));
 
-  const days = useQuery(query('days').where('calendarId', id).orderByAsc('date'));
-  const categories = useQuery(query('categories').where('calendarId', id).orderByAsc('createdAt'));
   const updateTitle = useCallback(
     (e: JSX.TargetedEvent<HTMLInputElement>) => {
       setIsEditingTitle(false);
-      updateRecord('calendars', id, {
-        title: e.currentTarget.value,
-      });
+      transact(tx.calendars[id].update({ title: e.currentTarget.value }));
     },
     [id],
   );
@@ -44,12 +44,12 @@ export function Editor({ id: urlID }: Props) {
 
   const onDayClick = useCallback(
     (date: Date, day: Day | undefined, isTopLeft: boolean) => {
-      toggleDay(id, date, day, isTopLeft);
+      toggleDay(ownerId, id, date, day, isTopLeft);
     },
-    [id],
+    [id, ownerId],
   );
 
-  if (!id || !calendar || !days || !categories) {
+  if (!id || !calendar || !categories || !days) {
     return <h1>Loading...</h1>;
   }
 
@@ -94,16 +94,16 @@ export function Editor({ id: urlID }: Props) {
 
         <div class={styles.controls}>
           <input
-            onChange={(e) =>
-              updateRecord('calendars', id, {
-                startDate: e.currentTarget.value,
-              })
-            }
+            onChange={(e) => {
+              transact(tx.calendars[id].update({ startDate: e.currentTarget.value }));
+            }}
             type="date"
             value={calendar.startDate}
           />
           <input
-            onChange={(e) => updateRecord('calendars', id, { endDate: e.currentTarget.value })}
+            onChange={(e) => {
+              transact(tx.calendars[id].update({ endDate: e.currentTarget.value }));
+            }}
             type="date"
             value={calendar.endDate}
           />
@@ -120,11 +120,9 @@ export function Editor({ id: urlID }: Props) {
 
         <Notes calendarId={calendar.id} notes={calendar.notes} />
       </div>
-
       <div>
         <CategoryList calendarId={calendar.id} categories={sortedCategories} countByCategory={countByCategory} />
       </div>
-
       {isShowingSettings && <Settings calendar={calendar} onClose={() => setIsShowingSettings(false)} />}
     </div>
   );
@@ -152,14 +150,20 @@ function lastIfNotFound(index: number): number {
   return index >= 0 ? index : Number.POSITIVE_INFINITY;
 }
 
-async function toggleDay(calendarId: string, date: Date, day: Day | undefined, isTopLeft: boolean) {
+function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | undefined, isTopLeft: boolean) {
   const { selectedCategoryID } = useStore.getState();
   if (!day) {
-    return createRecord('days', {
-      calendarId: calendarId,
-      categoryId: selectedCategoryID,
-      date: toISODateString(date),
-    });
+    const dayId = id();
+    transact(
+      tx.days[dayId].create({
+        categoryId: selectedCategoryID,
+        date: toISODateString(date),
+        halfCategoryId: null,
+        ownerId,
+      }),
+      tx.calendars[calendarId].link({ days: dayId }),
+    );
+    return;
   }
 
   const top = !day.categoryId ? 'empty' : day.categoryId === selectedCategoryID ? 'same' : 'different';
@@ -170,37 +174,31 @@ async function toggleDay(calendarId: string, date: Date, day: Day | undefined, i
     (top === 'same' && half === 'empty') ||
     (top === 'empty' && half === 'same')
   ) {
-    return updateRecord('days', day.id, {
-      categoryId: null,
-      halfCategoryId: null,
-    });
+    return transact(tx.days[day.id].update({ categoryId: null, halfCategoryId: null }));
   }
 
   if ((top === 'empty' && half === 'empty') || (top === 'empty' && half === 'different')) {
-    return updateRecord('days', day.id, { categoryId: selectedCategoryID });
+    return transact(tx.days[day.id].update({ categoryId: selectedCategoryID }));
   }
 
   if (top === 'same' && half === 'different') {
-    return updateRecord('days', day.id, { halfCategoryId: null });
+    return transact(tx.days[day.id].update({ halfCategoryId: selectedCategoryID }));
   }
 
   if (top === 'different' && half === 'same') {
-    return updateRecord('days', day.id, {
-      categoryId: selectedCategoryID,
-      halfCategoryId: null,
-    });
+    return transact(tx.days[day.id].update({ categoryId: selectedCategoryID, halfCategoryId: null }));
   }
 
   if ((top === 'different' && half === 'empty') || (top === 'different' && half === 'different')) {
     if (isTopLeft) {
-      return updateRecord('days', day.id, {
-        categoryId: selectedCategoryID,
-        halfCategoryId: half === 'empty' ? day.categoryId : day.halfCategoryId,
-      });
+      return transact(
+        tx.days[day.id].update({
+          categoryId: selectedCategoryID,
+          halfCategoryId: half === 'empty' ? day.categoryId : day.halfCategoryId,
+        }),
+      );
     } else {
-      return updateRecord('days', day.id, {
-        halfCategoryId: selectedCategoryID,
-      });
+      return transact(tx.days[day.id].update({ halfCategoryId: selectedCategoryID }));
     }
   }
 }
