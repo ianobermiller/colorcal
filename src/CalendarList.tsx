@@ -18,27 +18,12 @@ export function CalendarList(_: Props) {
   const { data } = useQuery({
     calendars: { $: { where: { ownerId } } },
   });
-  const calendars = data?.calendars ?? [];
+  const calendars = (data?.calendars ?? []).sort((a, b) => (a.startDate > b.startDate ? -1 : 1));
   const calendarName = useRef<HTMLInputElement>(null);
 
-  const createCalendar = useCallback(() => {
-    const startDate = new Date();
-    const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 7);
-
-    const calendarId = id();
-    transact(
-      tx.calendars[calendarId].create({
-        endDate: toISODateString(endDate),
-        isPubliclyVisible: false,
-        notes: '',
-        ownerId,
-        startDate: toISODateString(startDate),
-        title: calendarName.current?.value ?? 'Untitled Calendar',
-        updatedAt: new Date().toISOString(),
-      }),
-    );
-    route(`/${uuidToUrl(calendarId)}`);
+  const onCreate = useCallback(() => {
+    const title = calendarName.current?.value ?? 'Untitled Calendar';
+    createCalendar(ownerId, title);
   }, [ownerId]);
 
   return (
@@ -63,7 +48,7 @@ export function CalendarList(_: Props) {
             <input
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  createCalendar();
+                  onCreate();
                   e.currentTarget.value = '';
                 }
               }}
@@ -72,7 +57,7 @@ export function CalendarList(_: Props) {
               type="text"
             />
 
-            <Button onClick={createCalendar}>Create a Calendar</Button>
+            <Button onClick={onCreate}>Create a Calendar</Button>
           </div>
         </>
       )}
@@ -85,4 +70,23 @@ function formatDate(dateString: string): string {
     dateStyle: 'medium',
     timeZone: 'UTC',
   });
+}
+
+function createCalendar(ownerId: string, title: string) {
+  const startDate = new Date();
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 7);
+
+  const calendarId = id();
+  transact(
+    tx.calendars[calendarId].create({
+      endDate: toISODateString(endDate),
+      isPubliclyVisible: false,
+      notes: '',
+      ownerId,
+      startDate: toISODateString(startDate),
+      title,
+    }),
+  );
+  route(`/${uuidToUrl(calendarId)}`);
 }

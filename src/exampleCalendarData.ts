@@ -1,6 +1,6 @@
 import { Calendar, Category, Day } from './data';
 
-const commonFields = { createdAt: '', id: '', notes: '', ownerId: '', updatedAt: '' };
+const commonFields = { createdAt: '', id: '', notes: '', ownerId: '' };
 const commonInnerFields = { ...commonFields, calendarId: '' };
 
 // prettier-ignore

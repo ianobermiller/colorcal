@@ -8,7 +8,6 @@ type UUID = string;
 export interface Calendar {
   id: UUID;
   ownerId: UUID;
-  updatedAt: string;
   title: string;
   startDate: string;
   endDate: string;
