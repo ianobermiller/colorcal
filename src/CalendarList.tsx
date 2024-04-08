@@ -27,12 +27,12 @@ export function CalendarList(_: Props) {
 
   return (
     <>
-      <h2 class="text-xl mb-2">Your Calendars</h2>
+      <h2 class="mb-2 text-xl">Your Calendars</h2>
       {user && (
         <>
-          <ul class="flex flex-col gap-3 lg:flex-row lg:flex-wrap mb-3">
+          <ul class="mb-3 flex flex-col gap-3 lg:flex-row lg:flex-wrap">
             {calendars.map((cal) => (
-              <li class="rounded border-solid border-2 border-slate-200 flex flex-col gap-3 py-3 px-4 hover:bg-slate-100">
+              <li class="flex flex-col gap-3 rounded border-2 border-solid border-slate-200 px-4 py-3 hover:bg-slate-100">
                 <a href={`/${uuidToUrl(cal.id)}`}>
                   <h3>{cal.title}</h3>
                   <p>

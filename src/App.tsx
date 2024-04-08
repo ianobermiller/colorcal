@@ -12,10 +12,10 @@ export function App() {
   const { user } = useAuth();
 
   return (
-    <div class="max-w-2xl mx-auto p-3 lg:max-w-none lg:w-[1024px]">
-      <header class="items-center flex justify-between mb-3">
+    <div class="mx-auto max-w-2xl p-3 lg:w-[1024px] lg:max-w-none">
+      <header class="mb-3 flex items-center justify-between">
         <h1>
-          <a class="items-center flex gap-1 text-2xl" href="/">
+          <a class="flex items-center gap-1 text-2xl" href="/">
             <IoColorPalette /> Color Calendar
           </a>
         </h1>
