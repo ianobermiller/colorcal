@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import { useCallback } from 'preact/hooks';
 import { FiPlus, FiRefreshCw, FiTrash2 } from 'react-icons/fi';
 import { Button, IconButton } from './Button';
-import styles from './CategoryList.module.css';
 import { useStore } from './Store';
 import { Category, id, transact, tx, useAuth } from './data';
 
@@ -11,6 +10,8 @@ interface Props {
   calendarId: string;
   countByCategory: Record<string, number | undefined>;
 }
+
+const styles: Partial<Record<string, string>> = {};
 
 export function CategoryList({ calendarId, categories, countByCategory }: Props) {
   const { user } = useAuth();
@@ -41,13 +42,13 @@ export function CategoryList({ calendarId, categories, countByCategory }: Props)
     <div>
       <h3>Categories</h3>
 
-      <ul class={styles.categories}>
+      <ul>
         {categories.map((category) => (
           <CategoryRow category={category} count={countByCategory[category.id] ?? 0} />
         ))}
       </ul>
 
-      <div class={styles.buttons}>
+      <div class="flex gap-2">
         <Button onClick={addCategory}>
           <FiPlus size={24} />
           Add
@@ -79,18 +80,18 @@ function CategoryRow({ category, count }: { category: Category; count: number })
   }, [category.color, category.id, selectCategory, selectedCategoryID]);
 
   return (
-    <div class={styles.category}>
+    <div class="mb-2 flex items-center gap-2">
       <button
-        class={clsx({
-          [styles.categoryColor]: true,
-          [styles.currentCategoryColor]: selectedCategoryID === category.id,
-        })}
+        class={clsx(
+          'relative inline-flex size-8 items-center justify-center rounded-full border-2 border-solid border-transparent font-bold text-white',
+          selectedCategoryID === category.id && 'group border-slate-900',
+        )}
         onClick={onColorClick}
         style={{ background: category.color }}
       >
-        {count}
+        <div class="drop-shadow-[0_1px_1px_black] group-hover:opacity-0">{count}</div>
         {/* @ts-expect-error class isn't typed, but does work */}
-        <FiRefreshCw class={styles.refresh} size={24} />
+        <FiRefreshCw class="absolute opacity-0 drop-shadow-[0_1px_1px_black] group-hover:opacity-100" size={20} />
       </button>
 
       <input
