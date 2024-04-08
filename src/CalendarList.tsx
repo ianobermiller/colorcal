@@ -2,7 +2,6 @@ import { route } from 'preact-router';
 import { useCallback, useRef } from 'preact/hooks';
 import { uuidToUrl } from 'uuid-url';
 import { Button } from './Button';
-import styles from './CalendarList.module.css';
 import { id, transact, tx, useAuth, useQuery } from './data';
 import { toISODateString } from './dateUtils';
 
@@ -28,12 +27,12 @@ export function CalendarList(_: Props) {
 
   return (
     <>
-      <h2>Your Calendars</h2>
+      <h2 class="text-xl mb-2">Your Calendars</h2>
       {user && (
         <>
-          <ul class={styles.list}>
+          <ul class="flex flex-col gap-3 lg:flex-row lg:flex-wrap mb-3">
             {calendars.map((cal) => (
-              <li class={styles.calendar}>
+              <li class="rounded border-solid border-2 border-slate-200 flex flex-col gap-3 py-3 px-4 hover:bg-slate-100">
                 <a href={`/${uuidToUrl(cal.id)}`}>
                   <h3>{cal.title}</h3>
                   <p>
@@ -44,7 +43,7 @@ export function CalendarList(_: Props) {
             ))}
           </ul>
 
-          <div class={styles.addCalendar}>
+          <div class="flex gap-2">
             <input
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {

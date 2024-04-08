@@ -10,6 +10,7 @@
   height: 32px;
   line-height: 44px;
   padding: 0 12px;
+  text-align: center;
 }
 
 .iconButton {
@@ -18,7 +19,14 @@
   border: none;
   cursor: pointer;
   height: 32px;
+  text-align: center;
   width: 32px;
+}
+
+.iconButton > svg {
+  display: inline-block;
+  position: relative;
+  top: -2px;
 }
 
 .iconButton:hover,
