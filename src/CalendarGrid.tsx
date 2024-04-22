@@ -17,7 +17,7 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
     <div
       class="flex flex-wrap border-l border-t border-slate-400"
       style={{
-        '--day-size': 'calc((min(624px, 100vw) - 24px - 7px) / 7)',
+        '--day-size': 'calc((min(724px, 100vw) - 24px - 7px) / 7)',
         width: 'calc(var(--day-size) * 7 + 1px)',
       }}
     >

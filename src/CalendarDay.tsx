@@ -40,7 +40,7 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
             })}
       </span>
 
-      {topCategory && <div class={clsx('mt-1 text-xs', isTopSelected && 'font-bold')}>{topCategory.name}</div>}
+      {topCategory && <div class={clsx('mt-1 text-sm', isTopSelected && 'font-bold')}>{topCategory.name}</div>}
 
       {halfCategory && (
         <>
@@ -52,7 +52,7 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
               borderLeft: 'solid var(--day-size) transparent',
             }}
           />
-          <div class={clsx('absolute bottom-1 right-1 pl-1 text-right text-xs', isHalfSelected && 'font-bold')}>
+          <div class={clsx('absolute bottom-1 right-1 pl-1 text-right text-sm', isHalfSelected && 'font-bold')}>
             {halfCategory.name}
           </div>
         </>
