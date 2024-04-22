@@ -1,6 +1,7 @@
 import { Calendar, Category, Day } from './data';
 import { CalendarDay, DayOfWeek, FillerDay } from './CalendarDay';
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';
+import { indexArray } from './indexArray';
 
 interface Props {
   calendar: Calendar;
@@ -48,12 +49,4 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
       })}
     </div>
   );
-}
-
-function indexArray<T, K extends string>(arr: T[], getKey: (t: T) => K): Record<K, T | undefined> {
-  const result = {} as Record<K, T | undefined>;
-  for (const item of arr) {
-    result[getKey(item)] = item;
-  }
-  return result;
 }

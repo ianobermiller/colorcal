@@ -4,6 +4,7 @@ import { FiMoreVertical, FiPlus, FiRefreshCw } from 'react-icons/fi';
 import { Button, IconButton } from './Button';
 import { useStore } from './Store';
 import { Category, id, transact, tx, useAuth } from './data';
+import { wrap } from './wrap';
 
 interface Props {
   categories: Category[];
@@ -11,9 +12,10 @@ interface Props {
   countByCategory: Record<string, number | undefined>;
   onCopy: (category: Category) => void;
   onCopyAll: () => void;
+  onAutoColor: () => void;
 }
 
-export function CategoryList({ calendarId, categories, countByCategory, onCopy, onCopyAll }: Props) {
+export function CategoryList({ calendarId, categories, countByCategory, onAutoColor, onCopy, onCopyAll }: Props) {
   const { user } = useAuth();
   const ownerId = user?.id ?? '';
 
@@ -32,12 +34,6 @@ export function CategoryList({ calendarId, categories, countByCategory, onCopy, 
     selectCategory(categoryId);
   }, [calendarId, ownerId, selectCategory]);
 
-  const autoColor = useCallback(() => {
-    categories.forEach((cat, i) => {
-      transact(tx.categories[cat.id].update({ color: COLORS[wrap(COLORS.length, i)] }));
-    });
-  }, [categories]);
-
   return (
     <div class="flex w-72 flex-col gap-3">
       <h3>Categories</h3>
@@ -53,7 +49,7 @@ export function CategoryList({ calendarId, categories, countByCategory, onCopy, 
           <FiPlus size={24} />
           Add
         </Button>
-        <Button onClick={autoColor}>Auto-color</Button>
+        <Button onClick={onAutoColor}>Auto-color</Button>
         <Button onClick={onCopyAll}>Copy all</Button>
       </div>
     </div>
@@ -139,7 +135,3 @@ function CategoryRow({
 
 // https://colorbrewer2.org/#type=qualitative&scheme=Set2&n=6
 export const COLORS = ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f'];
-
-function wrap(length: number, index: number): number {
-  return index % length;
-}

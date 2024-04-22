@@ -10,6 +10,7 @@ import { Settings } from './Settings';
 import { useStore } from './Store';
 import { Category, Day, id, transact, tx, useAuth, useQuerySingle } from './data';
 import { getDayOfWeek, getMonth, toISODateString } from './dateUtils';
+import { autoColor } from './autoColor';
 
 interface Props {
   path: string;
@@ -68,6 +69,12 @@ export function Editor({ id: urlID }: Props) {
   const onCopyAll = useCallback(() => {
     days && copyHtmlToClipboard(sortedCategories.map((cat) => getHtmlForCategory(cat, days)).join(''));
   }, [days, sortedCategories]);
+
+  const onAutoColor = useCallback(() => {
+    if (!days || !calendar) return;
+
+    autoColor(days, calendar, sortedCategories);
+  }, [calendar, days, sortedCategories]);
 
   if (!id || !calendar || !categories || !days) {
     return <h1>Loading...</h1>;
@@ -141,6 +148,7 @@ export function Editor({ id: urlID }: Props) {
           calendarId={calendar.id}
           categories={sortedCategories}
           countByCategory={countByCategory}
+          onAutoColor={onAutoColor}
           onCopy={onCopy}
           onCopyAll={onCopyAll}
         />
