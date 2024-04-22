@@ -3,7 +3,6 @@ import { route } from 'preact-router';
 import { useCallback } from 'preact/hooks';
 import { FiTrash2, FiX } from 'react-icons/fi';
 import { Button, IconButton } from './Button';
-import styles from './Settings.module.css';
 import { Calendar, transact, tx } from './data';
 
 interface Props {
@@ -14,7 +13,7 @@ interface Props {
 export function Settings({ calendar, onClose }: Props) {
   const handleScrimClick = useCallback(
     (e: MouseEvent) => {
-      if (e.target instanceof HTMLElement && e.target.closest(`.${styles.modal}`)) {
+      if (e.target instanceof HTMLElement && e.target.closest('.modal')) {
         return;
       }
 
@@ -31,14 +30,14 @@ export function Settings({ calendar, onClose }: Props) {
   );
 
   return (
-    <div class={styles.scrim} onClick={handleScrimClick}>
-      <div class={styles.modal}>
+    <div class="fixed inset-0 flex items-start justify-center bg-black/50 pt-12" onClick={handleScrimClick}>
+      <div class="modal relative rounded border-slate-300 bg-white p-6">
         <h2>Calendar Settings</h2>
-        <IconButton class={styles.closeButton} onClick={onClose}>
+        <IconButton class="absolute right-3 top-5" onClick={onClose}>
           <FiX />
         </IconButton>
 
-        <label>
+        <label class="my-6 block">
           <input checked={calendar.isPubliclyVisible} onChange={handleVisibilityChange} type="checkbox" /> Anyone with
           the link can view
         </label>
