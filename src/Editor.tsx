@@ -70,11 +70,15 @@ export function Editor({ id: urlID }: Props) {
     days && copyHtmlToClipboard(sortedCategories.map((cat) => getHtmlForCategory(cat, days)).join(''));
   }, [days, sortedCategories]);
 
-  const onAutoColor = useCallback(() => {
-    if (!days || !calendar) return;
+  const onAutoColor = useCallback(
+    (e: MouseEvent) => {
+      if (!days || !calendar) return;
 
-    autoColor(days, calendar, sortedCategories);
-  }, [calendar, days, sortedCategories]);
+      const colors = autoColor(calendar, days, sortedCategories, e.shiftKey);
+      transact(...sortedCategories.map(({ id }, i) => tx.categories[id].update({ color: colors[i] })));
+    },
+    [calendar, days, sortedCategories],
+  );
 
   if (!id || !calendar || !categories || !days) {
     return <h1>Loading...</h1>;

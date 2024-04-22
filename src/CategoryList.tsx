@@ -5,6 +5,7 @@ import { Button, IconButton } from './Button';
 import { useStore } from './Store';
 import { Category, id, transact, tx, useAuth } from './data';
 import { wrap } from './wrap';
+import { COLORS } from './autoColor';
 
 interface Props {
   categories: Category[];
@@ -12,7 +13,7 @@ interface Props {
   countByCategory: Record<string, number | undefined>;
   onCopy: (category: Category) => void;
   onCopyAll: () => void;
-  onAutoColor: () => void;
+  onAutoColor: (e: MouseEvent) => void;
 }
 
 export function CategoryList({ calendarId, categories, countByCategory, onAutoColor, onCopy, onCopyAll }: Props) {
@@ -132,6 +133,3 @@ function CategoryRow({
     </div>
   );
 }
-
-// https://colorbrewer2.org/#type=qualitative&scheme=Set2&n=6
-export const COLORS = ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f'];

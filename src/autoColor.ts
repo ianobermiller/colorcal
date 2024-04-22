@@ -1,13 +1,26 @@
-import { COLORS } from './CategoryList';
-import { Calendar, Category, Day, transact, tx } from './data';
+import { Calendar, Category, Day } from './data';
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';
 import { indexArray } from './indexArray';
 import { wrap } from './wrap';
 
+// https://colorbrewer2.org/#type=qualitative&scheme=Set2&n=6
+export const COLORS = ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f'];
+
+export function autoColor(calendar: Calendar, days: Day[], categories: Category[], shiftKey: boolean) {
+  if (shiftKey) {
+    return greedy(calendar, days, categories);
+  }
+  return simple(categories);
+}
+
+function simple(categories: Category[]) {
+  return categories.map((_cat, i) => wrapAt(COLORS, i));
+}
+
 /**
  * Automatically color edges using a greedy algorithm, falling back to index-based so it never fails.
  */
-export function autoColor(days: Day[], calendar: Calendar, categories: Category[]) {
+function greedy(calendar: Calendar, days: Day[], categories: Category[]) {
   const dayByDate = indexArray(days, (day) => day.date);
   const range = dateRangeAlignWeek(new Date(calendar.startDate), new Date(calendar.endDate)).map((date) => ({
     date,
@@ -62,13 +75,16 @@ export function autoColor(days: Day[], calendar: Calendar, categories: Category[
 
   // greedy coloring algo
   const colorByCategoryId = new Map<string, string>();
-  transact(
-    ...categories.map(({ id }, i) => {
-      const adjacentColors = Array.from(adjacentCategoriesById.get(id) ?? [], (id) => colorByCategoryId.get(id));
-      const availableColors = COLORS.filter((color) => !adjacentColors.includes(color));
-      const color = availableColors[wrap(availableColors.length, i)] ?? COLORS[wrap(COLORS.length, i)];
-      colorByCategoryId.set(id, color);
-      return tx.categories[id].update({ color });
-    }),
-  );
+  let j = 0;
+  return categories.map(({ id }) => {
+    const adjacentColors = Array.from(adjacentCategoriesById.get(id) ?? [], (id) => colorByCategoryId.get(id));
+    const availableColors = COLORS.filter((color) => !adjacentColors.includes(color));
+    const color = availableColors.length ? wrapAt(availableColors, ++j) : wrapAt(COLORS, ++j);
+    colorByCategoryId.set(id, color);
+    return color;
+  });
+}
+
+function wrapAt<T>(arr: T[], index: number): T {
+  return arr[wrap(arr.length, index)];
 }
