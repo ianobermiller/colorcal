@@ -20,8 +20,7 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
   const halfCategory = categories.find((c) => c.id === day?.halfCategoryId);
 
   return (
-    <div
-      class="relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation select-none border-b border-r border-slate-400 p-0.5"
+    <BaseDay
       onClick={(e) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const cartesianX = e.clientX - rect.left;
@@ -40,7 +39,9 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
               timeZone: 'UTC',
             })}
       </span>
+
       {topCategory && <div class={clsx('mt-1 text-xs', isTopSelected && 'font-bold')}>{topCategory.name}</div>}
+
       {halfCategory && (
         <>
           <div
@@ -56,13 +57,18 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
           </div>
         </>
       )}
-    </div>
+    </BaseDay>
   );
 }
 
-export function FillerDay() {
+export const FillerDay = BaseDay;
+
+export function BaseDay(props: JSX.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div class="relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation select-none border-b border-r border-slate-400 p-0.5" />
+    <div
+      class="relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation select-none border-b border-r border-slate-400 p-0.5"
+      {...props}
+    />
   );
 }
 
