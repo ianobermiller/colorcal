@@ -5,7 +5,6 @@ import { urlToUuid } from 'uuid-url';
 import { IconButton } from './Button';
 import { CalendarGrid } from './CalendarGrid';
 import { CategoryList } from './CategoryList';
-import styles from './Editor.module.css';
 import { Notes } from './Notes';
 import { Settings } from './Settings';
 import { useStore } from './Store';
@@ -83,10 +82,10 @@ export function Editor({ id: urlID }: Props) {
   }, {});
 
   return (
-    <div class={styles.root}>
-      <div class={styles.main}>
-        <header>
-          <h2 class={clsx({ [styles.transparent]: isEditingTitle })}>
+    <div class="lg:flex">
+      <div class="mb-6 flex flex-grow flex-col gap-4">
+        <header class="relative">
+          <h2 class={clsx('text-lg', isEditingTitle && 'opacity-0')}>
             {calendar.title}{' '}
             <IconButton
               onClick={() => {
@@ -96,8 +95,10 @@ export function Editor({ id: urlID }: Props) {
               <FiEdit />
             </IconButton>
           </h2>
+
           {isEditingTitle && (
             <input
+              class="absolute top-1/2 -translate-y-1/2"
               defaultValue={calendar.title}
               onBlur={updateTitle}
               onKeyDown={(e) => e.key === 'Enter' && updateTitle(e)}
@@ -107,7 +108,7 @@ export function Editor({ id: urlID }: Props) {
           )}
         </header>
 
-        <div class={styles.controls}>
+        <div class="flex gap-2">
           <input
             onChange={(e) => {
               transact(tx.calendars[id].update({ startDate: e.currentTarget.value }));

@@ -1,5 +1,4 @@
 import { Calendar, Category, Day } from './data';
-import styles from './CalendarGrid.module.css';
 import { CalendarDay, DayOfWeek, FillerDay } from './CalendarDay';
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';
 
@@ -15,7 +14,13 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
   const range = dateRangeAlignWeek(new Date(calendar.startDate), new Date(calendar.endDate));
 
   return (
-    <div class={styles.calendar}>
+    <div
+      class="flex flex-wrap border-l border-t border-slate-400"
+      style={{
+        '--day-size': 'calc((min(624px, 100vw) - 24px - 7px) / 7)',
+        width: 'calc(var(--day-size) * 7 + 1px)',
+      }}
+    >
       {Array.from({ length: 7 }, (_, index) => {
         const date = range[index];
         const day = date && dayByDate[toISODateString(date)];
