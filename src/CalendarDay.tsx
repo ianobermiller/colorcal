@@ -6,12 +6,14 @@ import { useStore } from './Store';
 interface Props {
   categories: Category[];
   date: Date;
-  day: Day | undefined;
-  onDayClick?(date: Date, day: Day | undefined, isTopLeft: boolean): void;
+  day: Day | null | undefined;
+  onDayClick?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
   startDate: string;
+  hideLabel: boolean;
+  hideHalfLabel: boolean;
 }
 
-export function CalendarDay({ categories, date, day, onDayClick, startDate }: Props) {
+export function CalendarDay({ categories, date, day, hideHalfLabel, hideLabel, onDayClick, startDate }: Props) {
   const isTopSelected = useStore((state) => day?.categoryId && state.selectedCategoryID === day.categoryId);
   const isHalfSelected = useStore((state) => day?.halfCategoryId && state.selectedCategoryID === day.halfCategoryId);
   const showMonth = toISODateString(date) === startDate || date.getUTCDate() === 1;
@@ -40,7 +42,9 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
             })}
       </span>
 
-      {topCategory && <div class={clsx('mt-1 text-sm', isTopSelected && 'font-bold')}>{topCategory.name}</div>}
+      {!hideLabel && topCategory && (
+        <div class={clsx('mt-1 text-sm', isTopSelected && 'font-bold')}>{topCategory.name}</div>
+      )}
 
       {halfCategory && (
         <>
@@ -52,9 +56,11 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
               borderLeft: 'solid var(--day-size) transparent',
             }}
           />
-          <div class={clsx('absolute bottom-1 right-1 pl-1 text-right text-sm', isHalfSelected && 'font-bold')}>
-            {halfCategory.name}
-          </div>
+          {!hideHalfLabel && (
+            <div class={clsx('absolute bottom-1 right-1 pl-1 text-right text-sm', isHalfSelected && 'font-bold')}>
+              {halfCategory.name}
+            </div>
+          )}
         </>
       )}
     </BaseDay>

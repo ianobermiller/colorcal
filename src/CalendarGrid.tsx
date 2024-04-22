@@ -11,7 +11,10 @@ interface Props {
 
 export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) {
   const dayByDate = indexArray(days, (day) => day.date);
-  const range = dateRangeAlignWeek(new Date(calendar.startDate), new Date(calendar.endDate));
+  const range = dateRangeAlignWeek(new Date(calendar.startDate), new Date(calendar.endDate)).map((date) => ({
+    date,
+    day: date && dayByDate[toISODateString(date)],
+  }));
 
   return (
     <div
@@ -22,24 +25,27 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
       }}
     >
       {Array.from({ length: 7 }, (_, index) => {
-        const date = range[index];
-        const day = date && dayByDate[toISODateString(date)];
+        const { day } = range[index];
         const topCategory = categories.find((c) => c.id === day?.categoryId);
         return <DayOfWeek color={topCategory?.color} index={index} />;
       })}
-      {range.map((date) =>
-        date ? (
+      {range.map(({ date, day }, i) => {
+        const prevDay = range[i - 1]?.day;
+        const nextDay = range[i + 1]?.day;
+        return date ? (
           <CalendarDay
             categories={categories}
             date={date}
-            day={dayByDate[toISODateString(date)]}
+            day={day}
+            hideHalfLabel={nextDay?.categoryId === day?.halfCategoryId}
+            hideLabel={prevDay?.categoryId === day?.categoryId}
             onDayClick={onDayClick}
             startDate={calendar.startDate}
           />
         ) : (
           <FillerDay />
-        ),
-      )}
+        );
+      })}
     </div>
   );
 }
