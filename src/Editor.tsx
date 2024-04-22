@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useCallback, useEffect, useRef, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { FiEdit, FiSettings } from 'react-icons/fi';
 import { urlToUuid } from 'uuid-url';
 import { IconButton } from './Button';
@@ -9,8 +9,8 @@ import styles from './Editor.module.css';
 import { Notes } from './Notes';
 import { Settings } from './Settings';
 import { useStore } from './Store';
-import { Day, id, transact, tx, useAuth, useQuerySingle } from './data';
-import { toISODateString } from './dateUtils';
+import { Category, Day, id, transact, tx, useAuth, useQuerySingle } from './data';
+import { getDayOfWeek, getMonth, toISODateString } from './dateUtils';
 
 interface Props {
   path: string;
@@ -49,15 +49,30 @@ export function Editor({ id: urlID }: Props) {
     [id, ownerId],
   );
 
+  const onCopy = useCallback(
+    (category: Category) => {
+      days && copyHtmlToClipboard(getHtmlForCategory(category, days));
+    },
+    [days],
+  );
+
+  const sortedCategories = useMemo(
+    () =>
+      sortBy(
+        categories ?? [],
+        (cat) => lastIfNotFound(days?.findIndex((d) => d.categoryId === cat.id)),
+        (cat) => lastIfNotFound(days?.findIndex((d) => d.halfCategoryId === cat.id)),
+      ),
+    [categories, days],
+  );
+
+  const onCopyAll = useCallback(() => {
+    days && copyHtmlToClipboard(sortedCategories.map((cat) => getHtmlForCategory(cat, days)).join(''));
+  }, [days, sortedCategories]);
+
   if (!id || !calendar || !categories || !days) {
     return <h1>Loading...</h1>;
   }
-
-  const sortedCategories = sortBy(
-    categories,
-    (cat) => lastIfNotFound(days.findIndex((d) => d.categoryId === cat.id)),
-    (cat) => lastIfNotFound(days.findIndex((d) => d.halfCategoryId === cat.id)),
-  );
 
   const countByCategory = days.reduce<Record<string, number | undefined>>((acc, day) => {
     if (day.categoryId) {
@@ -121,11 +136,48 @@ export function Editor({ id: urlID }: Props) {
         <Notes calendarId={calendar.id} notes={calendar.notes} />
       </div>
       <div>
-        <CategoryList calendarId={calendar.id} categories={sortedCategories} countByCategory={countByCategory} />
+        <CategoryList
+          calendarId={calendar.id}
+          categories={sortedCategories}
+          countByCategory={countByCategory}
+          onCopy={onCopy}
+          onCopyAll={onCopyAll}
+        />
       </div>
       {isShowingSettings && <Settings calendar={calendar} onClose={() => setIsShowingSettings(false)} />}
     </div>
   );
+}
+
+function getHtmlForCategory(category: Category, days: Day[]) {
+  const matchingDays = days.filter(
+    (day) => day.halfCategoryId === category.id || (day.halfCategoryId == null && day.categoryId === category.id),
+  );
+  return `
+    <h2>${category.name.split(' - ').at(-1) ?? ''}</h2>
+    <br />
+    ${matchingDays
+      .map((day) => {
+        const date = new Date(day.date);
+        return `
+          <h3>${getMonth(date)} ${date.getUTCDate()} - ${getDayOfWeek(date)}</h3>
+          <ul>
+            <li></li>
+          </ul>
+          <br />
+        `;
+      })
+      .join('')}
+  `;
+}
+
+function copyHtmlToClipboard(html: string) {
+  navigator.clipboard.write([
+    new ClipboardItem({
+      'text/html': new Blob([html], { type: 'text/html' }),
+      'text/plain': new Blob([html], { type: 'text/plain' }),
+    }),
+  ]);
 }
 
 function sortBy<T>(array: T[], ...predicates: ((element: T) => number | string)[]): T[] {
@@ -146,8 +198,8 @@ function sortBy<T>(array: T[], ...predicates: ((element: T) => number | string)[
   });
 }
 
-function lastIfNotFound(index: number): number {
-  return index >= 0 ? index : Number.POSITIVE_INFINITY;
+function lastIfNotFound(index: number | undefined): number {
+  return index != null && index >= 0 ? index : Number.POSITIVE_INFINITY;
 }
 
 function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | undefined, isTopLeft: boolean) {

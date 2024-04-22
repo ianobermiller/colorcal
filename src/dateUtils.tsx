@@ -27,3 +27,11 @@ export function dateRange(tryStart: Date, tryEnd: Date): Date[] {
 export function toISODateString(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
+
+export function getDayOfWeek(date: Date): string {
+  return date.toLocaleDateString(undefined, { timeZone: 'UTC', weekday: 'short' });
+}
+
+export function getMonth(date: Date): string {
+  return date.toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' });
+}

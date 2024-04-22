@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { Category, Day } from './data';
 import styles from './CalendarDay.module.css';
-import { toISODateString } from './dateUtils';
+import { getDayOfWeek, toISODateString } from './dateUtils';
 import { useStore } from './Store';
 
 interface Props {
@@ -62,11 +62,10 @@ export function FillerDay() {
   return <div class={styles.day} />;
 }
 
-const dayOfWeekFormatter = new Intl.DateTimeFormat(undefined, { timeZone: 'UTC', weekday: 'short' });
 export function DayOfWeek({ color, index }: { color: string | undefined; index: number }) {
   return (
     <div class={styles.dayOfWeek} style={{ backgroundColor: color }}>
-      {dayOfWeekFormatter.format(new Date(`2017-01-0${index + 1}T00:00:00+00:00`))}
+      {getDayOfWeek(new Date(`2017-01-0${index + 1}T00:00:00+00:00`))}
     </div>
   );
 }

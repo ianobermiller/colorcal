@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useCallback } from 'preact/hooks';
-import { FiPlus, FiRefreshCw, FiTrash2 } from 'react-icons/fi';
+import { FiMoreVertical, FiPlus, FiRefreshCw } from 'react-icons/fi';
 import { Button, IconButton } from './Button';
 import { useStore } from './Store';
 import { Category, id, transact, tx, useAuth } from './data';
@@ -9,11 +9,11 @@ interface Props {
   categories: Category[];
   calendarId: string;
   countByCategory: Record<string, number | undefined>;
+  onCopy: (category: Category) => void;
+  onCopyAll: () => void;
 }
 
-const styles: Partial<Record<string, string>> = {};
-
-export function CategoryList({ calendarId, categories, countByCategory }: Props) {
+export function CategoryList({ calendarId, categories, countByCategory, onCopy, onCopyAll }: Props) {
   const { user } = useAuth();
   const ownerId = user?.id ?? '';
 
@@ -39,27 +39,36 @@ export function CategoryList({ calendarId, categories, countByCategory }: Props)
   }, [categories]);
 
   return (
-    <div>
+    <div class="flex w-72 flex-col gap-3">
       <h3>Categories</h3>
 
       <ul>
         {categories.map((category) => (
-          <CategoryRow category={category} count={countByCategory[category.id] ?? 0} />
+          <CategoryRow category={category} count={countByCategory[category.id] ?? 0} onCopy={onCopy} />
         ))}
       </ul>
 
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
         <Button onClick={addCategory}>
           <FiPlus size={24} />
           Add
         </Button>
         <Button onClick={autoColor}>Auto-color</Button>
+        <Button onClick={onCopyAll}>Copy all</Button>
       </div>
     </div>
   );
 }
 
-function CategoryRow({ category, count }: { category: Category; count: number }) {
+function CategoryRow({
+  category,
+  count,
+  onCopy,
+}: {
+  category: Category;
+  count: number;
+  onCopy: (category: Category) => void;
+}) {
   const selectedCategoryID = useStore((store) => store.selectedCategoryID);
   const selectCategory = useStore((store) => store.selectCategory);
 
@@ -80,7 +89,7 @@ function CategoryRow({ category, count }: { category: Category; count: number })
   }, [category.color, category.id, selectCategory, selectedCategoryID]);
 
   return (
-    <div class="mb-2 flex items-center gap-2">
+    <div class="relative mb-2 flex items-center gap-2">
       <button
         class={clsx(
           'relative inline-flex size-8 items-center justify-center rounded-full border-2 border-solid border-transparent font-bold text-white',
@@ -101,13 +110,28 @@ function CategoryRow({ category, count }: { category: Category; count: number })
         value={category.name}
       />
 
-      <IconButton
-        class={styles.delete}
-        onClick={() => {
-          transact(tx.categories[category.id].delete());
-        }}
-      >
-        <FiTrash2 size={20} />
+      <IconButton class="group relative -ml-2">
+        <FiMoreVertical size={20} />
+
+        <div class="group absolute right-0 z-10 hidden flex-col whitespace-nowrap rounded bg-white shadow-md group-focus-within:flex group-focus:flex">
+          <button
+            class="rounded px-4 py-2 text-left hover:bg-slate-100"
+            onClick={(e) => {
+              e.currentTarget.blur();
+              onCopy(category);
+            }}
+          >
+            Copy HTML
+          </button>
+          <button
+            class="rounded px-4 py-2 text-left hover:bg-slate-100"
+            onClick={() => {
+              transact(tx.categories[category.id].delete());
+            }}
+          >
+            Delete
+          </button>
+        </div>
       </IconButton>
     </div>
   );
