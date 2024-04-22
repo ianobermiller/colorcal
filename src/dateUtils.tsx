@@ -8,6 +8,8 @@ export function dateRangeAlignWeek(start: Date, end: Date): (Date | null)[] {
     dates.unshift(null);
   }
 
+  console.log({ dates });
+
   return dates;
 }
 

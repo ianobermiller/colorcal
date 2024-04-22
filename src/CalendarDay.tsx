@@ -1,6 +1,5 @@
 import clsx from 'clsx';
 import { Category, Day } from './data';
-import styles from './CalendarDay.module.css';
 import { getDayOfWeek, toISODateString } from './dateUtils';
 import { useStore } from './Store';
 
@@ -22,7 +21,7 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
 
   return (
     <div
-      class={styles.day}
+      class="relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation select-none border-b border-r border-slate-400 p-0.5"
       onClick={(e) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const cartesianX = e.clientX - rect.left;
@@ -32,7 +31,7 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
       }}
       style={{ background: topCategory?.color }}
     >
-      <span class={clsx({ [styles.selected]: isTopSelected ?? isHalfSelected })}>
+      <span class={clsx((isTopSelected ?? isHalfSelected) && 'font-bold')}>
         {date.getUTCDate()}
         {showMonth &&
           ' ' +
@@ -41,15 +40,18 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
               timeZone: 'UTC',
             })}
       </span>
-      {topCategory && <div class={clsx(styles.dayLabel, { [styles.selected]: isTopSelected })}>{topCategory.name}</div>}
+      {topCategory && <div class={clsx('mt-1 text-xs', isTopSelected && 'font-bold')}>{topCategory.name}</div>}
       {halfCategory && (
         <>
-          <div class={styles.halfDayBackground} style={`--color: ${halfCategory.color}`} />
           <div
-            class={clsx(styles.halfDayLabel, {
-              [styles.selected]: isHalfSelected,
-            })}
-          >
+            class="absolute bottom-0 right-0"
+            style={{
+              '--color': `${halfCategory.color}`,
+              borderBottom: 'solid var(--day-size) var(--color)',
+              borderLeft: 'solid var(--day-size) transparent',
+            }}
+          />
+          <div class={clsx('absolute bottom-1 right-1 pl-1 text-right text-xs', isHalfSelected && 'font-bold')}>
             {halfCategory.name}
           </div>
         </>
@@ -59,12 +61,14 @@ export function CalendarDay({ categories, date, day, onDayClick, startDate }: Pr
 }
 
 export function FillerDay() {
-  return <div class={styles.day} />;
+  return (
+    <div class="relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation select-none border-b border-r border-slate-400 p-0.5" />
+  );
 }
 
 export function DayOfWeek({ color, index }: { color: string | undefined; index: number }) {
   return (
-    <div class={styles.dayOfWeek} style={{ backgroundColor: color }}>
+    <div class="w-[var(--day-size)] border-r border-slate-400 p-0.5 text-sm" style={{ backgroundColor: color }}>
       {getDayOfWeek(new Date(`2017-01-0${index + 1}T00:00:00+00:00`))}
     </div>
   );
