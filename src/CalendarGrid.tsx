@@ -30,6 +30,7 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
       {range.map(({ date, day }, i) => {
         const prevDay = range[i - 1]?.day;
         const nextDay = range[i + 1]?.day;
+        const noBorderRight = i % 7 !== 6 && nextDay?.categoryId === (day?.halfCategoryId ?? day?.categoryId);
         return date ? (
           <CalendarDay
             categories={categories}
@@ -37,7 +38,7 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
             day={day}
             hideHalfLabel={nextDay?.categoryId === day?.halfCategoryId}
             hideLabel={prevDay?.categoryId === day?.categoryId}
-            noBorderRight={nextDay?.categoryId === (day?.halfCategoryId ?? day?.categoryId)}
+            noBorderRight={noBorderRight}
             onDayClick={onDayClick}
             startDate={calendar.startDate}
           />
