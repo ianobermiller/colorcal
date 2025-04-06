@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { Category, Day } from './data';
+import { Category, Day } from './types';
 import { getDayOfWeek, toISODateString } from './dateUtils';
 import { useStore } from './Store';
 
@@ -34,12 +34,7 @@ export function CalendarDay({ categories, date, day, hideHalfLabel, hideLabel, o
     >
       <span class={clsx((isTopSelected ?? isHalfSelected) && 'font-bold')}>
         {date.getUTCDate()}
-        {showMonth &&
-          ' ' +
-            date.toLocaleDateString(undefined, {
-              month: 'short',
-              timeZone: 'UTC',
-            })}
+        {showMonth && ' ' + date.toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' })}
       </span>
 
       {!hideLabel && topCategory && (
@@ -49,7 +44,7 @@ export function CalendarDay({ categories, date, day, hideHalfLabel, hideLabel, o
       {halfCategory && (
         <>
           <div
-            class="absolute bottom-0 right-0"
+            class="absolute right-0 bottom-0"
             style={{
               '--color': `${halfCategory.color}`,
               borderBottom: 'solid var(--day-size) var(--color)',
@@ -57,7 +52,7 @@ export function CalendarDay({ categories, date, day, hideHalfLabel, hideLabel, o
             }}
           />
           {!hideHalfLabel && (
-            <div class={clsx('absolute bottom-1 right-1 pl-1 text-right text-sm', isHalfSelected && 'font-bold')}>
+            <div class={clsx('absolute right-1 bottom-1 pl-1 text-right text-sm', isHalfSelected && 'font-bold')}>
               {halfCategory.name}
             </div>
           )}
@@ -72,7 +67,7 @@ export const FillerDay = BaseDay;
 export function BaseDay(props: JSX.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      class="relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation select-none border-b border-r border-slate-400 p-0.5"
+      class="relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation border-r border-b border-slate-400 p-0.5 select-none"
       {...props}
     />
   );

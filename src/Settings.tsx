@@ -3,7 +3,8 @@ import { route } from 'preact-router';
 import { useCallback } from 'preact/hooks';
 import { FiTrash2, FiX } from 'react-icons/fi';
 import { Button, IconButton } from './Button';
-import { Calendar, transact, tx } from './data';
+import { db } from './db';
+import { Calendar } from './types';
 
 interface Props {
   calendar: Calendar;
@@ -24,7 +25,7 @@ export function Settings({ calendar, onClose }: Props) {
 
   const handleVisibilityChange = useCallback(
     (e: JSX.TargetedEvent<HTMLInputElement>) => {
-      transact(tx.calendars[calendar.id].update({ isPubliclyVisible: e.currentTarget.checked }));
+      db.transact(db.tx.calendars[calendar.id].update({ isPubliclyVisible: e.currentTarget.checked }));
     },
     [calendar.id],
   );
@@ -33,7 +34,7 @@ export function Settings({ calendar, onClose }: Props) {
     <div class="fixed inset-0 flex items-start justify-center bg-black/50 pt-12" onClick={handleScrimClick}>
       <div class="modal relative rounded border-slate-300 bg-white p-6">
         <h2>Calendar Settings</h2>
-        <IconButton class="absolute right-3 top-5" onClick={onClose}>
+        <IconButton class="absolute top-5 right-3" onClick={onClose}>
           <FiX />
         </IconButton>
 
@@ -46,7 +47,7 @@ export function Settings({ calendar, onClose }: Props) {
           onClick={() => {
             // eslint-disable-next-line no-restricted-globals
             if (confirm(`Delete calendar "${calendar.title}"?`)) {
-              transact(tx.calendars[calendar.id].delete());
+              db.transact(db.tx.calendars[calendar.id].delete());
               route('/');
             }
           }}

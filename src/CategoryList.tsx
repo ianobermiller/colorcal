@@ -3,9 +3,10 @@ import { useCallback } from 'preact/hooks';
 import { FiMoreVertical, FiPlus, FiRefreshCw } from 'react-icons/fi';
 import { Button, IconButton } from './Button';
 import { useStore } from './Store';
-import { Category, id, transact, tx, useAuth } from './data';
-import { wrap } from './wrap';
 import { COLORS } from './autoColor';
+import { db, id } from './db';
+import { Category } from './types';
+import { wrap } from './wrap';
 
 interface Props {
   categories: Category[];
@@ -17,21 +18,21 @@ interface Props {
 }
 
 export function CategoryList({ calendarId, categories, countByCategory, onAutoColor, onCopy, onCopyAll }: Props) {
-  const { user } = useAuth();
+  const { user } = db.useAuth();
   const ownerId = user?.id ?? '';
 
   const selectCategory = useStore((store) => store.selectCategory);
 
   const addCategory = useCallback(() => {
     const categoryId = id();
-    transact(
-      tx.categories[categoryId].create({
+    db.transact([
+      db.tx.categories[categoryId].update({
         color: COLORS[Math.floor(Math.random() * COLORS.length)],
         name: '',
         ownerId,
       }),
-      tx.calendars[calendarId].link({ categories: categoryId }),
-    );
+      db.tx.calendars[calendarId].link({ categories: categoryId }),
+    ]);
     selectCategory(categoryId);
   }, [calendarId, ownerId, selectCategory]);
 
@@ -71,7 +72,7 @@ function CategoryRow({
 
   const onNameChange = useCallback(
     (e: JSX.TargetedEvent<HTMLInputElement>) => {
-      transact(tx.categories[category.id].update({ name: e.currentTarget.value }));
+      db.transact(db.tx.categories[category.id].update({ name: e.currentTarget.value }));
     },
     [category.id],
   );
@@ -79,7 +80,7 @@ function CategoryRow({
   const onColorClick = useCallback(() => {
     if (selectedCategoryID === category.id) {
       const color = COLORS[wrap(COLORS.length, COLORS.indexOf(category.color) + 1)];
-      transact(tx.categories[category.id].update({ color }));
+      db.transact(db.tx.categories[category.id].update({ color }));
     } else {
       selectCategory(category.id);
     }
@@ -123,7 +124,7 @@ function CategoryRow({
           <button
             class="rounded px-4 py-2 text-left hover:bg-slate-100"
             onClick={() => {
-              transact(tx.categories[category.id].delete());
+              db.transact(db.tx.categories[category.id].delete());
             }}
           >
             Delete

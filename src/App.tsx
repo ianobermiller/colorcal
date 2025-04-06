@@ -1,15 +1,15 @@
 import { createHashHistory } from 'history';
 import { CustomHistory, Router } from 'preact-router';
 import { IoColorPalette } from 'react-icons/io5';
-import { Editor } from './Editor';
-import { CalendarList } from './CalendarList';
-import { Landing } from './Landing';
 import { ButtonLink, LinkButton } from './Button';
-import { auth, useAuth } from './data';
+import { CalendarList } from './CalendarList';
+import { Editor } from './Editor';
+import { Landing } from './Landing';
 import { Login } from './Login';
+import { db } from './db';
 
 export function App() {
-  const { user } = useAuth();
+  const { user } = db.useAuth();
 
   return (
     <div class="mx-auto max-w-2xl p-3 lg:w-[1024px] lg:max-w-none">
@@ -21,7 +21,7 @@ export function App() {
         </h1>
         {user ? (
           <p>
-            {user.email} <LinkButton onClick={() => auth.signOut()}>Logout</LinkButton>
+            {user.email} <LinkButton onClick={() => db.auth.signOut()}>Logout</LinkButton>
           </p>
         ) : (
           <p>

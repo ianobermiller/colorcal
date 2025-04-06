@@ -8,9 +8,10 @@ import { CategoryList } from './CategoryList';
 import { Notes } from './Notes';
 import { Settings } from './Settings';
 import { useStore } from './Store';
-import { Category, Day, id, transact, tx, useAuth, useQuerySingle } from './data';
+import { Category, Day } from './types';
 import { getDayOfWeek, getMonth, toISODateString } from './dateUtils';
 import { autoColor } from './autoColor';
+import { db, id } from './db';
 
 interface Props {
   path: string;
@@ -18,20 +19,21 @@ interface Props {
 }
 
 export function Editor({ id: urlID }: Props) {
-  const { user } = useAuth();
+  const { user } = db.useAuth();
   const ownerId = user?.id ?? '';
 
   const id = urlToUuid(urlID);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isShowingSettings, setIsShowingSettings] = useState(false);
-  const { data: calendar } = useQuerySingle({ calendars: { $: { where: { id } }, categories: {}, days: {} } });
+  const { data } = db.useQuery({ calendars: { $: { where: { id } }, categories: {}, days: {} } });
+  const calendar = data?.calendars[0];
   const categories = calendar?.categories;
   const days = calendar?.days.sort((a, b) => a.date.localeCompare(b.date));
 
   const updateTitle = useCallback(
     (e: JSX.TargetedEvent<HTMLInputElement>) => {
       setIsEditingTitle(false);
-      transact(tx.calendars[id].update({ title: e.currentTarget.value }));
+      db.transact(db.tx.calendars[id].update({ title: e.currentTarget.value }));
     },
     [id],
   );
@@ -75,7 +77,7 @@ export function Editor({ id: urlID }: Props) {
       if (!days || !calendar) return;
 
       const colors = autoColor(calendar, days, sortedCategories, e.shiftKey);
-      transact(...sortedCategories.map(({ id }, i) => tx.categories[id].update({ color: colors[i] })));
+      db.transact(sortedCategories.map(({ id }, i) => db.tx.categories[id].update({ color: colors[i] })));
     },
     [calendar, days, sortedCategories],
   );
@@ -122,14 +124,14 @@ export function Editor({ id: urlID }: Props) {
         <div class="flex gap-2">
           <input
             onChange={(e) => {
-              transact(tx.calendars[id].update({ startDate: e.currentTarget.value }));
+              db.transact(db.tx.calendars[id].update({ startDate: e.currentTarget.value }));
             }}
             type="date"
             value={calendar.startDate}
           />
           <input
             onChange={(e) => {
-              transact(tx.calendars[id].update({ endDate: e.currentTarget.value }));
+              db.transact(db.tx.calendars[id].update({ endDate: e.currentTarget.value }));
             }}
             type="date"
             value={calendar.endDate}
@@ -219,15 +221,15 @@ function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | u
   const { selectedCategoryID } = useStore.getState();
   if (!day) {
     const dayId = id();
-    transact(
-      tx.days[dayId].create({
+    db.transact([
+      db.tx.days[dayId].update({
         categoryId: selectedCategoryID,
         date: toISODateString(date),
         halfCategoryId: null,
         ownerId,
       }),
-      tx.calendars[calendarId].link({ days: dayId }),
-    );
+      db.tx.calendars[calendarId].link({ days: dayId }),
+    ]);
     return;
   }
 
@@ -239,31 +241,31 @@ function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | u
     (top === 'same' && half === 'empty') ||
     (top === 'empty' && half === 'same')
   ) {
-    return transact(tx.days[day.id].update({ categoryId: null, halfCategoryId: null }));
+    return db.transact(db.tx.days[day.id].update({ categoryId: null, halfCategoryId: null }));
   }
 
   if ((top === 'empty' && half === 'empty') || (top === 'empty' && half === 'different')) {
-    return transact(tx.days[day.id].update({ categoryId: selectedCategoryID }));
+    return db.transact(db.tx.days[day.id].update({ categoryId: selectedCategoryID }));
   }
 
   if (top === 'same' && half === 'different') {
-    return transact(tx.days[day.id].update({ halfCategoryId: selectedCategoryID }));
+    return db.transact(db.tx.days[day.id].update({ halfCategoryId: selectedCategoryID }));
   }
 
   if (top === 'different' && half === 'same') {
-    return transact(tx.days[day.id].update({ categoryId: selectedCategoryID, halfCategoryId: null }));
+    return db.transact(db.tx.days[day.id].update({ categoryId: selectedCategoryID, halfCategoryId: null }));
   }
 
   if ((top === 'different' && half === 'empty') || (top === 'different' && half === 'different')) {
     if (isTopLeft) {
-      return transact(
-        tx.days[day.id].update({
+      return db.transact(
+        db.tx.days[day.id].update({
           categoryId: selectedCategoryID,
           halfCategoryId: half === 'empty' ? day.categoryId : day.halfCategoryId,
         }),
       );
     } else {
-      return transact(tx.days[day.id].update({ halfCategoryId: selectedCategoryID }));
+      return db.transact(db.tx.days[day.id].update({ halfCategoryId: selectedCategoryID }));
     }
   }
 }

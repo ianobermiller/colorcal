@@ -1,4 +1,4 @@
-import { Calendar, Category, Day } from './data';
+import { Calendar, Category, Day } from './types';
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';
 import { indexArray } from './indexArray';
 import { wrap } from './wrap';

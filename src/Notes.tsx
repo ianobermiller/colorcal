@@ -1,4 +1,4 @@
-import { transact, tx } from './data';
+import { db } from './db';
 
 interface Props {
   calendarId: string;
@@ -11,7 +11,7 @@ export function Notes({ calendarId, notes }: Props) {
       <h3>Notes</h3>
       <textarea
         onBlur={(e) => {
-          transact(tx.calendars[calendarId].update({ notes: e.currentTarget.value }));
+          db.transact(db.tx.calendars[calendarId].update({ notes: e.currentTarget.value }));
         }}
         rows={5}
       >

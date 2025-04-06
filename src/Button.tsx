@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { ComponentChildren } from 'preact';
 
 type Props = JSX.HTMLAttributes<HTMLButtonElement>;
 
@@ -10,10 +11,10 @@ export function Button({ class: className, ...otherProps }: Props) {
   return <button {...otherProps} class={clsx(buttonClasses, className)} />;
 }
 
-export function ButtonLink({ class: className, ...otherProps }: JSX.HTMLAttributes<HTMLAnchorElement>) {
+export function ButtonLink(props: { children: ComponentChildren; href: string }) {
   // This is a pass-through component
   // eslint-disable-next-line jsx-a11y/anchor-has-content
-  return <a {...otherProps} class={clsx(buttonClasses, className)} />;
+  return <a {...props} class={buttonClasses} />;
 }
 
 export function IconButton({ class: className, ...otherProps }: Props) {

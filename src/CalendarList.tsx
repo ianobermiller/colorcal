@@ -2,8 +2,8 @@ import { route } from 'preact-router';
 import { useCallback, useRef } from 'preact/hooks';
 import { uuidToUrl } from 'uuid-url';
 import { Button } from './Button';
-import { id, transact, tx, useAuth, useQuery } from './data';
 import { toISODateString } from './dateUtils';
+import { db, id } from './db';
 
 interface Props {
   /** for preact-router */
@@ -11,12 +11,10 @@ interface Props {
 }
 
 export function CalendarList(_: Props) {
-  const { user } = useAuth();
+  const { user } = db.useAuth();
   const ownerId = user?.id ?? '';
 
-  const { data } = useQuery({
-    calendars: { $: { where: { ownerId } } },
-  });
+  const { data } = db.useQuery({ calendars: { $: { where: { ownerId } } } });
   const calendars = (data?.calendars ?? []).sort((a, b) => (a.startDate > b.startDate ? -1 : 1));
   const calendarName = useRef<HTMLInputElement>(null);
 
@@ -65,10 +63,7 @@ export function CalendarList(_: Props) {
 }
 
 function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString(undefined, {
-    dateStyle: 'medium',
-    timeZone: 'UTC',
-  });
+  return new Date(dateString).toLocaleDateString(undefined, { dateStyle: 'medium', timeZone: 'UTC' });
 }
 
 function createCalendar(ownerId: string, title: string) {
@@ -77,8 +72,8 @@ function createCalendar(ownerId: string, title: string) {
   endDate.setDate(endDate.getDate() + 7);
 
   const calendarId = id();
-  transact(
-    tx.calendars[calendarId].create({
+  db.transact(
+    db.tx.calendars[calendarId].update({
       endDate: toISODateString(endDate),
       isPubliclyVisible: false,
       notes: '',
