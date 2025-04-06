@@ -50,9 +50,7 @@ export function CalendarDay({
       </span>
 
       {!hideLabel && topCategory && (
-        <div className={clsx('relative z-10 mt-1 text-sm whitespace-nowrap', isTopSelected && 'font-bold')}>
-          {topCategory.name}
-        </div>
+        <div className={clsx('mt-1 text-sm', isTopSelected && 'font-bold')}>{topCategory.name}</div>
       )}
 
       {halfCategory && (
@@ -66,12 +64,7 @@ export function CalendarDay({
             }}
           />
           {!hideHalfLabel && (
-            <div
-              className={clsx(
-                'absolute right-1 bottom-1 z-10 pl-1 text-right text-sm whitespace-nowrap',
-                isHalfSelected && 'font-bold',
-              )}
-            >
+            <div className={clsx('absolute right-1 bottom-1 pl-1 text-right text-sm', isHalfSelected && 'font-bold')}>
               {halfCategory.name}
             </div>
           )}
