@@ -10,11 +10,21 @@ interface Props {
   day: Day | null | undefined;
   hideHalfLabel: boolean;
   hideLabel: boolean;
+  noBorderRight?: boolean;
   onDayClick?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
   startDate: string;
 }
 
-export function CalendarDay({ categories, date, day, hideHalfLabel, hideLabel, onDayClick, startDate }: Props) {
+export function CalendarDay({
+  categories,
+  date,
+  day,
+  hideHalfLabel,
+  hideLabel,
+  noBorderRight,
+  onDayClick,
+  startDate,
+}: Props) {
   const isTopSelected = useStore((state) => day?.categoryId && state.selectedCategoryID === day.categoryId);
   const isHalfSelected = useStore((state) => day?.halfCategoryId && state.selectedCategoryID === day.halfCategoryId);
   const showMonth = toISODateString(date) === startDate || date.getUTCDate() === 1;
@@ -24,6 +34,7 @@ export function CalendarDay({ categories, date, day, hideHalfLabel, hideLabel, o
 
   return (
     <BaseDay
+      noBorderRight={noBorderRight}
       onClick={(e) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const cartesianX = e.clientX - rect.left;
@@ -39,7 +50,9 @@ export function CalendarDay({ categories, date, day, hideHalfLabel, hideLabel, o
       </span>
 
       {!hideLabel && topCategory && (
-        <div className={clsx('mt-1 text-sm', isTopSelected && 'font-bold')}>{topCategory.name}</div>
+        <div className={clsx('relative z-10 mt-1 text-sm whitespace-nowrap', isTopSelected && 'font-bold')}>
+          {topCategory.name}
+        </div>
       )}
 
       {halfCategory && (
@@ -53,7 +66,12 @@ export function CalendarDay({ categories, date, day, hideHalfLabel, hideLabel, o
             }}
           />
           {!hideHalfLabel && (
-            <div className={clsx('absolute right-1 bottom-1 pl-1 text-right text-sm', isHalfSelected && 'font-bold')}>
+            <div
+              className={clsx(
+                'absolute right-1 bottom-1 z-10 pl-1 text-right text-sm whitespace-nowrap',
+                isHalfSelected && 'font-bold',
+              )}
+            >
               {halfCategory.name}
             </div>
           )}
@@ -65,10 +83,13 @@ export function CalendarDay({ categories, date, day, hideHalfLabel, hideLabel, o
 
 export const FillerDay = BaseDay;
 
-export function BaseDay(props: JSX.HTMLAttributes<HTMLDivElement>) {
+export function BaseDay({ noBorderRight, ...props }: { noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className="relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation border-r border-b border-slate-400 p-0.5 select-none"
+      className={clsx(
+        !noBorderRight && 'border-r',
+        'relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none',
+      )}
       {...props}
     />
   );

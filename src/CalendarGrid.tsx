@@ -37,6 +37,7 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
             day={day}
             hideHalfLabel={nextDay?.categoryId === day?.halfCategoryId}
             hideLabel={prevDay?.categoryId === day?.categoryId}
+            noBorderRight={nextDay?.categoryId === (day?.halfCategoryId ?? day?.categoryId)}
             onDayClick={onDayClick}
             startDate={calendar.startDate}
           />
