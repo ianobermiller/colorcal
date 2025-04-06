@@ -1,10 +1,10 @@
 import clsx from 'clsx';
 import { ComponentChildren } from 'preact';
 
-type Props = JSX.HTMLAttributes<HTMLButtonElement>;
+type Props = JSX.ButtonHTMLAttributes;
 
 const buttonClasses = clsx(
-  'flex h-8 cursor-pointer items-center gap-2 rounded-lg border-2 border-black px-3 hover:bg-slate-100',
+  'inline-flex h-8 cursor-pointer items-center gap-2 rounded-lg border-2 border-black px-3 hover:bg-slate-100',
 );
 
 export function Button({ class: className, ...otherProps }: Props) {
