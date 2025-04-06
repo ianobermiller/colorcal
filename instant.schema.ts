@@ -14,12 +14,12 @@ export const schema = i.schema({
       startDate: i.string(),
       title: i.string(),
     }),
-    categories: i.entity({ ownerId: i.string(), color: i.string(), name: i.string() }),
+    categories: i.entity({ color: i.string(), name: i.string(), ownerId: i.string() }),
     days: i.entity({
-      ownerId: i.string(),
       categoryId: i.string().optional(),
-      halfCategoryId: i.string().optional(),
       date: i.string(),
+      halfCategoryId: i.string().optional(),
+      ownerId: i.string(),
     }),
   },
   links: {

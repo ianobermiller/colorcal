@@ -1,6 +1,6 @@
-import { Calendar, Category, Day } from './types';
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';
 import { indexArray } from './indexArray';
+import { Calendar, Category, Day } from './types';
 import { wrap } from './wrap';
 
 // https://colorbrewer2.org/#type=qualitative&scheme=Set2&n=6
@@ -11,10 +11,6 @@ export function autoColor(calendar: Calendar, days: Day[], categories: Category[
     return greedy(calendar, days, categories);
   }
   return simple(categories);
-}
-
-function simple(categories: Category[]) {
-  return categories.map((_cat, i) => wrapAt(COLORS, i));
 }
 
 /**
@@ -83,6 +79,10 @@ function greedy(calendar: Calendar, days: Day[], categories: Category[]) {
     colorByCategoryId.set(id, color);
     return color;
   });
+}
+
+function simple(categories: Category[]) {
+  return categories.map((_cat, i) => wrapAt(COLORS, i));
 }
 
 function wrapAt<T>(arr: T[], index: number): T {

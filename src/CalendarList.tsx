@@ -1,6 +1,7 @@
 import { route } from 'preact-router';
 import { useCallback, useRef } from 'preact/hooks';
 import { uuidToUrl } from 'uuid-url';
+
 import { Button } from './Button';
 import { toISODateString } from './dateUtils';
 import { db, id } from './db';
@@ -20,17 +21,20 @@ export function CalendarList(_: Props) {
 
   const onCreate = useCallback(() => {
     const title = calendarName.current?.value ?? 'Untitled Calendar';
-    createCalendar(ownerId, title);
+    void createCalendar(ownerId, title);
   }, [ownerId]);
 
   return (
     <>
-      <h2 class="mb-2 text-xl">Your Calendars</h2>
+      <h2 className="mb-2 text-xl">Your Calendars</h2>
       {user && (
         <>
-          <ul class="mb-3 flex flex-col gap-3 lg:flex-row lg:flex-wrap">
+          <ul className="mb-3 flex flex-col gap-3 lg:flex-row lg:flex-wrap">
             {calendars.map((cal) => (
-              <li class="flex flex-col gap-3 rounded border-2 border-solid border-slate-200 px-4 py-3 hover:bg-slate-100">
+              <li
+                className="flex flex-col gap-3 rounded border-2 border-solid border-slate-200 px-4 py-3 hover:bg-slate-100"
+                key={cal.id}
+              >
                 <a href={`/${uuidToUrl(cal.id)}`}>
                   <h3>{cal.title}</h3>
                   <p>
@@ -41,7 +45,7 @@ export function CalendarList(_: Props) {
             ))}
           </ul>
 
-          <div class="flex gap-2">
+          <div className="flex gap-2">
             <input
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
@@ -62,17 +66,13 @@ export function CalendarList(_: Props) {
   );
 }
 
-function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString(undefined, { dateStyle: 'medium', timeZone: 'UTC' });
-}
-
-function createCalendar(ownerId: string, title: string) {
+async function createCalendar(ownerId: string, title: string) {
   const startDate = new Date();
   const endDate = new Date(startDate);
   endDate.setDate(endDate.getDate() + 7);
 
   const calendarId = id();
-  db.transact(
+  await db.transact(
     db.tx.calendars[calendarId].update({
       endDate: toISODateString(endDate),
       isPubliclyVisible: false,
@@ -83,4 +83,8 @@ function createCalendar(ownerId: string, title: string) {
     }),
   );
   route(`/${uuidToUrl(calendarId)}`);
+}
+
+function formatDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString(undefined, { dateStyle: 'medium', timeZone: 'UTC' });
 }

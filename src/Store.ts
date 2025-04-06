@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 
 interface State {
-  selectedCategoryID: string | null;
-  selectCategory(id: string | null): void;
+  selectCategory(id: null | string): void;
+  selectedCategoryID: null | string;
 }
 
 export const useStore = create<State>((set) => ({

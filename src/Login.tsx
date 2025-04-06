@@ -1,7 +1,8 @@
 import { route } from 'preact-router';
 import { useState } from 'preact/hooks';
-import { db } from './db';
+
 import { Button } from './Button';
+import { db } from './db';
 
 interface Props {
   /** for preact-router */
@@ -33,7 +34,7 @@ function Email({ setSentEmail }: { setSentEmail: (email: string) => void }) {
           if (!email) return;
           setSentEmail(email);
 
-          db.auth.sendMagicCode({ email }).catch((err) => {
+          db.auth.sendMagicCode({ email }).catch((err: unknown) => {
             console.error(err);
             setSentEmail('');
           });
@@ -65,7 +66,7 @@ function MagicCode({ sentEmail }: { sentEmail: string }) {
             .then(() => {
               route('/');
             })
-            .catch((err) => {
+            .catch((err: unknown) => {
               console.error(err);
               setCode('');
             });

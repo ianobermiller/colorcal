@@ -1,16 +1,17 @@
 import clsx from 'clsx';
-import { Category, Day } from './types';
+
 import { getDayOfWeek, toISODateString } from './dateUtils';
 import { useStore } from './Store';
+import { Category, Day } from './types';
 
 interface Props {
   categories: Category[];
   date: Date;
   day: Day | null | undefined;
+  hideHalfLabel: boolean;
+  hideLabel: boolean;
   onDayClick?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
   startDate: string;
-  hideLabel: boolean;
-  hideHalfLabel: boolean;
 }
 
 export function CalendarDay({ categories, date, day, hideHalfLabel, hideLabel, onDayClick, startDate }: Props) {
@@ -32,27 +33,27 @@ export function CalendarDay({ categories, date, day, hideHalfLabel, hideLabel, o
       }}
       style={{ background: topCategory?.color }}
     >
-      <span class={clsx((isTopSelected ?? isHalfSelected) && 'font-bold')}>
+      <span className={clsx((isTopSelected ?? isHalfSelected) && 'font-bold')}>
         {date.getUTCDate()}
         {showMonth && ' ' + date.toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' })}
       </span>
 
       {!hideLabel && topCategory && (
-        <div class={clsx('mt-1 text-sm', isTopSelected && 'font-bold')}>{topCategory.name}</div>
+        <div className={clsx('mt-1 text-sm', isTopSelected && 'font-bold')}>{topCategory.name}</div>
       )}
 
       {halfCategory && (
         <>
           <div
-            class="absolute right-0 bottom-0"
+            className="absolute right-0 bottom-0"
             style={{
-              '--color': `${halfCategory.color}`,
+              '--color': halfCategory.color,
               borderBottom: 'solid var(--day-size) var(--color)',
               borderLeft: 'solid var(--day-size) transparent',
             }}
           />
           {!hideHalfLabel && (
-            <div class={clsx('absolute right-1 bottom-1 pl-1 text-right text-sm', isHalfSelected && 'font-bold')}>
+            <div className={clsx('absolute right-1 bottom-1 pl-1 text-right text-sm', isHalfSelected && 'font-bold')}>
               {halfCategory.name}
             </div>
           )}
@@ -67,7 +68,7 @@ export const FillerDay = BaseDay;
 export function BaseDay(props: JSX.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      class="relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation border-r border-b border-slate-400 p-0.5 select-none"
+      className="relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation border-r border-b border-slate-400 p-0.5 select-none"
       {...props}
     />
   );
@@ -75,7 +76,7 @@ export function BaseDay(props: JSX.HTMLAttributes<HTMLDivElement>) {
 
 export function DayOfWeek({ color, index }: { color: string | undefined; index: number }) {
   return (
-    <div class="w-[var(--day-size)] border-r border-slate-400 p-0.5 text-sm" style={{ backgroundColor: color }}>
+    <div className="w-[var(--day-size)] border-r border-slate-400 p-0.5 text-sm" style={{ backgroundColor: color }}>
       {getDayOfWeek(new Date(`2017-01-0${index + 1}T00:00:00+00:00`))}
     </div>
   );

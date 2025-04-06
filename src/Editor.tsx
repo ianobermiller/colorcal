@@ -2,20 +2,21 @@ import clsx from 'clsx';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { FiEdit, FiSettings } from 'react-icons/fi';
 import { urlToUuid } from 'uuid-url';
+
+import { autoColor } from './autoColor';
 import { IconButton } from './Button';
 import { CalendarGrid } from './CalendarGrid';
 import { CategoryList } from './CategoryList';
+import { getDayOfWeek, getMonth, toISODateString } from './dateUtils';
+import { db, id } from './db';
 import { Notes } from './Notes';
 import { Settings } from './Settings';
 import { useStore } from './Store';
 import { Category, Day } from './types';
-import { getDayOfWeek, getMonth, toISODateString } from './dateUtils';
-import { autoColor } from './autoColor';
-import { db, id } from './db';
 
 interface Props {
-  path: string;
   id: string;
+  path: string;
 }
 
 export function Editor({ id: urlID }: Props) {
@@ -33,7 +34,7 @@ export function Editor({ id: urlID }: Props) {
   const updateTitle = useCallback(
     (e: JSX.TargetedEvent<HTMLInputElement>) => {
       setIsEditingTitle(false);
-      db.transact(db.tx.calendars[id].update({ title: e.currentTarget.value }));
+      void db.transact(db.tx.calendars[id].update({ title: e.currentTarget.value }));
     },
     [id],
   );
@@ -46,14 +47,15 @@ export function Editor({ id: urlID }: Props) {
 
   const onDayClick = useCallback(
     (date: Date, day: Day | undefined, isTopLeft: boolean) => {
-      toggleDay(ownerId, id, date, day, isTopLeft);
+      void toggleDay(ownerId, id, date, day, isTopLeft);
     },
     [id, ownerId],
   );
 
   const onCopy = useCallback(
     (category: Category) => {
-      days && copyHtmlToClipboard(getHtmlForCategory(category, days));
+      if (!days) return;
+      void copyHtmlToClipboard(getHtmlForCategory(category, days));
     },
     [days],
   );
@@ -69,15 +71,16 @@ export function Editor({ id: urlID }: Props) {
   );
 
   const onCopyAll = useCallback(() => {
-    days && copyHtmlToClipboard(sortedCategories.map((cat) => getHtmlForCategory(cat, days)).join(''));
+    if (!days) return;
+    void copyHtmlToClipboard(sortedCategories.map((cat) => getHtmlForCategory(cat, days)).join(''));
   }, [days, sortedCategories]);
 
   const onAutoColor = useCallback(
     (e: MouseEvent) => {
-      if (!days || !calendar) return;
+      if (!calendar || !days) return;
 
       const colors = autoColor(calendar, days, sortedCategories, e.shiftKey);
-      db.transact(sortedCategories.map(({ id }, i) => db.tx.categories[id].update({ color: colors[i] })));
+      void db.transact(sortedCategories.map(({ id }, i) => db.tx.categories[id].update({ color: colors[i] })));
     },
     [calendar, days, sortedCategories],
   );
@@ -95,10 +98,10 @@ export function Editor({ id: urlID }: Props) {
   }, {});
 
   return (
-    <div class="lg:flex">
-      <div class="mb-6 flex flex-grow flex-col gap-4">
-        <header class="relative">
-          <h2 class={clsx('text-lg', isEditingTitle && 'opacity-0')}>
+    <div className="lg:flex">
+      <div className="mb-6 flex flex-grow flex-col gap-4">
+        <header className="relative">
+          <h2 className={clsx('text-lg', isEditingTitle && 'opacity-0')}>
             {calendar.title}{' '}
             <IconButton
               onClick={() => {
@@ -111,7 +114,7 @@ export function Editor({ id: urlID }: Props) {
 
           {isEditingTitle && (
             <input
-              class="absolute top-1/2 -translate-y-1/2"
+              className="absolute top-1/2 -translate-y-1/2"
               defaultValue={calendar.title}
               onBlur={updateTitle}
               onKeyDown={(e) => e.key === 'Enter' && updateTitle(e)}
@@ -121,17 +124,17 @@ export function Editor({ id: urlID }: Props) {
           )}
         </header>
 
-        <div class="flex gap-2">
+        <div className="flex gap-2">
           <input
             onChange={(e) => {
-              db.transact(db.tx.calendars[id].update({ startDate: e.currentTarget.value }));
+              void db.transact(db.tx.calendars[id].update({ startDate: e.currentTarget.value }));
             }}
             type="date"
             value={calendar.startDate}
           />
           <input
             onChange={(e) => {
-              db.transact(db.tx.calendars[id].update({ endDate: e.currentTarget.value }));
+              void db.transact(db.tx.calendars[id].update({ endDate: e.currentTarget.value }));
             }}
             type="date"
             value={calendar.endDate}
@@ -164,6 +167,15 @@ export function Editor({ id: urlID }: Props) {
   );
 }
 
+function copyHtmlToClipboard(html: string) {
+  return navigator.clipboard.write([
+    new ClipboardItem({
+      'text/html': new Blob([html], { type: 'text/html' }),
+      'text/plain': new Blob([html], { type: 'text/plain' }),
+    }),
+  ]);
+}
+
 function getHtmlForCategory(category: Category, days: Day[]) {
   const matchingDays = days.filter(
     (day) => day.halfCategoryId === category.id || (day.halfCategoryId == null && day.categoryId === category.id),
@@ -186,13 +198,8 @@ function getHtmlForCategory(category: Category, days: Day[]) {
   `;
 }
 
-function copyHtmlToClipboard(html: string) {
-  navigator.clipboard.write([
-    new ClipboardItem({
-      'text/html': new Blob([html], { type: 'text/html' }),
-      'text/plain': new Blob([html], { type: 'text/plain' }),
-    }),
-  ]);
+function lastIfNotFound(index: number | undefined): number {
+  return index != null && index >= 0 ? index : Number.POSITIVE_INFINITY;
 }
 
 function sortBy<T>(array: T[], ...predicates: ((element: T) => number | string)[]): T[] {
@@ -213,15 +220,11 @@ function sortBy<T>(array: T[], ...predicates: ((element: T) => number | string)[
   });
 }
 
-function lastIfNotFound(index: number | undefined): number {
-  return index != null && index >= 0 ? index : Number.POSITIVE_INFINITY;
-}
-
 function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | undefined, isTopLeft: boolean) {
   const { selectedCategoryID } = useStore.getState();
   if (!day) {
     const dayId = id();
-    db.transact([
+    void db.transact([
       db.tx.days[dayId].update({
         categoryId: selectedCategoryID,
         date: toISODateString(date),

@@ -1,10 +1,8 @@
-module.exports = {
-  bracketSpacing: true,
+export default {
   plugins: ['prettier-plugin-tailwindcss'],
   printWidth: 120,
   semi: true,
   singleQuote: true,
   tabWidth: 2,
-  tailwindFunctions: ['clsx'],
   trailingComma: 'all',
 };

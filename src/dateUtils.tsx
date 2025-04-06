@@ -1,16 +1,3 @@
-export function dateRangeAlignWeek(start: Date, end: Date): (Date | null)[] {
-  const dates: (Date | null)[] = dateRange(start, end);
-
-  const firstDayOfWeek = dates[0]?.getUTCDay() ?? 0;
-
-  // Filler days
-  for (let i = 0; i < firstDayOfWeek; i++) {
-    dates.unshift(null);
-  }
-
-  return dates;
-}
-
 export function dateRange(tryStart: Date, tryEnd: Date): Date[] {
   const [start, end] = tryStart < tryEnd ? [tryStart, tryEnd] : [tryEnd, tryStart];
 
@@ -24,8 +11,17 @@ export function dateRange(tryStart: Date, tryEnd: Date): Date[] {
   return dates;
 }
 
-export function toISODateString(date: Date): string {
-  return date.toISOString().slice(0, 10);
+export function dateRangeAlignWeek(start: Date, end: Date): (Date | null)[] {
+  const dates: (Date | null)[] = dateRange(start, end);
+
+  const firstDayOfWeek = dates[0]?.getUTCDay() ?? 0;
+
+  // Filler days
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    dates.unshift(null);
+  }
+
+  return dates;
 }
 
 export function getDayOfWeek(date: Date): string {
@@ -34,4 +30,8 @@ export function getDayOfWeek(date: Date): string {
 
 export function getMonth(date: Date): string {
   return date.toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' });
+}
+
+export function toISODateString(date: Date): string {
+  return date.toISOString().slice(0, 10);
 }

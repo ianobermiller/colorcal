@@ -1,7 +1,7 @@
-import { Calendar, Category, Day } from './types';
 import { CalendarDay, DayOfWeek, FillerDay } from './CalendarDay';
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';
 import { indexArray } from './indexArray';
+import { Calendar, Category, Day } from './types';
 
 interface Props {
   calendar: Calendar;
@@ -19,13 +19,13 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
 
   return (
     <div
-      class="flex flex-wrap border-t border-l border-slate-400"
+      className="flex flex-wrap border-t border-l border-slate-400"
       style={{ '--day-size': 'calc((min(724px, 100vw) - 24px - 7px) / 7)', width: 'calc(var(--day-size) * 7 + 1px)' }}
     >
       {Array.from({ length: 7 }, (_, index) => {
         const { day } = range[index];
         const topCategory = categories.find((c) => c.id === day?.categoryId);
-        return <DayOfWeek color={topCategory?.color} index={index} />;
+        return <DayOfWeek color={topCategory?.color} index={index} key={index} />;
       })}
       {range.map(({ date, day }, i) => {
         const prevDay = range[i - 1]?.day;
