@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "upload": "yarn build --base cal && rsync -avz dist/* iano@obermillers.com:~/public_html/obermillers/cal",
+    "upload": "npm run build -- --base /cal && rsync -avz dist/* iano@obermillers.com:~/public_html/obermillers/cal",
     "lint": "eslint ."
   },
   "dependencies": {
