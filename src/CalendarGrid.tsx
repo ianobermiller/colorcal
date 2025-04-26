@@ -48,7 +48,6 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
         const nextDay = range[i + 1]?.day;
         const isLastDayOfWeek = i % 7 !== 6;
         const nextCategoryId = nextDay?.categoryId;
-        const prevCategoryId = prevDay?.categoryId;
         const thisCategoryId = day?.halfCategoryId ?? day?.categoryId;
         const noBorderRight = Boolean(isLastDayOfWeek && thisCategoryId && nextCategoryId === thisCategoryId);
 
@@ -58,7 +57,7 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
             date={date}
             day={day}
             hideHalfLabel={nextCategoryId === day?.halfCategoryId}
-            hideLabel={prevCategoryId === day?.categoryId}
+            hideLabel={prevDay?.categoryId === day?.categoryId}
             noBorderRight={noBorderRight}
             onDayClick={onDayClick}
             startDate={calendar.startDate}

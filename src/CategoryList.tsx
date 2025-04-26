@@ -99,7 +99,7 @@ function CategoryRow({
       <button
         className={clsx(
           'relative inline-flex size-8 items-center justify-center rounded-full border-2 border-solid font-bold text-white',
-          selectedCategoryID === category.id ? 'group border-slate-900' : 'border-transparent',
+          selectedCategoryID === category.id ? 'group border-slate-900 dark:border-white' : 'border-transparent',
         )}
         onClick={onColorClick}
         style={{ background: category.color }}
