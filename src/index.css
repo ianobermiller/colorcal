@@ -1,31 +1,5 @@
 @import 'tailwindcss';
 
-input[type='text'],
-input[type='date'],
-input[type='email'],
-textarea {
-  border: 2px solid black;
-  border-radius: 8px;
-  box-sizing: border-box;
-  font-size: 1em;
-}
-
-input[type='text'],
-input[type='date'],
-input[type='email'] {
-  display: inline-block;
-  height: 32px;
-  line-height: 32px;
-  padding: 0 12px;
-}
-
-textarea {
-  display: block;
-  padding: 12px;
-  resize: vertical;
-  width: 100%;
-}
-
 h1,
 h2,
 h3 {
