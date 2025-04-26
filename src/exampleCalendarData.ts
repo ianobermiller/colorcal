@@ -1,4 +1,4 @@
-import { Calendar, Category, Day } from './types';
+import type { Calendar, Category, Day } from './types';
 
 const commonFields = { createdAt: '', id: '', notes: '', ownerId: '' };
 const commonInnerFields = { ...commonFields, calendarId: '' };

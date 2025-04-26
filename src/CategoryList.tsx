@@ -2,11 +2,12 @@ import clsx from 'clsx';
 import { useCallback } from 'preact/hooks';
 import { FiMoreVertical, FiPlus, FiRefreshCw } from 'react-icons/fi';
 
+import type { Category } from './types';
+
 import { COLORS } from './autoColor';
 import { Button, IconButton } from './Button';
 import { db, id } from './db';
 import { useStore } from './Store';
-import { Category } from './types';
 import { wrap } from './wrap';
 
 interface Props {

@@ -1,11 +1,13 @@
-import { JSX } from 'preact';
+import type { JSX } from 'preact';
+
 import { route } from 'preact-router';
 import { useCallback } from 'preact/hooks';
 import { FiTrash2, FiX } from 'react-icons/fi';
 
+import type { Calendar } from './types';
+
 import { Button, IconButton } from './Button';
 import { db } from './db';
-import { Calendar } from './types';
 
 interface Props {
   calendar: Calendar;

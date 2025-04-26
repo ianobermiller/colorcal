@@ -1,6 +1,6 @@
-import { InstaQLEntity } from '@instantdb/react';
+import type { InstaQLEntity } from '@instantdb/react';
 
-import type { schema } from '../instant.schema';
+import type schema from '../instant.schema';
 
 export type { User } from '@instantdb/react';
 export type Calendar = InstaQLEntity<typeof schema, 'calendars'>;

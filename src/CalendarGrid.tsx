@@ -1,7 +1,8 @@
+import type { Calendar, Category, Day } from './types';
+
 import { CalendarDay, DayOfWeek, FillerDay } from './CalendarDay';
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';
 import { indexArray } from './indexArray';
-import { Calendar, Category, Day } from './types';
 
 interface Props {
   calendar: Calendar;

@@ -1,6 +1,7 @@
+import type { Calendar, Category, Day } from './types';
+
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';
 import { indexArray } from './indexArray';
-import { Calendar, Category, Day } from './types';
 import { wrap } from './wrap';
 
 // https://colorbrewer2.org/#type=qualitative&scheme=Set2&n=6

@@ -4,11 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "build": "npm run ts && vite build",
     "dev": "vite",
-    "build": "tsc && vite build",
+    "lint": "eslint .",
     "preview": "vite preview",
-    "upload": "npm run build -- --base /cal && rsync -avz dist/* iano@obermillers.com:~/public_html/obermillers/cal",
-    "lint": "eslint ."
+    "ts": "tsc",
+    "upload": "npm run build -- --base /cal && rsync -avz dist/* iano@obermillers.com:~/public_html/obermillers/cal"
   },
   "dependencies": {
     "@instantdb/core": "^0.18.3",

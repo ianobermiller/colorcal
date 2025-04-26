@@ -26,6 +26,7 @@ export default tseslint.config(
   perfectionist.configs['recommended-alphabetical'],
   {
     rules: {
+      '@typescript-eslint/consistent-type-imports': 'error',
       // Disallows one-line arrow functions that return void
       '@typescript-eslint/no-confusing-void-expression': 'off',
       // Disallows passing an async function to an event handler

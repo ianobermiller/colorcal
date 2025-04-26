@@ -1,5 +1,7 @@
+import type { CustomHistory} from 'preact-router';
+
 import { createHashHistory } from 'history';
-import { CustomHistory, Router } from 'preact-router';
+import { Router } from 'preact-router';
 import { IoColorPalette } from 'react-icons/io5';
 
 import { ButtonLink, LinkButton } from './Button';

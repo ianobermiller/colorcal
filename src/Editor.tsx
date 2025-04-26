@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { FiEdit, FiSettings } from 'react-icons/fi';
 import { urlToUuid } from 'uuid-url';
 
+import type { Category, Day } from './types';
+
 import { autoColor } from './autoColor';
 import { IconButton } from './Button';
 import { CalendarGrid } from './CalendarGrid';
@@ -12,7 +14,6 @@ import { db, id } from './db';
 import { Notes } from './Notes';
 import { Settings } from './Settings';
 import { useStore } from './Store';
-import { Category, Day } from './types';
 
 interface Props {
   id: string;

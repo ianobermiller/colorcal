@@ -1,5 +1,6 @@
+import type { ComponentChildren } from 'preact';
+
 import clsx from 'clsx';
-import { ComponentChildren } from 'preact';
 
 type Props = JSX.ButtonHTMLAttributes;
 

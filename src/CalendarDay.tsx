@@ -1,8 +1,9 @@
 import clsx from 'clsx';
 
+import type { Category, Day } from './types';
+
 import { getDayOfWeek, toISODateString } from './dateUtils';
 import { useStore } from './Store';
-import { Category, Day } from './types';
 
 interface Props {
   categories: Category[];
