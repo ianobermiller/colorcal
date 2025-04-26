@@ -51,19 +51,22 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
         const thisCategoryId = day?.halfCategoryId ?? day?.categoryId;
         const noBorderRight = Boolean(isLastDayOfWeek && thisCategoryId && nextCategoryId === thisCategoryId);
 
-        return date ? (
+        if (!date) {
+          return <FillerDay key={i} />;
+        }
+
+        return (
           <CalendarDay
             categories={categories}
             date={date}
             day={day}
             hideHalfLabel={nextCategoryId === day?.halfCategoryId}
             hideLabel={prevDay?.categoryId === day?.categoryId}
+            key={i}
             noBorderRight={noBorderRight}
             onDayClick={onDayClick}
             startDate={calendar.startDate}
           />
-        ) : (
-          <FillerDay />
         );
       })}
     </div>
