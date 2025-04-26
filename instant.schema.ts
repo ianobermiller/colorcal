@@ -2,7 +2,7 @@
 
 import { i } from '@instantdb/react';
 
-export const schema = i.schema({
+const schema = i.schema({
   entities: {
     $files: i.entity({ path: i.string().unique().indexed(), url: i.any() }),
     $users: i.entity({ email: i.string().unique().indexed() }),
@@ -34,6 +34,8 @@ export const schema = i.schema({
   },
   rooms: {},
 });
+
+export default schema;
 
 // This helps Typescript display nicer intellisense
 export type AppSchema = typeof schema;
