@@ -7,6 +7,7 @@ import type { Category } from './types';
 import { COLORS } from './autoColor';
 import { Button, IconButton } from './Button';
 import { db, id } from './db';
+import { Input } from './Input';
 import { useStore } from './Store';
 import { wrap } from './wrap';
 
@@ -108,7 +109,7 @@ function CategoryRow({
         <FiRefreshCw class="absolute opacity-0 drop-shadow-[0_1px_1px_black] group-hover:opacity-100" size={20} />
       </button>
 
-      <input
+      <Input
         onBlur={onNameChange}
         onKeyDown={(e) => e.key === 'Enter' && onNameChange(e)}
         type="text"

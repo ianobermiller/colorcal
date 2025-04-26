@@ -11,6 +11,7 @@ import { CalendarGrid } from './CalendarGrid';
 import { CategoryList } from './CategoryList';
 import { getDayOfWeek, getMonth, toISODateString } from './dateUtils';
 import { db, id } from './db';
+import { Input } from './Input';
 import { Notes } from './Notes';
 import { Settings } from './Settings';
 import { useStore } from './Store';
@@ -114,7 +115,7 @@ export function Editor({ id: urlID }: Props) {
           </h2>
 
           {isEditingTitle && (
-            <input
+            <Input
               className="absolute top-1/2 -translate-y-1/2"
               defaultValue={calendar.title}
               onBlur={updateTitle}
@@ -126,14 +127,14 @@ export function Editor({ id: urlID }: Props) {
         </header>
 
         <div className="flex gap-2">
-          <input
+          <Input
             onChange={(e) => {
               void db.transact(db.tx.calendars[id].update({ startDate: e.currentTarget.value }));
             }}
             type="date"
             value={calendar.startDate}
           />
-          <input
+          <Input
             onChange={(e) => {
               void db.transact(db.tx.calendars[id].update({ endDate: e.currentTarget.value }));
             }}

@@ -8,6 +8,7 @@ import type { Calendar } from './types';
 
 import { Button, IconButton } from './Button';
 import { db } from './db';
+import { Input } from './Input';
 
 interface Props {
   calendar: Calendar;
@@ -42,7 +43,7 @@ export function Settings({ calendar, onClose }: Props) {
         </IconButton>
 
         <label className="my-6 block">
-          <input checked={calendar.isPubliclyVisible} onChange={handleVisibilityChange} type="checkbox" /> Anyone with
+          <Input checked={calendar.isPubliclyVisible} onChange={handleVisibilityChange} type="checkbox" /> Anyone with
           the link can view
         </label>
 

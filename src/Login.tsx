@@ -3,6 +3,7 @@ import { useState } from 'preact/hooks';
 
 import { Button } from './Button';
 import { db } from './db';
+import { Input } from './Input';
 
 interface Props {
   /** for preact-router */
@@ -32,7 +33,7 @@ function Email({ setSentEmail }: { setSentEmail: (email: string) => void }) {
           });
         }}
       >
-        <input
+        <Input
           id="email"
           name="email"
           onChange={(e) => setEmail(e.currentTarget.value)}
@@ -67,7 +68,7 @@ function MagicCode({ sentEmail }: { sentEmail: string }) {
             });
         }}
       >
-        <input onChange={(e) => setCode(e.currentTarget.value)} size={6} type="text" value={code} />
+        <Input onChange={(e) => setCode(e.currentTarget.value)} size={6} type="text" value={code} />
 
         <Button type="submit">Verify</Button>
       </form>

@@ -5,6 +5,7 @@ import { uuidToUrl } from 'uuid-url';
 import { Button } from './Button';
 import { toISODateString } from './dateUtils';
 import { db, id } from './db';
+import { Input } from './Input';
 
 interface Props {
   /** for preact-router */
@@ -46,7 +47,7 @@ export function CalendarList(_: Props) {
           </ul>
 
           <div className="flex gap-2">
-            <input
+            <Input
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   onCreate();
