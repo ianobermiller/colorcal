@@ -91,7 +91,10 @@ export function BaseDay({ noBorderRight, ...props }: { noBorderRight?: boolean }
 
 export function DayOfWeek({ color, index }: { color: string | undefined; index: number }) {
   return (
-    <div className="w-[var(--day-size)] border-r border-slate-400 p-0.5 text-sm" style={{ backgroundColor: color }}>
+    <div
+      className="w-[var(--day-size)] border-t border-r border-slate-400 p-0.5 text-sm"
+      style={{ backgroundColor: color }}
+    >
       {getDayOfWeek(new Date(`2017-01-0${index + 1}T00:00:00+00:00`))}
     </div>
   );

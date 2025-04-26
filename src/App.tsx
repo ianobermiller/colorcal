@@ -1,4 +1,4 @@
-import type { CustomHistory} from 'preact-router';
+import type { CustomHistory } from 'preact-router';
 
 import { createHashHistory } from 'history';
 import { Router } from 'preact-router';
