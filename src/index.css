@@ -1,7 +1,5 @@
 @import 'tailwindcss';
 
-@custom-variant dark (&:is(.dark *));
-
 input[type='text'],
 input[type='date'],
 input[type='email'],

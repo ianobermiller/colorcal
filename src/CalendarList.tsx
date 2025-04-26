@@ -32,7 +32,7 @@ export function CalendarList(_: Props) {
           <ul className="mb-3 flex flex-col gap-3 lg:flex-row lg:flex-wrap">
             {calendars.map((cal) => (
               <li
-                className="flex flex-col gap-3 rounded border-2 border-solid border-slate-200 px-4 py-3 hover:bg-slate-100"
+                className="flex flex-col gap-3 rounded border-2 border-solid border-slate-200 px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800"
                 key={cal.id}
               >
                 <a href={`/${uuidToUrl(cal.id)}`}>

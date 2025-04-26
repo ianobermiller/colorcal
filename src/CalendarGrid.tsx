@@ -32,7 +32,11 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
   }, []);
 
   return (
-    <div className="flex flex-wrap border-l border-slate-400" ref={rootRef} style={{ '--day-size': `${daySize}px` }}>
+    <div
+      className="flex flex-wrap border-l border-slate-400 dark:text-slate-900"
+      ref={rootRef}
+      style={{ '--day-size': `${daySize}px` }}
+    >
       {Array.from({ length: 7 }, (_, index) => {
         const { day } = range[index];
         const topCategory = categories.find((c) => c.id === day?.categoryId);
