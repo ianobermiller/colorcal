@@ -2,6 +2,7 @@ import clsx from 'clsx';
 
 import type { Category, Day } from './types';
 
+import { getColorForMode } from './colors';
 import { getDayOfWeek, toISODateString } from './dateUtils';
 import { useStore } from './Store';
 
@@ -43,7 +44,7 @@ export function CalendarDay({
         const isTopLeft = cartesianY > cartesianX;
         return onDayClick?.(date, day, isTopLeft);
       }}
-      style={{ background: topCategory?.color }}
+      style={{ background: getColorForMode(topCategory?.color) }}
     >
       <span className={clsx((isTopSelected ?? isHalfSelected) && 'font-bold')}>
         {date.getUTCDate()}
@@ -59,7 +60,7 @@ export function CalendarDay({
           <div
             className="absolute right-0 bottom-0"
             style={{
-              '--color': halfCategory.color,
+              '--color': getColorForMode(halfCategory.color),
               borderBottom: 'solid var(--day-size) var(--color)',
               borderLeft: 'solid var(--day-size) transparent',
             }}
@@ -82,7 +83,7 @@ export function BaseDay({ noBorderRight, ...props }: { noBorderRight?: boolean }
     <div
       className={clsx(
         !noBorderRight && 'border-r',
-        'relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none',
+        'relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none dark:text-slate-100',
       )}
       {...props}
     />
@@ -92,8 +93,8 @@ export function BaseDay({ noBorderRight, ...props }: { noBorderRight?: boolean }
 export function DayOfWeek({ color, index }: { color: string | undefined; index: number }) {
   return (
     <div
-      className="w-[var(--day-size)] border-t border-r border-slate-400 p-0.5 text-sm"
-      style={{ backgroundColor: color }}
+      className="w-[var(--day-size)] border-t border-r border-slate-400 p-0.5 text-sm dark:text-slate-100"
+      style={{ backgroundColor: getColorForMode(color) }}
     >
       {getDayOfWeek(new Date(`2017-01-0${index + 1}T00:00:00+00:00`))}
     </div>

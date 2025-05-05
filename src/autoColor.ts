@@ -1,11 +1,9 @@
 import type { Calendar, Category, Day } from './types';
 
+import { COLORS } from './colors';
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';
 import { indexArray } from './indexArray';
 import { wrap } from './wrap';
-
-// https://colorbrewer2.org/#type=qualitative&scheme=Set2&n=6
-export const COLORS = ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f'];
 
 export function autoColor(calendar: Calendar, days: Day[], categories: Category[], shiftKey: boolean) {
   if (shiftKey) {

@@ -4,8 +4,8 @@ import { FiMoreVertical, FiPlus, FiRefreshCw } from 'react-icons/fi';
 
 import type { Category } from './types';
 
-import { COLORS } from './autoColor';
 import { Button, IconButton } from './Button';
+import { COLORS, getColorForMode } from './colors';
 import { db, id } from './db';
 import { Input } from './Input';
 import { useStore } from './Store';
@@ -102,7 +102,7 @@ function CategoryRow({
           selectedCategoryID === category.id ? 'group border-slate-900 dark:border-white' : 'border-transparent',
         )}
         onClick={onColorClick}
-        style={{ background: category.color }}
+        style={{ background: getColorForMode(category.color) }}
       >
         <div className="drop-shadow-[0_1px_1px_black] group-hover:opacity-0">{count}</div>
         {/* @ts-expect-error class isn't typed, but does work */}
