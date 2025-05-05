@@ -25,7 +25,8 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
     const node = rootRef.current;
     if (!node) return;
 
-    const listener = () => setDaySize(Math.floor(node.offsetWidth / 7) - 1);
+    // Subtract one to account for the border on the calendar itself
+    const listener = () => setDaySize(Math.floor((node.offsetWidth - 1) / 7));
     window.addEventListener('resize', listener);
     listener();
     return () => window.removeEventListener('resize', listener);

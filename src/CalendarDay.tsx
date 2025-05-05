@@ -83,7 +83,7 @@ export function BaseDay({ noBorderRight, ...props }: { noBorderRight?: boolean }
     <div
       className={clsx(
         !noBorderRight && 'border-r',
-        'relative h-[var(--day-size)] w-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none dark:text-slate-100',
+        'relative box-border size-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none dark:text-slate-100',
       )}
       {...props}
     />
@@ -93,7 +93,7 @@ export function BaseDay({ noBorderRight, ...props }: { noBorderRight?: boolean }
 export function DayOfWeek({ color, index }: { color: string | undefined; index: number }) {
   return (
     <div
-      className="w-[var(--day-size)] border-t border-r border-slate-400 p-0.5 text-sm dark:text-slate-100"
+      className="box-border w-[var(--day-size)] border-t border-r border-b border-slate-400 px-0.5 py-2 text-sm dark:text-slate-100"
       style={{ backgroundColor: getColorForMode(color) }}
     >
       {getDayOfWeek(new Date(`2017-01-0${index + 1}T00:00:00+00:00`))}

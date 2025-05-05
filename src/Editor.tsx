@@ -100,7 +100,7 @@ export function Editor({ id: urlID }: Props) {
   }, {});
 
   return (
-    <div className="lg:flex">
+    <div className="gap-4 lg:flex">
       <div className="mb-6 flex flex-grow flex-col gap-4">
         <header className="relative">
           <h2 className={clsx('text-lg', isEditingTitle && 'opacity-0')}>

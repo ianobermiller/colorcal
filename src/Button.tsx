@@ -5,10 +5,10 @@ import clsx from 'clsx';
 type Props = JSX.ButtonHTMLAttributes;
 
 const buttonClasses = clsx(
-  'inline-flex h-8 cursor-pointer items-center gap-2 rounded px-3 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600',
+  'inline-flex h-8 cursor-pointer items-center gap-2 rounded px-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600',
 );
 
-export function Button({ class: className, ...otherProps }: Props) {
+export function Button({ className, ...otherProps }: Props) {
   return <button {...otherProps} className={clsx(buttonClasses, className)} />;
 }
 
@@ -17,12 +17,12 @@ export function ButtonLink(props: { children: ComponentChildren; href: string })
   return <a {...props} className={buttonClasses} />;
 }
 
-export function IconButton({ class: className, ...otherProps }: Props) {
+export function IconButton({ className, ...otherProps }: Props) {
   return (
     <button
       {...otherProps}
       className={clsx(
-        'inline-flex size-8 cursor-pointer items-center justify-center rounded hover:bg-slate-100 dark:hover:bg-slate-700',
+        'inline-flex size-8 cursor-pointer items-center justify-center rounded bg-slate-200 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600',
         className,
       )}
     />

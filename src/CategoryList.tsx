@@ -43,7 +43,7 @@ export function CategoryList({ calendarId, categories, countByCategory, onAutoCo
     <div className="flex w-72 flex-col gap-3">
       <h3>Categories</h3>
 
-      <ul>
+      <ul className="flex flex-col gap-2">
         {categories.map((category) => (
           <CategoryRow
             category={category}
@@ -95,10 +95,10 @@ function CategoryRow({
   }, [category.color, category.id, selectCategory, selectedCategoryID]);
 
   return (
-    <div className="relative mb-2 flex items-center gap-2">
+    <div className="relative flex items-center gap-2">
       <button
         className={clsx(
-          'relative inline-flex size-8 items-center justify-center rounded-full border-2 border-solid font-bold text-white',
+          'inline-flex size-8 items-center justify-center rounded-full border-2 border-solid font-bold text-white',
           selectedCategoryID === category.id ? 'group border-slate-900 dark:border-white' : 'border-transparent',
         )}
         onClick={onColorClick}
@@ -117,7 +117,7 @@ function CategoryRow({
         value={category.name}
       />
 
-      <IconButton class="group relative -ml-2">
+      <IconButton class="group relative">
         <FiMoreVertical size={20} />
 
         <div className="group absolute right-0 z-10 hidden flex-col rounded bg-white whitespace-nowrap shadow-md group-focus-within:flex group-focus:flex dark:bg-slate-700 dark:text-slate-100">

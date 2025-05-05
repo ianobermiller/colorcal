@@ -35,29 +35,37 @@ export function Settings({ calendar, onClose }: Props) {
   );
 
   return (
-    <div className="fixed inset-0 flex items-start justify-center bg-black/50 pt-12" onClick={handleScrimClick}>
-      <div className="modal relative rounded border-slate-300 bg-white p-6">
-        <h2>Calendar Settings</h2>
-        <IconButton class="absolute top-5 right-3" onClick={onClose}>
-          <FiX />
-        </IconButton>
+    <div className="fixed inset-0 flex items-start justify-center bg-black/50 px-4 pt-12" onClick={handleScrimClick}>
+      <div className="flex w-full flex-col gap-4 rounded border-slate-300 bg-white px-6 py-2 shadow-lg md:max-w-lg dark:bg-slate-800">
+        <header className="flex items-center justify-between border-b border-slate-400 py-3">
+          <h2 className="text-lg font-bold">Calendar Settings</h2>
+          <IconButton onClick={onClose}>
+            <FiX />
+          </IconButton>
+        </header>
+        <div className="flex flex-col gap-3 pb-4">
+          <h3 className="font-bold">Visibility</h3>
 
-        <label className="my-6 block">
-          <Input checked={calendar.isPubliclyVisible} onChange={handleVisibilityChange} type="checkbox" /> Anyone with
-          the link can view
-        </label>
+          <label className="flex items-center gap-2">
+            <Input checked={calendar.isPubliclyVisible} onChange={handleVisibilityChange} type="checkbox" /> Anyone with
+            the link can view
+          </label>
 
-        <Button
-          onClick={async () => {
-            if (confirm(`Delete calendar "${calendar.title}"?`)) {
-              await db.transact(db.tx.calendars[calendar.id].delete());
-              route('/');
-            }
-          }}
-        >
-          <FiTrash2 />
-          Delete Calendar
-        </Button>
+          <h3 className="font-bold">Delete</h3>
+
+          <Button
+            className="self-start"
+            onClick={async () => {
+              if (confirm(`Delete calendar "${calendar.title}"?`)) {
+                await db.transact(db.tx.calendars[calendar.id].delete());
+                route('/');
+              }
+            }}
+          >
+            <FiTrash2 />
+            Delete Calendar
+          </Button>
+        </div>
       </div>
     </div>
   );
