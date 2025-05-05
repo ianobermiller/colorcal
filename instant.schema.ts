@@ -13,6 +13,7 @@ const schema = i.schema({
       ownerId: i.string(),
       startDate: i.string(),
       title: i.string(),
+      updatedAt: i.date(),
     }),
     categories: i.entity({ color: i.string(), name: i.string(), ownerId: i.string() }),
     days: i.entity({

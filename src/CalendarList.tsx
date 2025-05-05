@@ -17,7 +17,7 @@ export function CalendarList(_: Props) {
   const ownerId = user?.id ?? '';
 
   const { data } = db.useQuery({ calendars: { $: { where: { ownerId } } } });
-  const calendars = (data?.calendars ?? []).sort((a, b) => (a.startDate > b.startDate ? -1 : 1));
+  const calendars = (data?.calendars ?? []).sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
   const calendarName = useRef<HTMLInputElement>(null);
 
   const onCreate = useCallback(() => {
@@ -26,44 +26,65 @@ export function CalendarList(_: Props) {
   }, [ownerId]);
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <h2 className="mb-2 text-xl">Your Calendars</h2>
       {user && (
+        <div className="flex gap-2">
+          <Input
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                onCreate();
+                e.currentTarget.value = '';
+              }
+            }}
+            placeholder="Calendar Name"
+            ref={calendarName}
+            type="text"
+          />
+
+          <Button onClick={onCreate}>Create a Calendar</Button>
+        </div>
+      )}
+
+      {user && calendars.length && (
         <>
-          <ul className="mb-3 flex flex-col gap-3 lg:flex-row lg:flex-wrap">
+          <div className="">
+            <div className="hidden w-full border-b font-medium text-gray-400 lg:grid lg:grid-cols-[2fr_repeat(3,_1fr)] dark:border-gray-600 dark:text-gray-200">
+              <div className="p-4 pt-0 pb-3 pl-8 text-left">Name</div>
+              <div className="p-4 pt-0 pb-3 pl-8 text-right">Start Date</div>
+              <div className="p-4 pt-0 pb-3 pl-8 text-right">End Date</div>
+              <div className="p-4 pt-0 pb-3 pl-8 text-right">Last Modified</div>
+            </div>
+
             {calendars.map((cal) => (
-              <li
-                className="flex flex-col gap-3 rounded border-2 border-solid border-slate-200 px-4 py-3 hover:bg-slate-100 dark:hover:bg-slate-800"
+              <div
+                className="border-b border-gray-100 bg-white p-4 text-gray-500 lg:grid lg:grid-cols-[2fr_repeat(3,_1fr)] lg:p-0 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                 key={cal.id}
               >
-                <a href={`/${uuidToUrl(cal.id)}`}>
+                <a
+                  className="text-gray-400 lg:p-4 lg:pl-8 lg:text-left dark:text-gray-200"
+                  href={`/${uuidToUrl(cal.id)}`}
+                >
                   <h3>{cal.title}</h3>
-                  <p>
-                    {formatDate(cal.startDate)} to {formatDate(cal.endDate)}
-                  </p>
                 </a>
-              </li>
+
+                <div className="inline text-sm after:content-['_-_'] lg:block lg:p-4 lg:pl-8 lg:text-right lg:text-base lg:after:content-['']">
+                  {formatDate(cal.startDate)}
+                </div>
+
+                <div className="inline text-sm lg:block lg:p-4 lg:pl-8 lg:text-right lg:text-base">
+                  {formatDate(cal.endDate)}
+                </div>
+
+                <div className="hidden lg:block lg:p-4 lg:pl-8 lg:text-right">
+                  {formatDate(new Date(cal.updatedAt))}
+                </div>
+              </div>
             ))}
-          </ul>
-
-          <div className="flex gap-2">
-            <Input
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  onCreate();
-                  e.currentTarget.value = '';
-                }
-              }}
-              placeholder="Calendar Name"
-              ref={calendarName}
-              type="text"
-            />
-
-            <Button onClick={onCreate}>Create a Calendar</Button>
           </div>
         </>
       )}
-    </>
+    </div>
   );
 }
 
@@ -86,6 +107,9 @@ async function createCalendar(ownerId: string, title: string) {
   route(`/${uuidToUrl(calendarId)}`);
 }
 
-function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString(undefined, { dateStyle: 'medium', timeZone: 'UTC' });
+function formatDate(date: Date | string): string {
+  return (typeof date === 'string' ? new Date(date) : date).toLocaleDateString(undefined, {
+    dateStyle: 'medium',
+    timeZone: 'UTC',
+  });
 }

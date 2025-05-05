@@ -14,6 +14,7 @@ export const exampleData: {
     isPubliclyVisible: false,
     startDate: '2023-05-01',
     title: 'Fake UK Travels',
+    updatedAt: '2023-05-01',
   },
   categories: [
     { ...commonInnerFields, color: '#8da0cb', id: 'travel', name: 'Travel' },
