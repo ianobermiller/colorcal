@@ -9,7 +9,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({ classN
   return (
     <textarea
       className={clsx(
-        'box-border block w-full resize-y rounded-lg border-2 border-black p-3 text-base dark:border-white',
+        'box-border block w-full resize-y rounded border border-slate-400 text-base dark:text-slate-400 dark:focus:text-slate-100',
         className,
       )}
       ref={ref}

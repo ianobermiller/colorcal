@@ -111,6 +111,7 @@ function CategoryRow({
 
       <Input
         onBlur={onNameChange}
+        onFocus={onColorClick}
         onKeyDown={(e) => e.key === 'Enter' && onNameChange(e)}
         type="text"
         value={category.name}
@@ -119,9 +120,9 @@ function CategoryRow({
       <IconButton class="group relative -ml-2">
         <FiMoreVertical size={20} />
 
-        <div className="group absolute right-0 z-10 hidden flex-col rounded bg-white whitespace-nowrap shadow-md group-focus-within:flex group-focus:flex">
+        <div className="group absolute right-0 z-10 hidden flex-col rounded bg-white whitespace-nowrap shadow-md group-focus-within:flex group-focus:flex dark:bg-slate-700 dark:text-slate-100">
           <button
-            className="rounded px-4 py-2 text-left hover:bg-slate-100"
+            className="rounded px-4 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-600"
             onClick={(e) => {
               e.currentTarget.blur();
               onCopy(category);
@@ -130,7 +131,7 @@ function CategoryRow({
             Copy HTML
           </button>
           <button
-            className="rounded px-4 py-2 text-left hover:bg-slate-100"
+            className="rounded px-4 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-600"
             onClick={() => {
               void db.transact(db.tx.categories[category.id].delete());
             }}

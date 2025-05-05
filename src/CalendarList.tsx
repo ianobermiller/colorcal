@@ -49,7 +49,7 @@ export function CalendarList(_: Props) {
       {user && calendars.length && (
         <>
           <div className="">
-            <div className="hidden w-full border-b font-medium text-gray-400 lg:grid lg:grid-cols-[2fr_repeat(3,_1fr)] dark:border-gray-600 dark:text-gray-200">
+            <div className="hidden w-full border-b font-medium text-gray-500 lg:grid lg:grid-cols-[2fr_repeat(3,_1fr)] dark:border-gray-600 dark:text-gray-200">
               <div className="p-4 pt-0 pb-3 pl-8 text-left">Name</div>
               <div className="p-4 pt-0 pb-3 pl-8 text-right">Start Date</div>
               <div className="p-4 pt-0 pb-3 pl-8 text-right">End Date</div>
@@ -57,16 +57,12 @@ export function CalendarList(_: Props) {
             </div>
 
             {calendars.map((cal) => (
-              <div
-                className="border-b border-gray-100 bg-white p-4 text-gray-500 lg:grid lg:grid-cols-[2fr_repeat(3,_1fr)] lg:p-0 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+              <a
+                className="block border-b border-gray-100 bg-white p-4 text-gray-600 lg:grid lg:grid-cols-[2fr_repeat(3,_1fr)] lg:p-0 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                href={`/${uuidToUrl(cal.id)}`}
                 key={cal.id}
               >
-                <a
-                  className="text-gray-400 lg:p-4 lg:pl-8 lg:text-left dark:text-gray-200"
-                  href={`/${uuidToUrl(cal.id)}`}
-                >
-                  <h3>{cal.title}</h3>
-                </a>
+                <h3 className="text-gray-900 lg:p-4 lg:pl-8 lg:text-left dark:text-gray-200">{cal.title}</h3>
 
                 <div className="inline text-sm after:content-['_-_'] lg:block lg:p-4 lg:pl-8 lg:text-right lg:text-base lg:after:content-['']">
                   {formatDate(cal.startDate)}
@@ -79,7 +75,7 @@ export function CalendarList(_: Props) {
                 <div className="hidden lg:block lg:p-4 lg:pl-8 lg:text-right">
                   {formatDate(new Date(cal.updatedAt))}
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </>
