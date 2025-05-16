@@ -26,11 +26,11 @@ const schema = i.schema({
   links: {
     calendarCategories: {
       forward: { has: 'many', label: 'categories', on: 'calendars' },
-      reverse: { has: 'one', label: 'calendars', on: 'categories', onDelete: 'cascade' },
+      reverse: { has: 'one', label: 'calendar', on: 'categories', onDelete: 'cascade' },
     },
     calendarDays: {
       forward: { has: 'many', label: 'days', on: 'calendars' },
-      reverse: { has: 'one', label: 'calendars', on: 'days', onDelete: 'cascade' },
+      reverse: { has: 'one', label: 'calendar', on: 'days', onDelete: 'cascade' },
     },
   },
   rooms: {},

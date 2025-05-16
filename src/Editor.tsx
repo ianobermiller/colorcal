@@ -28,7 +28,10 @@ export function Editor({ id: urlID }: Props) {
   const id = urlToUuid(urlID);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isShowingSettings, setIsShowingSettings] = useState(false);
-  const { data } = db.useQuery({ calendars: { $: { where: { id } }, categories: {}, days: {} } });
+  const { data } = db.useQuery(
+    { calendars: { $: { where: { id } }, categories: {}, days: {} } },
+    { ruleParams: { knownCalendarId: id } },
+  );
   const calendar = data?.calendars[0];
   const categories = calendar?.categories;
   const days = calendar?.days.sort((a, b) => a.date.localeCompare(b.date));

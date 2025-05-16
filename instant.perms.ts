@@ -12,15 +12,23 @@ const rules = {
   attrs: { allow: { $default: 'false' } },
   calendars: {
     allow: { create: 'isOwnerCreate', delete: 'isOwner', update: 'isOwner', view: 'isOwner || isPubliclyVisible' },
-    bind: [...ownerRules, 'isPubliclyVisible', 'data.isPubliclyVisible'],
+    bind: [...ownerRules, 'isPubliclyVisible', 'data.isPubliclyVisible && data.id == ruleParams.knownCalendarId'],
   },
   categories: {
     allow: { create: 'isOwnerCreate', delete: 'isOwner', update: 'isOwner', view: 'isOwner || isPubliclyVisible' },
-    bind: [...ownerRules, 'isPubliclyVisible', "true in data.ref('calendars.isPubliclyVisible')"],
+    bind: [
+      ...ownerRules,
+      'isPubliclyVisible',
+      'true in data.ref("calendar.isPubliclyVisible") && ruleParams.knownCalendarId in data.ref("calendar.id")',
+    ],
   },
   days: {
     allow: { create: 'isOwnerCreate', delete: 'isOwner', update: 'isOwner', view: 'isOwner || isPubliclyVisible' },
-    bind: [...ownerRules, 'isPubliclyVisible', "true in data.ref('calendars.isPubliclyVisible')"],
+    bind: [
+      ...ownerRules,
+      'isPubliclyVisible',
+      'true in data.ref("calendar.isPubliclyVisible") && ruleParams.knownCalendarId in data.ref("calendar.id")',
+    ],
   },
 } satisfies InstantRules;
 
