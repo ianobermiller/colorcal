@@ -117,10 +117,10 @@ function CategoryRow({
         value={category.name}
       />
 
-      <IconButton class="group relative">
+      <IconButton className="group relative">
         <FiMoreVertical size={20} />
 
-        <div className="group absolute right-0 z-10 hidden flex-col rounded bg-white whitespace-nowrap shadow-md group-focus-within:flex group-focus:flex dark:bg-slate-700 dark:text-slate-100">
+        <div className="absolute right-0 z-10 hidden flex-col rounded bg-white whitespace-nowrap shadow-md group-focus-within:flex group-focus:flex dark:bg-slate-700 dark:text-slate-100">
           <button
             className="rounded px-4 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-600"
             onClick={(e) => {

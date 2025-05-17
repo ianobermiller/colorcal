@@ -18,3 +18,4 @@ A travel planning tool that lets you color code and label the days of your trip.
 ## TODO
 
 - Allow locking locations that are already booked
+- Auto-coloring is the only way
