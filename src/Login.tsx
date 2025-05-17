@@ -17,19 +17,23 @@ export function Login(_: Props) {
 
 function Email({ setSentEmail }: { setSentEmail: (email: string) => void }) {
   const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
   return (
     <div className="flex flex-col gap-4">
       <h2>Let&apos;s log you in!</h2>
 
       <form
         className="flex gap-2"
-        onSubmit={() => {
+        onSubmit={(e) => {
+          e.preventDefault();
+
           if (!email) return;
           setSentEmail(email);
 
           db.auth.sendMagicCode({ email }).catch((err: unknown) => {
             console.error(err);
             setSentEmail('');
+            setError('Unable to send code' + (err instanceof Error ? `: ${err.message}` : ''));
           });
         }}
       >
@@ -44,27 +48,32 @@ function Email({ setSentEmail }: { setSentEmail: (email: string) => void }) {
 
         <Button type="submit">Send Code</Button>
       </form>
+
+      {error && <p className="text-red-500">{error}</p>}
     </div>
   );
 }
 
 function MagicCode({ sentEmail }: { sentEmail: string }) {
   const [code, setCode] = useState('');
+  const [error, setError] = useState('');
   return (
     <div className="flex flex-col gap-4">
       <h2>Okay we sent an email to {sentEmail}! What was the code?</h2>
-
       <form
         className="flex gap-2"
-        onSubmit={() => {
+        onSubmit={(e) => {
+          e.preventDefault();
+
+          if (!code) return;
+
           db.auth
             .signInWithMagicCode({ code, email: sentEmail })
-            .then(() => {
-              route('/');
-            })
+            .then(() => route('/'))
             .catch((err: unknown) => {
               console.error(err);
               setCode('');
+              setError('Unable to verify code' + (err instanceof Error ? `: ${err.message}` : ''));
             });
         }}
       >
@@ -72,6 +81,8 @@ function MagicCode({ sentEmail }: { sentEmail: string }) {
 
         <Button type="submit">Verify</Button>
       </form>
+
+      {error && <p className="text-red-500">{error}</p>}
     </div>
   );
 }
