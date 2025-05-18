@@ -1,13 +1,13 @@
 import clsx from 'clsx';
 
-import type { Category, Day } from './types';
+import type { CategoryWithColor, Day } from './types';
 
 import { getColorForMode } from './colors';
 import { getDayOfWeek, toISODateString } from './dateUtils';
 import { useStore } from './Store';
 
 interface Props {
-  categories: Category[];
+  categories: CategoryWithColor[];
   date: Date;
   day: Day | null | undefined;
   hideHalfLabel: boolean;

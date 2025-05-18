@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'preact/hooks';
 
-import type { Calendar, Category, Day } from './types';
+import type { Calendar, CategoryWithColor, Day } from './types';
 
 import { CalendarDay, DayOfWeek, FillerDay } from './CalendarDay';
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';
@@ -8,7 +8,7 @@ import { indexArray } from './indexArray';
 
 interface Props {
   calendar: Calendar;
-  categories: Category[];
+  categories: CategoryWithColor[];
   days: Day[];
   onDayClick?(date: Date, day: Day | undefined, isTopLeft: boolean): void;
 }

@@ -98,6 +98,7 @@ async function createCalendar(ownerId: string, title: string) {
       ownerId,
       startDate: toISODateString(startDate),
       title,
+      updatedAt: Date.now(),
     }),
   );
   route(`/${uuidToUrl(calendarId)}`);

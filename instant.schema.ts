@@ -15,7 +15,7 @@ const schema = i.schema({
       title: i.string(),
       updatedAt: i.date(),
     }),
-    categories: i.entity({ color: i.string(), name: i.string(), ownerId: i.string() }),
+    categories: i.entity({ name: i.string(), ownerId: i.string() }),
     days: i.entity({
       categoryId: i.string().optional(),
       date: i.string(),

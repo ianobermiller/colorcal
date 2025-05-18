@@ -1,21 +1,14 @@
-import type { Calendar, Category, Day } from './types';
+import type { Calendar, Category, CategoryWithColor, Day } from './types';
 
 import { COLORS } from './colors';
 import { dateRangeAlignWeek, toISODateString } from './dateUtils';
 import { indexArray } from './indexArray';
 import { wrap } from './wrap';
 
-export function autoColor(calendar: Calendar, days: Day[], categories: Category[], shiftKey: boolean) {
-  if (shiftKey) {
-    return greedy(calendar, days, categories);
-  }
-  return simple(categories);
-}
-
 /**
  * Automatically color edges using a greedy algorithm, falling back to index-based so it never fails.
  */
-function greedy(calendar: Calendar, days: Day[], categories: Category[]) {
+export function autoColor(calendar: Calendar, days: Day[], categories: Category[]): CategoryWithColor[] {
   const dayByDate = indexArray(days, (day) => day.date);
   const range = dateRangeAlignWeek(new Date(calendar.startDate), new Date(calendar.endDate)).map((date) => ({
     date,
@@ -71,17 +64,12 @@ function greedy(calendar: Calendar, days: Day[], categories: Category[]) {
   // greedy coloring algo
   const colorByCategoryId = new Map<string, string>();
   let j = 0;
-  return categories.map(({ id }) => {
-    const adjacentColors = Array.from(adjacentCategoriesById.get(id) ?? [], (id) => colorByCategoryId.get(id));
+  return categories.map((category) => {
+    const adjacentColors = Array.from(adjacentCategoriesById.get(category.id) ?? [], (id) => colorByCategoryId.get(id));
     const availableColors = COLORS.filter((color) => !adjacentColors.includes(color));
     const color = availableColors.length ? wrapAt(availableColors, ++j) : wrapAt(COLORS, ++j);
-    colorByCategoryId.set(id, color);
-    return color;
+    return { ...category, color };
   });
-}
-
-function simple(categories: Category[]) {
-  return categories.map((_cat, i) => wrapAt(COLORS, i));
 }
 
 function wrapAt<T>(arr: T[], index: number): T {

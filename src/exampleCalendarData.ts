@@ -1,11 +1,11 @@
-import type { Calendar, Category, Day } from './types';
+import type { Calendar, CategoryWithColor, Day } from './types';
 
 const commonFields = { createdAt: '', id: '', notes: '', ownerId: '' };
 const commonInnerFields = { ...commonFields, calendarId: '' };
 
 export const exampleData: {
   calendar: Calendar;
-  categories: Category[];
+  categories: CategoryWithColor[];
   days: Day[];
 } = {
   calendar: {

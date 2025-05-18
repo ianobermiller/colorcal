@@ -33,7 +33,7 @@ export function Editor({ id: urlID }: Props) {
     { ruleParams: { knownCalendarId: id } },
   );
   const calendar = data?.calendars[0];
-  const categories = calendar?.categories;
+  const categoriesRaw = calendar?.categories;
   const days = calendar?.days.sort((a, b) => a.date.localeCompare(b.date));
 
   const updateTitle = useCallback(
@@ -65,30 +65,20 @@ export function Editor({ id: urlID }: Props) {
     [days],
   );
 
-  const sortedCategories = useMemo(
-    () =>
-      sortBy(
-        categories ?? [],
-        (cat) => lastIfNotFound(days?.findIndex((d) => d.categoryId === cat.id)),
-        (cat) => lastIfNotFound(days?.findIndex((d) => d.halfCategoryId === cat.id)),
-      ),
-    [categories, days],
-  );
+  const categories = useMemo(() => {
+    if (!calendar || !days || !categoriesRaw) return;
+    const sorted = sortBy(
+      categoriesRaw,
+      (cat) => lastIfNotFound(days.findIndex((d) => d.categoryId === cat.id)),
+      (cat) => lastIfNotFound(days.findIndex((d) => d.halfCategoryId === cat.id)),
+    );
+    return autoColor(calendar, days, sorted);
+  }, [calendar, categoriesRaw, days]);
 
   const onCopyAll = useCallback(() => {
-    if (!days) return;
-    void copyHtmlToClipboard(sortedCategories.map((cat) => getHtmlForCategory(cat, days)).join(''));
-  }, [days, sortedCategories]);
-
-  const onAutoColor = useCallback(
-    (e: MouseEvent) => {
-      if (!calendar || !days) return;
-
-      const colors = autoColor(calendar, days, sortedCategories, e.shiftKey);
-      void db.transact(sortedCategories.map(({ id }, i) => db.tx.categories[id].update({ color: colors[i] })));
-    },
-    [calendar, days, sortedCategories],
-  );
+    if (!days || !categories) return;
+    void copyHtmlToClipboard(categories.map((cat) => getHtmlForCategory(cat, days)).join(''));
+  }, [days, categories]);
 
   if (!id || !calendar || !categories || !days) {
     return <h1>Loading...</h1>;
@@ -160,9 +150,8 @@ export function Editor({ id: urlID }: Props) {
       <div>
         <CategoryList
           calendarId={calendar.id}
-          categories={sortedCategories}
+          categories={categories}
           countByCategory={countByCategory}
-          onAutoColor={onAutoColor}
           onCopy={onCopy}
           onCopyAll={onCopyAll}
         />
