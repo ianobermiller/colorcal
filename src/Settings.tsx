@@ -19,7 +19,7 @@ export function Settings(props: Props) {
   const navigate = useNavigate();
 
   const handleScrimClick = (e: MouseEvent) => {
-    if (e.target instanceof HTMLElement && e.target.closest('.modal')) {
+    if (e.target !== e.currentTarget) {
       return;
     }
 
