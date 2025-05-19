@@ -1,8 +1,6 @@
 import { CalendarGrid } from './CalendarGrid';
 import { exampleData } from './exampleCalendarData';
 
-// No props needed for SolidJS router
-
 export function Landing() {
   return (
     <div class="max-w-2xl">
@@ -13,7 +11,11 @@ export function Landing() {
       </p>
       <div class="mt-4 rounded bg-slate-100 p-6 dark:bg-slate-800">
         <h2>Example Trip to the UK</h2>
-        <CalendarGrid {...exampleData} />
+        <CalendarGrid
+          calendar={() => exampleData.calendar}
+          categories={() => exampleData.categories}
+          days={() => exampleData.days}
+        />
       </div>
     </div>
   );

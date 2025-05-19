@@ -8,8 +8,6 @@ import { db, id } from './db';
 import { Input } from './Input';
 import { useAuth, useQuery } from './instantdb-solid';
 
-// No props needed for SolidJS router
-
 export function CalendarList() {
   const { user } = useAuth();
   const ownerId = () => user()?.id ?? '';
