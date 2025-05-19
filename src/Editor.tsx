@@ -1,6 +1,7 @@
+import EditIcon from '~icons/feather/edit';
+import SettingsIcon from '~icons/feather/settings';
 import clsx from 'clsx';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { FiEdit, FiSettings } from 'react-icons/fi';
+import { createEffect, createMemo, createSignal, Show } from 'solid-js';
 import { urlToUuid } from 'uuid-url';
 
 import type { Category, Day } from './types';
@@ -12,152 +13,164 @@ import { CategoryList } from './CategoryList';
 import { getDayOfWeek, getMonth, toISODateString } from './dateUtils';
 import { db, id } from './db';
 import { Input } from './Input';
+import { useAuth, useQuery } from './instantdb-solid';
 import { Notes } from './Notes';
 import { Settings } from './Settings';
-import { useStore } from './Store';
+import { selectedCategoryID } from './Store';
 
 interface Props {
   id: string;
-  path: string;
 }
 
 export function Editor({ id: urlID }: Props) {
-  const { user } = db.useAuth();
-  const ownerId = user?.id ?? '';
+  const { user } = useAuth();
+  const ownerId = () => user()?.id ?? '';
 
   const id = urlToUuid(urlID);
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [isShowingSettings, setIsShowingSettings] = useState(false);
-  const { data } = db.useQuery(
-    { calendars: { $: { where: { id } }, categories: {}, days: {} } },
-    { ruleParams: { knownCalendarId: id } },
-  );
-  const calendar = data?.calendars[0];
-  const categoriesRaw = calendar?.categories;
-  const days = calendar?.days.sort((a, b) => a.date.localeCompare(b.date));
-
-  const updateTitle = useCallback(
-    (e: JSX.TargetedEvent<HTMLInputElement>) => {
-      setIsEditingTitle(false);
-      void db.transact(db.tx.calendars[id].update({ title: e.currentTarget.value }));
-    },
-    [id],
-  );
-
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    titleInputRef.current?.focus();
-    titleInputRef.current?.select();
+  const [isEditingTitle, setIsEditingTitle] = createSignal(false);
+  const [isShowingSettings, setIsShowingSettings] = createSignal(false);
+  const { data } = useQuery(() => ({ calendars: { $: { where: { id } }, categories: {}, days: {} } }), {
+    ruleParams: { knownCalendarId: id },
+  });
+  const calendar = () => data()?.calendars[0];
+  const days = createMemo(() => {
+    const calendarDays = calendar()?.days;
+    return calendarDays ? [...calendarDays].sort((a, b) => a.date.localeCompare(b.date)) : [];
+  });
+  const categories = createMemo(() => {
+    const cal = calendar();
+    if (!cal?.categories) return [];
+    const currentDays = days();
+    const sorted = sortBy(
+      cal.categories,
+      (cat) => lastIfNotFound(currentDays.findIndex((d) => d.categoryId === cat.id)),
+      (cat) => lastIfNotFound(currentDays.findIndex((d) => d.halfCategoryId === cat.id)),
+    );
+    return autoColor(cal, currentDays, sorted);
+  });
+  const countByCategory = createMemo(() => {
+    return days().reduce<Record<string, number>>((acc, day) => {
+      if (day.categoryId) {
+        const existing = acc[day.categoryId] ?? 0;
+        acc[day.categoryId] = existing + 1;
+      }
+      return acc;
+    }, {});
   });
 
-  const onDayClick = useCallback(
-    (date: Date, day: Day | undefined, isTopLeft: boolean) => {
-      void toggleDay(ownerId, id, date, day, isTopLeft);
-    },
-    [id, ownerId],
-  );
+  const updateTitle = (e: { currentTarget: { value: string } }) => {
+    setIsEditingTitle(false);
+    void db.transact(db.tx.calendars[id].update({ title: e.currentTarget.value }));
+  };
 
-  const onCopy = useCallback(
-    (category: Category) => {
-      if (!days) return;
-      void copyHtmlToClipboard(getHtmlForCategory(category, days));
-    },
-    [days],
-  );
+  let titleInputRef: HTMLInputElement | undefined;
 
-  const categories = useMemo(() => {
-    if (!calendar || !days || !categoriesRaw) return;
-    const sorted = sortBy(
-      categoriesRaw,
-      (cat) => lastIfNotFound(days.findIndex((d) => d.categoryId === cat.id)),
-      (cat) => lastIfNotFound(days.findIndex((d) => d.halfCategoryId === cat.id)),
-    );
-    return autoColor(calendar, days, sorted);
-  }, [calendar, categoriesRaw, days]);
-
-  const onCopyAll = useCallback(() => {
-    if (!days || !categories) return;
-    void copyHtmlToClipboard(categories.map((cat) => getHtmlForCategory(cat, days)).join(''));
-  }, [days, categories]);
-
-  if (!id || !calendar || !categories || !days) {
-    return <h1>Loading...</h1>;
-  }
-
-  const countByCategory = days.reduce<Record<string, number | undefined>>((acc, day) => {
-    if (day.categoryId) {
-      const existing = acc[day.categoryId] ?? 0;
-      acc[day.categoryId] = existing + 1;
+  createEffect(() => {
+    if (isEditingTitle()) {
+      titleInputRef?.focus();
+      titleInputRef?.select();
     }
-    return acc;
-  }, {});
+  });
+
+  const onDayClick = (date: Date, day: Day | undefined, isTopLeft: boolean) => {
+    void toggleDay(ownerId(), id, date, day, isTopLeft);
+  };
+
+  const onCopy = (category: Category) => {
+    const currentDays = days();
+    if (!currentDays.length) return;
+    void copyHtmlToClipboard(getHtmlForCategory(category, currentDays));
+  };
+
+  const onCopyAll = () => {
+    const currentDays = days();
+    const currentCategories = categories();
+    if (currentDays.length === 0 || currentCategories.length === 0) return;
+    void copyHtmlToClipboard(currentCategories.map((cat) => getHtmlForCategory(cat, currentDays)).join(''));
+  };
 
   return (
-    <div className="gap-4 lg:flex">
-      <div className="mb-6 flex flex-grow flex-col gap-4">
-        <header className="relative">
-          <h2 className={clsx('text-lg', isEditingTitle && 'opacity-0')}>
-            {calendar.title}{' '}
-            <IconButton
-              onClick={() => {
-                setIsEditingTitle(true);
-              }}
-            >
-              <FiEdit />
-            </IconButton>
-          </h2>
+    <Show fallback={<h1>Loading...</h1>} when={calendar()}>
+      {(cal) => (
+        <div class="gap-4 lg:flex">
+          <div class="mb-6 flex flex-grow flex-col gap-4">
+            <header class="relative">
+              <h2 class={clsx('text-lg', isEditingTitle() && 'opacity-0')}>
+                {cal().title}{' '}
+                <IconButton
+                  onClick={() => {
+                    setIsEditingTitle(true);
+                  }}
+                >
+                  <EditIcon height="16" width="16" />
+                </IconButton>
+              </h2>
 
-          {isEditingTitle && (
-            <Input
-              className="absolute top-1/2 -translate-y-1/2"
-              defaultValue={calendar.title}
-              onBlur={updateTitle}
-              onKeyDown={(e) => e.key === 'Enter' && updateTitle(e)}
-              ref={titleInputRef}
-              type="text"
+              {isEditingTitle() && (
+                <Input
+                  class="inline w-auto"
+                  onBlur={updateTitle}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      updateTitle(e);
+                    }
+                  }}
+                  ref={titleInputRef}
+                  type="text"
+                  value={cal().title}
+                />
+              )}
+            </header>
+
+            <div class="flex gap-2">
+              <Input
+                onChange={(e) => {
+                  void db.transact(db.tx.calendars[id].update({ startDate: e.currentTarget.value }));
+                }}
+                type="date"
+                value={cal().startDate}
+              />
+              <Input
+                onChange={(e) => {
+                  void db.transact(db.tx.calendars[id].update({ endDate: e.currentTarget.value }));
+                }}
+                type="date"
+                value={cal().endDate}
+              />
+              <IconButton
+                onClick={() => {
+                  setIsShowingSettings(true);
+                }}
+              >
+                <SettingsIcon height="16" width="16" />
+              </IconButton>
+            </div>
+
+            <CalendarGrid calendar={cal} categories={categories} days={days} onDayClick={onDayClick} />
+
+            <Notes calendarId={id} notes={cal().notes} />
+          </div>
+          <div>
+            <CategoryList
+              calendarId={id}
+              categories={categories()}
+              countByCategory={countByCategory()}
+              onCopy={onCopy}
+              onCopyAll={onCopyAll}
+            />
+          </div>
+
+          {isShowingSettings() && (
+            <Settings
+              calendar={cal}
+              onClose={() => {
+                setIsShowingSettings(false);
+              }}
             />
           )}
-        </header>
-
-        <div className="flex gap-2">
-          <Input
-            onChange={(e) => {
-              void db.transact(db.tx.calendars[id].update({ startDate: e.currentTarget.value }));
-            }}
-            type="date"
-            value={calendar.startDate}
-          />
-          <Input
-            onChange={(e) => {
-              void db.transact(db.tx.calendars[id].update({ endDate: e.currentTarget.value }));
-            }}
-            type="date"
-            value={calendar.endDate}
-          />
-          <IconButton
-            onClick={() => {
-              setIsShowingSettings(true);
-            }}
-          >
-            <FiSettings />
-          </IconButton>
         </div>
-
-        <CalendarGrid calendar={calendar} categories={categories} days={days} onDayClick={onDayClick} />
-
-        <Notes calendarId={calendar.id} notes={calendar.notes} />
-      </div>
-      <div>
-        <CategoryList
-          calendarId={calendar.id}
-          categories={categories}
-          countByCategory={countByCategory}
-          onCopy={onCopy}
-          onCopyAll={onCopyAll}
-        />
-      </div>
-      {isShowingSettings && <Settings calendar={calendar} onClose={() => setIsShowingSettings(false)} />}
-    </div>
+      )}
+    </Show>
   );
 }
 
@@ -215,12 +228,13 @@ function sortBy<T>(array: T[], ...predicates: ((element: T) => number | string)[
 }
 
 function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | undefined, isTopLeft: boolean) {
-  const { selectedCategoryID } = useStore.getState();
+  const categoryId = selectedCategoryID();
+
   if (!day) {
     const dayId = id();
     void db.transact([
       db.tx.days[dayId].update({
-        categoryId: selectedCategoryID,
+        categoryId,
         date: toISODateString(date),
         halfCategoryId: null,
         ownerId,
@@ -230,8 +244,8 @@ function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | u
     return;
   }
 
-  const top = !day.categoryId ? 'empty' : day.categoryId === selectedCategoryID ? 'same' : 'different';
-  const half = !day.halfCategoryId ? 'empty' : day.halfCategoryId === selectedCategoryID ? 'same' : 'different';
+  const top = !day.categoryId ? 'empty' : day.categoryId === categoryId ? 'same' : 'different';
+  const half = !day.halfCategoryId ? 'empty' : day.halfCategoryId === categoryId ? 'same' : 'different';
 
   if (
     (top === 'same' && half === 'same') ||
@@ -242,27 +256,27 @@ function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | u
   }
 
   if ((top === 'empty' && half === 'empty') || (top === 'empty' && half === 'different')) {
-    return db.transact(db.tx.days[day.id].update({ categoryId: selectedCategoryID }));
+    return db.transact(db.tx.days[day.id].update({ categoryId: categoryId }));
   }
 
   if (top === 'same' && half === 'different') {
-    return db.transact(db.tx.days[day.id].update({ halfCategoryId: selectedCategoryID }));
+    return db.transact(db.tx.days[day.id].update({ halfCategoryId: categoryId }));
   }
 
   if (top === 'different' && half === 'same') {
-    return db.transact(db.tx.days[day.id].update({ categoryId: selectedCategoryID, halfCategoryId: null }));
+    return db.transact(db.tx.days[day.id].update({ categoryId, halfCategoryId: null }));
   }
 
   if ((top === 'different' && half === 'empty') || (top === 'different' && half === 'different')) {
     if (isTopLeft) {
       return db.transact(
         db.tx.days[day.id].update({
-          categoryId: selectedCategoryID,
+          categoryId,
           halfCategoryId: half === 'empty' ? day.categoryId : day.halfCategoryId,
         }),
       );
     } else {
-      return db.transact(db.tx.days[day.id].update({ halfCategoryId: selectedCategoryID }));
+      return db.transact(db.tx.days[day.id].update({ halfCategoryId: categoryId }));
     }
   }
 }

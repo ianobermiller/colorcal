@@ -1,21 +1,36 @@
 import clsx from 'clsx';
+import { type Accessor, type JSX, Show } from 'solid-js';
 
 import type { CategoryWithColor, Day } from './types';
 
 import { getColorForMode } from './colors';
 import { getDayOfWeek, toISODateString } from './dateUtils';
-import { useStore } from './Store';
+import { selectedCategoryID } from './Store';
 
 interface Props {
-  categories: CategoryWithColor[];
+  categories: Accessor<CategoryWithColor[]>;
   date: Date;
-  day: Day | null | undefined;
+  day: Accessor<Day | null | undefined>;
   hideHalfLabel: boolean;
   hideLabel: boolean;
   noBorderRight?: boolean;
   onDayClick?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
-  startDate: string;
+  startDate: Accessor<string>;
 }
+
+export function BaseDay({ noBorderRight, ...props }: { noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      class={clsx(
+        !noBorderRight && 'border-r',
+        'relative box-border size-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none dark:text-slate-100',
+      )}
+      {...props}
+    />
+  );
+}
+
+export const FillerDay = BaseDay;
 
 export function CalendarDay({
   categories,
@@ -27,12 +42,12 @@ export function CalendarDay({
   onDayClick,
   startDate,
 }: Props) {
-  const isTopSelected = useStore((state) => day?.categoryId && state.selectedCategoryID === day.categoryId);
-  const isHalfSelected = useStore((state) => day?.halfCategoryId && state.selectedCategoryID === day.halfCategoryId);
-  const showMonth = toISODateString(date) === startDate || date.getUTCDate() === 1;
+  const isTopSelected = () => day()?.categoryId && selectedCategoryID() === day()?.categoryId;
+  const isHalfSelected = () => day()?.halfCategoryId && selectedCategoryID() === day()?.halfCategoryId;
+  const showMonth = () => toISODateString(date) === startDate() || date.getUTCDate() === 1;
 
-  const topCategory = categories.find((c) => c.id === day?.categoryId);
-  const halfCategory = categories.find((c) => c.id === day?.halfCategoryId);
+  const topCategory = () => categories().find((c) => c.id === day()?.categoryId);
+  const halfCategory = () => categories().find((c) => c.id === day()?.halfCategoryId);
 
   return (
     <BaseDay
@@ -42,59 +57,47 @@ export function CalendarDay({
         const cartesianX = e.clientX - rect.left;
         const cartesianY = rect.bottom - e.clientY;
         const isTopLeft = cartesianY > cartesianX;
-        return onDayClick?.(date, day, isTopLeft);
+        return onDayClick?.(date, day(), isTopLeft);
       }}
-      style={{ background: getColorForMode(topCategory?.color) }}
+      style={{ background: getColorForMode(topCategory()?.color) }}
     >
-      <span className={clsx((isTopSelected ?? isHalfSelected) && 'font-bold')}>
+      <span class={clsx((isTopSelected() ?? isHalfSelected()) && 'font-bold')}>
         {date.getUTCDate()}
-        {showMonth && ' ' + date.toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' })}
+        {showMonth() && ' ' + date.toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' })}
       </span>
 
-      {!hideLabel && topCategory && (
-        <div className={clsx('mt-1 text-sm', isTopSelected && 'font-bold')}>{topCategory.name}</div>
-      )}
+      <Show when={!hideLabel && topCategory()}>
+        <div class={clsx('mt-1 text-sm', isTopSelected() && 'font-bold')}>{topCategory()?.name}</div>
+      </Show>
 
-      {halfCategory && (
-        <>
-          <div
-            className="absolute right-0 bottom-0"
-            style={{
-              '--color': getColorForMode(halfCategory.color),
-              borderBottom: 'solid var(--day-size) var(--color)',
-              borderLeft: 'solid var(--day-size) transparent',
-            }}
-          />
-          {!hideHalfLabel && (
-            <div className={clsx('absolute right-1 bottom-1 pl-1 text-right text-sm', isHalfSelected && 'font-bold')}>
-              {halfCategory.name}
-            </div>
-          )}
-        </>
-      )}
+      <Show when={halfCategory()}>
+        {(category) => (
+          <>
+            <div
+              class="absolute right-0 bottom-0"
+              style={{
+                '--color': getColorForMode(category().color),
+                'border-bottom': 'solid var(--day-size) var(--color)',
+                'border-left': 'solid var(--day-size) transparent',
+              }}
+            />
+            {!hideHalfLabel && (
+              <div class={clsx('absolute right-1 bottom-1 pl-1 text-right text-sm', isHalfSelected() && 'font-bold')}>
+                {category().name}
+              </div>
+            )}
+          </>
+        )}
+      </Show>
     </BaseDay>
-  );
-}
-
-export const FillerDay = BaseDay;
-
-export function BaseDay({ noBorderRight, ...props }: { noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={clsx(
-        !noBorderRight && 'border-r',
-        'relative box-border size-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none dark:text-slate-100',
-      )}
-      {...props}
-    />
   );
 }
 
 export function DayOfWeek({ color, index }: { color: string | undefined; index: number }) {
   return (
     <div
-      className="box-border w-[var(--day-size)] border-t border-r border-b border-slate-400 px-0.5 py-2 text-sm dark:text-slate-100"
-      style={{ backgroundColor: getColorForMode(color) }}
+      class="box-border w-[var(--day-size)] border-t border-r border-b border-slate-400 px-0.5 py-2 text-sm dark:text-slate-100"
+      style={{ 'background-color': getColorForMode(color) }}
     >
       {getDayOfWeek(new Date(`2017-01-0${index + 1}T00:00:00+00:00`))}
     </div>

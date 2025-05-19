@@ -1,4 +1,6 @@
-import { useLayoutEffect, useRef, useState } from 'preact/hooks';
+import type { Accessor } from 'solid-js';
+
+import { createMemo, createSignal, For, onCleanup, onMount } from 'solid-js';
 
 import type { Calendar, CategoryWithColor, Day } from './types';
 
@@ -7,69 +9,75 @@ import { dateRangeAlignWeek, toISODateString } from './dateUtils';
 import { indexArray } from './indexArray';
 
 interface Props {
-  calendar: Calendar;
-  categories: CategoryWithColor[];
-  days: Day[];
+  calendar: Accessor<Calendar>;
+  categories: Accessor<CategoryWithColor[]>;
+  days: Accessor<Day[]>;
   onDayClick?(date: Date, day: Day | undefined, isTopLeft: boolean): void;
 }
 
 export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) {
-  const dayByDate = indexArray(days, (day) => day.date);
-  const range = dateRangeAlignWeek(new Date(calendar.startDate), new Date(calendar.endDate)).map((date) => ({
-    date,
-    day: date && dayByDate[toISODateString(date)],
-  }));
-  const [daySize, setDaySize] = useState(0);
-  const rootRef = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    const node = rootRef.current;
-    if (!node) return;
+  const dayByDate = createMemo(() => indexArray(days(), (day) => day.date));
+  const range = createMemo(() =>
+    dateRangeAlignWeek(new Date(calendar().startDate), new Date(calendar().endDate)).map((date) => ({
+      date,
+      day: () => date && dayByDate()[toISODateString(date)],
+    })),
+  );
+  const [daySize, setDaySize] = createSignal(0);
+  let rootRef: HTMLDivElement | undefined;
 
+  onMount(() => {
     // Subtract one to account for the border on the calendar itself
-    const listener = () => setDaySize(Math.floor((node.offsetWidth - 1) / 7));
+    const listener = () => {
+      if (rootRef) {
+        setDaySize(Math.floor((rootRef.offsetWidth - 1) / 7));
+      }
+    };
     window.addEventListener('resize', listener);
     listener();
-    return () => window.removeEventListener('resize', listener);
-  }, []);
+
+    onCleanup(() => window.removeEventListener('resize', listener));
+  });
 
   return (
     <div
-      className="flex flex-wrap border-l border-slate-400 dark:text-slate-900"
+      class="flex flex-wrap border-l border-slate-400 dark:text-slate-900"
       ref={rootRef}
-      style={{ '--day-size': `${daySize}px` }}
+      style={{ '--day-size': `${daySize()}px` }}
     >
       {Array.from({ length: 7 }, (_, index) => {
-        const { day } = range[index];
-        const topCategory = categories.find((c) => c.id === day?.categoryId);
-        return <DayOfWeek color={topCategory?.color} index={index} key={index} />;
+        const { day } = range()[index];
+        const topCategory = categories().find((c) => c.id === day()?.categoryId);
+        return <DayOfWeek color={topCategory?.color} index={index} />;
       })}
 
-      {range.map(({ date, day }, i) => {
-        const prevDay = range[i - 1]?.day;
-        const nextDay = range[i + 1]?.day;
-        const isLastDayOfWeek = i % 7 !== 6;
-        const nextCategoryId = nextDay?.categoryId;
-        const thisCategoryId = day?.halfCategoryId ?? day?.categoryId;
-        const noBorderRight = Boolean(isLastDayOfWeek && thisCategoryId && nextCategoryId === thisCategoryId);
+      <For each={range()}>
+        {({ date, day }, i) => {
+          const prevDay = range()[i() - 1]?.day();
+          const nextDay = range()[i() + 1]?.day();
+          const isLastDayOfWeek = i() % 7 !== 6;
+          const nextCategoryId = nextDay?.categoryId;
+          const thisCategoryId = day()?.halfCategoryId ?? day()?.categoryId;
+          const noBorderRight = Boolean(isLastDayOfWeek && thisCategoryId && nextCategoryId === thisCategoryId);
 
-        if (!date) {
-          return <FillerDay key={i} />;
-        }
+          if (!date) {
+            return <FillerDay />;
+          }
 
-        return (
-          <CalendarDay
-            categories={categories}
-            date={date}
-            day={day}
-            hideHalfLabel={nextCategoryId === day?.halfCategoryId}
-            hideLabel={prevDay?.categoryId === day?.categoryId}
-            key={i}
-            noBorderRight={noBorderRight}
-            onDayClick={onDayClick}
-            startDate={calendar.startDate}
-          />
-        );
-      })}
+          return (
+            <CalendarDay
+              categories={categories}
+              date={date}
+              day={day}
+              hideHalfLabel={nextCategoryId === day()?.halfCategoryId}
+              hideLabel={prevDay?.categoryId === day()?.categoryId}
+              noBorderRight={noBorderRight}
+              onDayClick={onDayClick}
+              startDate={() => calendar().startDate}
+            />
+          );
+        }}
+      </For>
     </div>
   );
 }

@@ -1,42 +1,45 @@
-import type { CustomHistory } from 'preact-router';
-
-import { createHashHistory } from 'history';
-import { Router } from 'preact-router';
-import { IoColorPalette } from 'react-icons/io5';
+import { Route, Router } from '@solidjs/router';
+import ColorPaletteIcon from '~icons/ion/color-palette';
+import { Show } from 'solid-js';
 
 import { ButtonLink, LinkButton } from './Button';
 import { CalendarList } from './CalendarList';
 import { db } from './db';
 import { Editor } from './Editor';
+import { useAuth } from './instantdb-solid';
 import { Landing } from './Landing';
 import { Login } from './Login';
 
 export function App() {
-  const { user } = db.useAuth();
+  const { user } = useAuth();
 
   return (
-    <div className="mx-auto max-w-2xl p-3 lg:w-[1024px] lg:max-w-none">
-      <header className="mb-3 flex items-center justify-between">
+    <div class="mx-auto max-w-2xl p-3 lg:w-[1024px] lg:max-w-none">
+      <header class="mb-3 flex items-center justify-between">
         <h1>
-          <a className="flex items-center gap-1 text-2xl" href="/">
-            <IoColorPalette /> Color Calendar
+          <a class="flex items-center gap-1 text-2xl" href="/">
+            <ColorPaletteIcon height="24" width="24" />
+            Color Calendar
           </a>
         </h1>
-        {user ? (
-          <p>
-            {user.email} <LinkButton onClick={() => db.auth.signOut()}>Logout</LinkButton>
-          </p>
-        ) : (
-          <p>
-            <ButtonLink href="/login">Login</ButtonLink>
-          </p>
-        )}
+        <p>
+          <Show fallback={<ButtonLink href="/login">Login</ButtonLink>} when={user()}>
+            {user()?.email} <LinkButton onClick={() => db.auth.signOut()}>Logout</LinkButton>
+          </Show>
+        </p>
       </header>
 
-      <Router history={createHashHistory() as unknown as CustomHistory}>
-        {user ? <CalendarList path="/" /> : <Landing path="/" />}
-        <Editor id="provided-by-router" path="/:id" />
-        <Login path="/login" />
+      <Router>
+        <Route
+          component={() => (
+            <Show fallback={<Landing />} when={user()}>
+              <CalendarList />
+            </Show>
+          )}
+          path="/"
+        />
+        <Route component={({ params }) => <Editor id={params.id} />} path="/:id" />
+        <Route component={Login} path=" /login" />
       </Router>
     </div>
   );

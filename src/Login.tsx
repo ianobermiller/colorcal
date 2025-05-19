@@ -1,38 +1,34 @@
-import { route } from 'preact-router';
-import { useState } from 'preact/hooks';
+import { useNavigate } from '@solidjs/router';
+import { createSignal } from 'solid-js';
 
 import { Button } from './Button';
 import { db } from './db';
 import { Input } from './Input';
 
-interface Props {
-  /** for preact-router */
-  path: string;
+export function Login() {
+  const [sentEmail, setSentEmail] = createSignal('');
+  return <div>{!sentEmail() ? <Email setSentEmail={setSentEmail} /> : <MagicCode sentEmail={sentEmail()} />}</div>;
 }
 
-export function Login(_: Props) {
-  const [sentEmail, setSentEmail] = useState('');
-  return <div>{!sentEmail ? <Email setSentEmail={setSentEmail} /> : <MagicCode sentEmail={sentEmail} />}</div>;
-}
-
-function Email({ setSentEmail }: { setSentEmail: (email: string) => void }) {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
+function Email(props: { setSentEmail: (email: string) => void }) {
+  const [email, setEmail] = createSignal('');
+  const [error, setError] = createSignal('');
+  
   return (
-    <div className="flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
       <h2>Let&apos;s log you in!</h2>
 
       <form
-        className="flex gap-2"
+        class="flex gap-2"
         onSubmit={(e) => {
           e.preventDefault();
 
-          if (!email) return;
-          setSentEmail(email);
+          if (!email()) return;
+          props.setSentEmail(email());
 
-          db.auth.sendMagicCode({ email }).catch((err: unknown) => {
+          db.auth.sendMagicCode({ email: email() }).catch((err: unknown) => {
             console.error(err);
-            setSentEmail('');
+            props.setSentEmail('');
             setError('Unable to send code' + (err instanceof Error ? `: ${err.message}` : ''));
           });
         }}
@@ -43,33 +39,35 @@ function Email({ setSentEmail }: { setSentEmail: (email: string) => void }) {
           onChange={(e) => setEmail(e.currentTarget.value)}
           placeholder="Enter your email"
           type="email"
-          value={email}
+          value={email()}
         />
 
         <Button type="submit">Send Code</Button>
       </form>
 
-      {error && <p className="text-red-500">{error}</p>}
+      {error() && <p class="text-red-500">{error()}</p>}
     </div>
   );
 }
 
-function MagicCode({ sentEmail }: { sentEmail: string }) {
-  const [code, setCode] = useState('');
-  const [error, setError] = useState('');
+function MagicCode(props: { sentEmail: string }) {
+  const navigate = useNavigate();
+  const [code, setCode] = createSignal('');
+  const [error, setError] = createSignal('');
+  
   return (
-    <div className="flex flex-col gap-4">
-      <h2>Okay we sent an email to {sentEmail}! What was the code?</h2>
+    <div class="flex flex-col gap-4">
+      <h2>Okay we sent an email to {props.sentEmail}! What was the code?</h2>
       <form
-        className="flex gap-2"
+        class="flex gap-2"
         onSubmit={(e) => {
           e.preventDefault();
 
-          if (!code) return;
+          if (!code()) return;
 
           db.auth
-            .signInWithMagicCode({ code, email: sentEmail })
-            .then(() => route('/'))
+            .signInWithMagicCode({ code: code(), email: props.sentEmail })
+            .then(() => navigate('/'))
             .catch((err: unknown) => {
               console.error(err);
               setCode('');
@@ -77,12 +75,12 @@ function MagicCode({ sentEmail }: { sentEmail: string }) {
             });
         }}
       >
-        <Input onChange={(e) => setCode(e.currentTarget.value)} size={6} type="text" value={code} />
+        <Input onChange={(e) => setCode(e.currentTarget.value)} size={6} type="text" value={code()} />
 
         <Button type="submit">Verify</Button>
       </form>
 
-      {error && <p className="text-red-500">{error}</p>}
+      {error() && <p class="text-red-500">{error()}</p>}
     </div>
   );
 }

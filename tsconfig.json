@@ -15,8 +15,8 @@
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact",
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
   "include": ["src"],

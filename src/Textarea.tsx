@@ -1,19 +1,17 @@
-import type { ComponentProps } from 'preact/compat';
+import type { JSX } from 'solid-js';
 
-import { clsx } from 'clsx';
-import { forwardRef } from 'preact/compat';
+import clsx from 'clsx';
 
-type TextareaProps = ComponentProps<'textarea'>;
+type TextareaProps = JSX.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({ className, ...props }, ref) => {
+export function Textarea(props: TextareaProps) {
   return (
     <textarea
-      className={clsx(
+      class={clsx(
         'box-border block w-full resize-y rounded border border-slate-400 text-base dark:text-slate-400 dark:focus:text-slate-100',
-        className,
+        props.class
       )}
-      ref={ref}
       {...props}
     />
   );
-});
+}
