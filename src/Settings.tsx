@@ -18,7 +18,7 @@ interface Props {
 export function Settings({ calendar, onClose }: Props) {
   const handleScrimClick = useCallback(
     (e: MouseEvent) => {
-      if (e.target instanceof HTMLElement && e.target.closest('.modal')) {
+      if (e.target !== e.currentTarget) {
         return;
       }
 
