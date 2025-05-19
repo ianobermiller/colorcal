@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { type Accessor, type JSX, Show } from 'solid-js';
+import { type Accessor, type JSX, Show, splitProps } from 'solid-js';
 
 import type { CategoryWithColor, Day } from './types';
 
@@ -9,7 +9,7 @@ import { selectedCategoryID } from './Store';
 
 interface Props {
   categories: Accessor<CategoryWithColor[]>;
-  date: Date;
+  date: Accessor<Date>;
   day: Accessor<Day | null | undefined>;
   hideHalfLabel: boolean;
   hideLabel: boolean;
@@ -18,55 +18,47 @@ interface Props {
   startDate: Accessor<string>;
 }
 
-export function BaseDay({ noBorderRight, ...props }: { noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>) {
+export function BaseDay(props: { noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>) {
+  const [local, rest] = splitProps(props, ['noBorderRight']);
   return (
     <div
       class={clsx(
-        !noBorderRight && 'border-r',
+        !local.noBorderRight && 'border-r',
         'relative box-border size-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none dark:text-slate-100',
       )}
-      {...props}
+      {...rest}
     />
   );
 }
 
 export const FillerDay = BaseDay;
 
-export function CalendarDay({
-  categories,
-  date,
-  day,
-  hideHalfLabel,
-  hideLabel,
-  noBorderRight,
-  onDayClick,
-  startDate,
-}: Props) {
-  const isTopSelected = () => day()?.categoryId && selectedCategoryID() === day()?.categoryId;
-  const isHalfSelected = () => day()?.halfCategoryId && selectedCategoryID() === day()?.halfCategoryId;
-  const showMonth = () => toISODateString(date) === startDate() || date.getUTCDate() === 1;
+export function CalendarDay(props: Props) {
+  const isTopSelected = () => props.day()?.categoryId && selectedCategoryID() === props.day()?.categoryId;
+  const isHalfSelected = () => props.day()?.halfCategoryId && selectedCategoryID() === props.day()?.halfCategoryId;
+  const showMonth = () => toISODateString(props.date()) === props.startDate() || props.date().getUTCDate() === 1;
 
-  const topCategory = () => categories().find((c) => c.id === day()?.categoryId);
-  const halfCategory = () => categories().find((c) => c.id === day()?.halfCategoryId);
+  const topCategory = () => props.categories().find((c) => c.id === props.day()?.categoryId);
+  const halfCategory = () => props.categories().find((c) => c.id === props.day()?.halfCategoryId);
 
   return (
     <BaseDay
-      noBorderRight={noBorderRight}
+      noBorderRight={props.noBorderRight}
       onClick={(e) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const cartesianX = e.clientX - rect.left;
         const cartesianY = rect.bottom - e.clientY;
         const isTopLeft = cartesianY > cartesianX;
-        return onDayClick?.(date, day(), isTopLeft);
+        return props.onDayClick?.(props.date(), props.day(), isTopLeft);
       }}
       style={{ background: getColorForMode(topCategory()?.color) }}
     >
       <span class={clsx((isTopSelected() ?? isHalfSelected()) && 'font-bold')}>
-        {date.getUTCDate()}
-        {showMonth() && ' ' + date.toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' })}
+        {props.date().getUTCDate()}
+        {showMonth() && ' ' + props.date().toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' })}
       </span>
 
-      <Show when={!hideLabel && topCategory()}>
+      <Show when={!props.hideLabel && topCategory()}>
         <div class={clsx('mt-1 text-sm', isTopSelected() && 'font-bold')}>{topCategory()?.name}</div>
       </Show>
 
@@ -81,7 +73,7 @@ export function CalendarDay({
                 'border-left': 'solid var(--day-size) transparent',
               }}
             />
-            {!hideHalfLabel && (
+            {!props.hideHalfLabel && (
               <div class={clsx('absolute right-1 bottom-1 pl-1 text-right text-sm', isHalfSelected() && 'font-bold')}>
                 {category().name}
               </div>
@@ -93,13 +85,13 @@ export function CalendarDay({
   );
 }
 
-export function DayOfWeek({ color, index }: { color: string | undefined; index: number }) {
+export function DayOfWeek(props: { color: string | undefined; index: number }) {
   return (
     <div
       class="box-border w-[var(--day-size)] border-t border-r border-b border-slate-400 px-0.5 py-2 text-sm dark:text-slate-100"
-      style={{ 'background-color': getColorForMode(color) }}
+      style={{ 'background-color': getColorForMode(props.color) }}
     >
-      {getDayOfWeek(new Date(`2017-01-0${index + 1}T00:00:00+00:00`))}
+      {getDayOfWeek(new Date(`2017-01-0${props.index + 1}T00:00:00+00:00`))}
     </div>
   );
 }

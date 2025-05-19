@@ -1,6 +1,7 @@
 import MoreVerticalIcon from '~icons/feather/more-vertical';
 import PlusIcon from '~icons/feather/plus';
 import clsx from 'clsx';
+import { For } from "solid-js";
 
 import type { CategoryWithColor } from './types';
 
@@ -19,7 +20,7 @@ interface Props {
   onCopyAll: () => void;
 }
 
-export function CategoryList({ calendarId, categories, countByCategory, onCopy, onCopyAll }: Props) {
+export function CategoryList(props: Props) {
   const { user } = useAuth();
   const ownerId = () => user()?.id ?? '';
 
@@ -30,7 +31,7 @@ export function CategoryList({ calendarId, categories, countByCategory, onCopy, 
         name: '',
         ownerId: ownerId(),
       }),
-      db.tx.calendars[calendarId].link({ categories: categoryId }),
+      db.tx.calendars[props.calendarId].link({ categories: categoryId }),
     ]);
     setSelectedCategoryID(categoryId);
   };
@@ -40,9 +41,9 @@ export function CategoryList({ calendarId, categories, countByCategory, onCopy, 
       <h3>Categories</h3>
 
       <ul class="flex flex-col gap-2">
-        {categories.map((category) => (
-          <CategoryRow category={category} count={countByCategory[category.id] ?? 0} onCopy={onCopy} />
-        ))}
+        <For each={props.categories}>{(category) => (
+          <CategoryRow category={category} count={props.countByCategory[category.id] ?? 0} onCopy={props.onCopy} />
+        )}</For>
       </ul>
 
       <div class="flex flex-wrap gap-2">
@@ -50,39 +51,35 @@ export function CategoryList({ calendarId, categories, countByCategory, onCopy, 
           <PlusIcon height="24" width="24" />
           Add
         </Button>
-        <Button onClick={onCopyAll}>Copy all</Button>
+        <Button onClick={props.onCopyAll}>Copy all</Button>
       </div>
     </div>
   );
 }
 
-function CategoryRow({
-  category,
-  count,
-  onCopy,
-}: {
+function CategoryRow(props: {
   category: CategoryWithColor;
   count: number;
   onCopy: (category: CategoryWithColor) => void;
 }) {
   const onNameChange = (e: Event) => {
     const target = e.target as HTMLInputElement;
-    void db.transact(db.tx.categories[category.id].update({ name: target.value }));
+    void db.transact(db.tx.categories[props.category.id].update({ name: target.value }));
   };
 
-  const onColorClick = () => setSelectedCategoryID(category.id);
+  const onColorClick = () => setSelectedCategoryID(props.category.id);
 
   return (
     <div class="flex items-center gap-2">
       <button
         class={clsx(
           'inline-flex size-8 items-center justify-center rounded-full border-2 border-solid font-bold text-white',
-          selectedCategoryID() === category.id ? 'group border-slate-900 dark:border-white' : 'border-transparent',
+          selectedCategoryID() === props.category.id ? 'group border-slate-900 dark:border-white' : 'border-transparent',
         )}
         onClick={onColorClick}
-        style={{ background: getColorForMode(category.color) }}
+        style={{ background: getColorForMode(props.category.color) }}
       >
-        <span class="drop-shadow-[0_1px_1px_black]">{count}</span>
+        <span class="drop-shadow-[0_1px_1px_black]">{props.count}</span>
       </button>
 
       <Input
@@ -90,7 +87,7 @@ function CategoryRow({
         onFocus={onColorClick}
         onKeyDown={(e) => e.key === 'Enter' && onNameChange(e)}
         type="text"
-        value={category.name}
+        value={props.category.name}
       />
 
       <IconButton class="group relative">
@@ -101,7 +98,7 @@ function CategoryRow({
             class="rounded px-4 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-600"
             onClick={(e) => {
               e.currentTarget.blur();
-              onCopy(category);
+              props.onCopy(props.category);
             }}
           >
             Copy HTML
@@ -109,7 +106,7 @@ function CategoryRow({
           <button
             class="rounded px-4 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-600"
             onClick={() => {
-              void db.transact(db.tx.categories[category.id].delete());
+              void db.transact(db.tx.categories[props.category.id].delete());
             }}
           >
             Delete

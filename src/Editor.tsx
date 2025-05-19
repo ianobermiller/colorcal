@@ -22,16 +22,17 @@ interface Props {
   id: string;
 }
 
-export function Editor({ id: urlID }: Props) {
+export function Editor(props: Props) {
   const { user } = useAuth();
   const ownerId = () => user()?.id ?? '';
 
-  const id = urlToUuid(urlID);
+  const id = () => urlToUuid(props.id);
   const [isEditingTitle, setIsEditingTitle] = createSignal(false);
   const [isShowingSettings, setIsShowingSettings] = createSignal(false);
-  const { data } = useQuery(() => ({ calendars: { $: { where: { id } }, categories: {}, days: {} } }), {
-    ruleParams: { knownCalendarId: id },
-  });
+  const { data } = useQuery(
+    () => ({ calendars: { $: { where: { id: id() } }, categories: {}, days: {} } }),
+    () => ({ ruleParams: { knownCalendarId: id() } }),
+  );
   const calendar = () => data()?.calendars[0];
   const days = createMemo(() => {
     const calendarDays = calendar()?.days;
@@ -60,7 +61,7 @@ export function Editor({ id: urlID }: Props) {
 
   const updateTitle = (e: { currentTarget: { value: string } }) => {
     setIsEditingTitle(false);
-    void db.transact(db.tx.calendars[id].update({ title: e.currentTarget.value }));
+    void db.transact(db.tx.calendars[id()].update({ title: e.currentTarget.value }));
   };
 
   let titleInputRef: HTMLInputElement | undefined;
@@ -73,7 +74,7 @@ export function Editor({ id: urlID }: Props) {
   });
 
   const onDayClick = (date: Date, day: Day | undefined, isTopLeft: boolean) => {
-    void toggleDay(ownerId(), id, date, day, isTopLeft);
+    void toggleDay(ownerId(), id(), date, day, isTopLeft);
   };
 
   const onCopy = (category: Category) => {
@@ -125,14 +126,14 @@ export function Editor({ id: urlID }: Props) {
             <div class="flex gap-2">
               <Input
                 onChange={(e) => {
-                  void db.transact(db.tx.calendars[id].update({ startDate: e.currentTarget.value }));
+                  void db.transact(db.tx.calendars[id()].update({ startDate: e.currentTarget.value }));
                 }}
                 type="date"
                 value={cal().startDate}
               />
               <Input
                 onChange={(e) => {
-                  void db.transact(db.tx.calendars[id].update({ endDate: e.currentTarget.value }));
+                  void db.transact(db.tx.calendars[id()].update({ endDate: e.currentTarget.value }));
                 }}
                 type="date"
                 value={cal().endDate}
@@ -148,11 +149,11 @@ export function Editor({ id: urlID }: Props) {
 
             <CalendarGrid calendar={cal} categories={categories} days={days} onDayClick={onDayClick} />
 
-            <Notes calendarId={id} notes={cal().notes} />
+            <Notes calendarId={id()} notes={cal().notes} />
           </div>
           <div>
             <CategoryList
-              calendarId={id}
+              calendarId={id()}
               categories={categories()}
               countByCategory={countByCategory()}
               onCopy={onCopy}

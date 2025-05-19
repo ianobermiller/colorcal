@@ -37,7 +37,7 @@ export function useAuth() {
  */
 export function useQuery<Q extends InstaQLParams<Schema>>(
   query: Accessor<Q>,
-  opts?: InstaQLOptions,
+  opts?: Accessor<InstaQLOptions>,
 ): {
   data: Accessor<InstaQLResponse<Schema, Q> | undefined>;
   error: Accessor<{ message: string } | undefined>;
@@ -56,7 +56,7 @@ export function useQuery<Q extends InstaQLParams<Schema>>(
         setError(result.error);
         setLoading(false);
       },
-      opts,
+      opts?.(),
     );
 
     onCleanup(() => {

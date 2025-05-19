@@ -13,24 +13,26 @@ export function Login() {
 function Email(props: { setSentEmail: (email: string) => void }) {
   const [email, setEmail] = createSignal('');
   const [error, setError] = createSignal('');
-  
+
   return (
     <div class="flex flex-col gap-4">
       <h2>Let&apos;s log you in!</h2>
 
       <form
         class="flex gap-2"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
 
           if (!email()) return;
           props.setSentEmail(email());
 
-          db.auth.sendMagicCode({ email: email() }).catch((err: unknown) => {
+          try {
+            await db.auth.sendMagicCode({ email: email() });
+          } catch (err: unknown) {
             console.error(err);
             props.setSentEmail('');
             setError('Unable to send code' + (err instanceof Error ? `: ${err.message}` : ''));
-          });
+          }
         }}
       >
         <Input
@@ -54,25 +56,25 @@ function MagicCode(props: { sentEmail: string }) {
   const navigate = useNavigate();
   const [code, setCode] = createSignal('');
   const [error, setError] = createSignal('');
-  
+
   return (
     <div class="flex flex-col gap-4">
       <h2>Okay we sent an email to {props.sentEmail}! What was the code?</h2>
       <form
         class="flex gap-2"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
 
           if (!code()) return;
 
-          db.auth
-            .signInWithMagicCode({ code: code(), email: props.sentEmail })
-            .then(() => navigate('/'))
-            .catch((err: unknown) => {
-              console.error(err);
-              setCode('');
-              setError('Unable to verify code' + (err instanceof Error ? `: ${err.message}` : ''));
-            });
+          try {
+            await db.auth.signInWithMagicCode({ code: code(), email: props.sentEmail });
+            navigate('/');
+          } catch (err: unknown) {
+            console.error(err);
+            setCode('');
+            setError('Unable to verify code' + (err instanceof Error ? `: ${err.message}` : ''));
+          }
         }}
       >
         <Input onChange={(e) => setCode(e.currentTarget.value)} size={6} type="text" value={code()} />

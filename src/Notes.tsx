@@ -6,17 +6,17 @@ interface Props {
   notes: string;
 }
 
-export function Notes({ calendarId, notes }: Props) {
+export function Notes(props: Props) {
   return (
     <>
       <h3>Notes</h3>
       <Textarea
         onBlur={(e) => {
-          void db.transact(db.tx.calendars[calendarId].update({ notes: e.currentTarget.value }));
+          void db.transact(db.tx.calendars[props.calendarId].update({ notes: e.currentTarget.value }));
         }}
         rows={5}
       >
-        {notes}
+        {props.notes}
       </Textarea>
     </>
   );

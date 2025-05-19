@@ -1,6 +1,6 @@
 import type { Accessor } from 'solid-js';
 
-import { createMemo, createSignal, For, onCleanup, onMount } from 'solid-js';
+import { createMemo, createSignal, For, onCleanup, onMount, Show } from 'solid-js';
 
 import type { Calendar, CategoryWithColor, Day } from './types';
 
@@ -15,10 +15,10 @@ interface Props {
   onDayClick?(date: Date, day: Day | undefined, isTopLeft: boolean): void;
 }
 
-export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) {
-  const dayByDate = createMemo(() => indexArray(days(), (day) => day.date));
+export function CalendarGrid(props: Props) {
+  const dayByDate = createMemo(() => indexArray(props.days(), (day) => day.date));
   const range = createMemo(() =>
-    dateRangeAlignWeek(new Date(calendar().startDate), new Date(calendar().endDate)).map((date) => ({
+    dateRangeAlignWeek(new Date(props.calendar().startDate), new Date(props.calendar().endDate)).map((date) => ({
       date,
       day: () => date && dayByDate()[toISODateString(date)],
     })),
@@ -47,34 +47,35 @@ export function CalendarGrid({ calendar, categories, days, onDayClick }: Props) 
     >
       {Array.from({ length: 7 }, (_, index) => {
         const { day } = range()[index];
-        const topCategory = categories().find((c) => c.id === day()?.categoryId);
+        const topCategory = props.categories().find((c) => c.id === day()?.categoryId);
         return <DayOfWeek color={topCategory?.color} index={index} />;
       })}
 
       <For each={range()}>
         {({ date, day }, i) => {
-          const prevDay = range()[i() - 1]?.day();
-          const nextDay = range()[i() + 1]?.day();
-          const isLastDayOfWeek = i() % 7 !== 6;
-          const nextCategoryId = nextDay?.categoryId;
-          const thisCategoryId = day()?.halfCategoryId ?? day()?.categoryId;
-          const noBorderRight = Boolean(isLastDayOfWeek && thisCategoryId && nextCategoryId === thisCategoryId);
-
-          if (!date) {
-            return <FillerDay />;
-          }
+          const prevDay = () => range()[i() - 1]?.day();
+          const nextDay = () => range()[i() + 1]?.day();
+          const isLastDayOfWeek = () => i() % 7 !== 6;
+          const nextCategoryId = () => nextDay()?.categoryId;
+          const thisCategoryId = () => day()?.halfCategoryId ?? day()?.categoryId;
+          const noBorderRight = () =>
+            Boolean(isLastDayOfWeek() && thisCategoryId() && nextCategoryId() === thisCategoryId());
 
           return (
-            <CalendarDay
-              categories={categories}
-              date={date}
-              day={day}
-              hideHalfLabel={nextCategoryId === day()?.halfCategoryId}
-              hideLabel={prevDay?.categoryId === day()?.categoryId}
-              noBorderRight={noBorderRight}
-              onDayClick={onDayClick}
-              startDate={() => calendar().startDate}
-            />
+            <Show fallback={<FillerDay />} when={date}>
+              {(date) => (
+                <CalendarDay
+                  categories={props.categories}
+                  date={date}
+                  day={day}
+                  hideHalfLabel={nextCategoryId() === day()?.halfCategoryId}
+                  hideLabel={prevDay()?.categoryId === day()?.categoryId}
+                  noBorderRight={noBorderRight()}
+                  onDayClick={props.onDayClick}
+                  startDate={() => props.calendar().startDate}
+                />
+              )}
+            </Show>
           );
         }}
       </For>
