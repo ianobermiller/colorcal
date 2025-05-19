@@ -1,6 +1,6 @@
 // Docs: https://www.instantdb.com/docs/permissions
 
-import type { InstantRules } from '@instantdb/react';
+import type { InstantRules } from '@instantdb/core';
 
 const ownerRules = Object.entries({
   isOwner: 'auth.id == data.ownerId',
