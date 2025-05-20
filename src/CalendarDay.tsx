@@ -1,17 +1,12 @@
-import TrashIcon from '~icons/feather/trash-2';
 import clsx from 'clsx';
-import { type Accessor, createSignal, For, type JSX, Show, splitProps } from 'solid-js';
-import { Portal } from 'solid-js/web';
+import { type Accessor, createSignal, type JSX, Show, splitProps } from 'solid-js';
 
 import type { CategoryWithColor, Day } from './types';
 
-import { IconButton } from './Button';
 import { getColorForMode } from './colors';
 import { getDayOfWeek, toISODateString } from './dateUtils';
-import { db } from './db';
-import { Modal } from './Modal';
+import { DayEditor } from './DayEditor';
 import { selectedCategoryID } from './Store';
-import { Textarea } from './Textarea';
 
 interface Props {
   categories: Accessor<CategoryWithColor[]>;
@@ -23,8 +18,6 @@ interface Props {
   onDayClick?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
   startDate: Accessor<string>;
 }
-
-const ICONS = ['✈️', '🚆', '🚙', '🚍'];
 
 export function BaseDay(props: { noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>) {
   const [local, rest] = splitProps(props, ['noBorderRight']);
@@ -112,13 +105,7 @@ export function CalendarDay(props: Props) {
       </BaseDay>
 
       <Show when={isShowingEditor()}>
-        <Show when={props.day}>
-          {(day) => (
-            <Portal>
-              <DayEditor day={day} onClose={() => setIsShowingEditor(false)} />
-            </Portal>
-          )}
-        </Show>
+        <Show when={props.day}>{(day) => <DayEditor day={day()} onClose={() => setIsShowingEditor(false)} />}</Show>
       </Show>
     </>
   );
@@ -132,48 +119,5 @@ export function DayOfWeek(props: { color: string | undefined; index: number }) {
     >
       {getDayOfWeek(new Date(`2017-01-0${props.index + 1}T00:00:00+00:00`))}
     </div>
-  );
-}
-
-function DayEditor(props: { day: Accessor<Day>; onClose(): void }) {
-  return (
-    <Modal onClose={props.onClose} title="Edit Day">
-      <div class="flex flex-col gap-3 pb-4">
-        <div class="flex flex-wrap gap-2">
-          <For each={ICONS}>
-            {(icon) => (
-              <div
-                class={clsx(
-                  'flex size-10 cursor-pointer items-center justify-center rounded-full text-xl hover:font-bold',
-                  props.day().icon === icon && 'bg-slate-200',
-                )}
-                onClick={() => {
-                  const id = props.day().id;
-                  if (id) void db.transact(db.tx.days[id].update({ icon }));
-                }}
-              >
-                {icon}
-              </div>
-            )}
-          </For>
-          <IconButton
-            onClick={() => {
-              const id = props.day().id;
-              if (id) void db.transact(db.tx.days[id].update({ icon: null }));
-            }}
-          >
-            <TrashIcon />
-          </IconButton>
-        </div>
-        <Textarea
-          onBlur={(e) => {
-            const id = props.day().id;
-            if (id) void db.transact(db.tx.days[id].update({ note: e.target.value }));
-          }}
-          placeholder="Note"
-          value={props.day().note}
-        />
-      </div>
-    </Modal>
   );
 }

@@ -1,7 +1,7 @@
 import EditIcon from '~icons/feather/edit';
 import SettingsIcon from '~icons/feather/settings';
 import clsx from 'clsx';
-import { createEffect, createMemo, createSignal, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
 import { urlToUuid } from 'uuid-url';
 
 import type { Category, Day } from './types';
@@ -11,6 +11,7 @@ import { IconButton } from './Button';
 import { CalendarGrid } from './CalendarGrid';
 import { CategoryList } from './CategoryList';
 import { getDayOfWeek, getMonth, toISODateString } from './dateUtils';
+import { DayEditor } from './DayEditor';
 import { db, id } from './db';
 import { Input } from './Input';
 import { useAuth, useQuery } from './instantdb-solid';
@@ -38,6 +39,7 @@ export function Editor(props: Props) {
     const calendarDays = calendar()?.days;
     return calendarDays ? [...calendarDays].sort((a, b) => a.date.localeCompare(b.date)) : [];
   });
+  const daysWithNote = createMemo(() => days().filter((d) => d.note));
   const categories = createMemo(() => {
     const cal = calendar();
     if (!cal?.categories) return [];
@@ -89,6 +91,8 @@ export function Editor(props: Props) {
     if (currentDays.length === 0 || currentCategories.length === 0) return;
     void copyHtmlToClipboard(currentCategories.map((cat) => getHtmlForCategory(cat, currentDays)).join(''));
   };
+
+  const [editingDay, setEditingDay] = createSignal<Day | undefined>(undefined);
 
   return (
     <Show fallback={<h1>Loading...</h1>} when={calendar()}>
@@ -150,7 +154,25 @@ export function Editor(props: Props) {
             <CalendarGrid calendar={cal} categories={categories} days={days} onDayClick={onDayClick} />
 
             <Notes calendarId={id()} notes={cal().notes} />
+
+            <ul class="list-disc pl-4">
+              <For each={daysWithNote()}>
+                {(day) => (
+                  <li class="group hover:bg-slate-200 dark:hover:bg-slate-800">
+                    <div class="flex">
+                      <span>
+                        <strong>{day.date}</strong> {day.icon} {day.note}
+                      </span>
+                      <IconButton class="ml-auto opacity-0 group-hover:opacity-100" onClick={() => setEditingDay(day)}>
+                        <EditIcon />
+                      </IconButton>
+                    </div>
+                  </li>
+                )}
+              </For>
+            </ul>
           </div>
+
           <div>
             <CategoryList
               calendarId={id()}
@@ -161,14 +183,16 @@ export function Editor(props: Props) {
             />
           </div>
 
-          {isShowingSettings() && (
+          <Show when={isShowingSettings()}>
             <Settings
               calendar={cal}
               onClose={() => {
                 setIsShowingSettings(false);
               }}
             />
-          )}
+          </Show>
+
+          <Show when={editingDay()}>{(day) => <DayEditor day={day()} onClose={() => setEditingDay(undefined)} />}</Show>
         </div>
       )}
     </Show>
