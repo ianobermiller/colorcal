@@ -221,7 +221,7 @@ function getHtmlForCategory(category: Category, days: Day[]) {
         return `
           <h3>${getMonth(date)} ${date.getUTCDate()} - ${getDayOfWeek(date)}</h3>
           <ul>
-            <li></li>
+            <li>${day.icon ? `${day.icon} ` : ''}${day.note ?? ''}</li>
           </ul>
           <br />
         `;
