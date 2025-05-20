@@ -24,8 +24,8 @@ export function CalendarGrid(props: Props) {
     })),
   );
   const [daySize, setDaySize] = createSignal(0);
-  let rootRef: HTMLDivElement | undefined;
 
+  let rootRef: HTMLDivElement | undefined;
   onMount(() => {
     // Subtract one to account for the border on the calendar itself
     const listener = () => {
@@ -33,9 +33,9 @@ export function CalendarGrid(props: Props) {
         setDaySize(Math.floor((rootRef.offsetWidth - 1) / 7));
       }
     };
-    window.addEventListener('resize', listener);
     listener();
 
+    window.addEventListener('resize', listener);
     onCleanup(() => window.removeEventListener('resize', listener));
   });
 
