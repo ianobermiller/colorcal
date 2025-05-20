@@ -12,11 +12,6 @@ export default defineConfig({
     Icons({ autoInstall: true, compiler: 'solid' }),
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     tailwindcss(),
-    visualizer({
-      brotliSize: true,
-      filename: 'dist/stats.html',
-      gzipSize: true,
-      open: true,
-    }),
+    visualizer({ gzipSize: true }),
   ],
 });

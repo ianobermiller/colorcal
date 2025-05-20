@@ -1,4 +1,4 @@
-import { Route, Router } from '@solidjs/router';
+import { HashRouter, Route } from '@solidjs/router';
 import ColorPaletteIcon from '~icons/ion/color-palette';
 import { Show } from 'solid-js';
 
@@ -29,7 +29,7 @@ export function App() {
         </p>
       </header>
 
-      <Router>
+      <HashRouter>
         <Route
           component={() => (
             <Show fallback={<Landing />} when={user()}>
@@ -40,7 +40,7 @@ export function App() {
         />
         <Route component={({ params }) => <Editor id={params.id} />} path="/:id" />
         <Route component={Login} path=" /login" />
-      </Router>
+      </HashRouter>
     </div>
   );
 }
