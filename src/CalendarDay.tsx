@@ -1,16 +1,22 @@
+import TrashIcon from '~icons/feather/trash-2';
 import clsx from 'clsx';
-import { type Accessor, type JSX, Show, splitProps } from 'solid-js';
+import { type Accessor, createSignal, For, type JSX, Show, splitProps } from 'solid-js';
+import { Portal } from 'solid-js/web';
 
 import type { CategoryWithColor, Day } from './types';
 
+import { IconButton } from './Button';
 import { getColorForMode } from './colors';
 import { getDayOfWeek, toISODateString } from './dateUtils';
+import { db } from './db';
+import { Modal } from './Modal';
 import { selectedCategoryID } from './Store';
+import { Textarea } from './Textarea';
 
 interface Props {
   categories: Accessor<CategoryWithColor[]>;
   date: Accessor<Date>;
-  day: Accessor<Day | null | undefined>;
+  day: Day | null | undefined;
   hideHalfLabel: boolean;
   hideLabel: boolean;
   noBorderRight?: boolean;
@@ -18,13 +24,15 @@ interface Props {
   startDate: Accessor<string>;
 }
 
+const ICONS = ['✈️', '🚆', '🚙', '🚍'];
+
 export function BaseDay(props: { noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>) {
   const [local, rest] = splitProps(props, ['noBorderRight']);
   return (
     <div
       class={clsx(
         !local.noBorderRight && 'border-r',
-        'relative box-border size-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none dark:text-slate-100',
+        'group relative box-border size-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none dark:text-slate-100',
       )}
       {...rest}
     />
@@ -34,54 +42,85 @@ export function BaseDay(props: { noBorderRight?: boolean } & JSX.HTMLAttributes<
 export const FillerDay = BaseDay;
 
 export function CalendarDay(props: Props) {
-  const isTopSelected = () => props.day()?.categoryId && selectedCategoryID() === props.day()?.categoryId;
-  const isHalfSelected = () => props.day()?.halfCategoryId && selectedCategoryID() === props.day()?.halfCategoryId;
+  const isTopSelected = () => props.day?.categoryId && selectedCategoryID() === props.day.categoryId;
+  const isHalfSelected = () => props.day?.halfCategoryId && selectedCategoryID() === props.day.halfCategoryId;
   const showMonth = () => toISODateString(props.date()) === props.startDate() || props.date().getUTCDate() === 1;
 
-  const topCategory = () => props.categories().find((c) => c.id === props.day()?.categoryId);
-  const halfCategory = () => props.categories().find((c) => c.id === props.day()?.halfCategoryId);
+  const topCategory = () => props.categories().find((c) => c.id === props.day?.categoryId);
+  const halfCategory = () => props.categories().find((c) => c.id === props.day?.halfCategoryId);
+
+  const [isShowingEditor, setIsShowingEditor] = createSignal(false);
 
   return (
-    <BaseDay
-      noBorderRight={props.noBorderRight}
-      onClick={(e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const cartesianX = e.clientX - rect.left;
-        const cartesianY = rect.bottom - e.clientY;
-        const isTopLeft = cartesianY > cartesianX;
-        return props.onDayClick?.(props.date(), props.day(), isTopLeft);
-      }}
-      style={{ background: getColorForMode(topCategory()?.color) }}
-    >
-      <span class={clsx((isTopSelected() ?? isHalfSelected()) && 'font-bold')}>
-        {props.date().getUTCDate()}
-        {showMonth() && ' ' + props.date().toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' })}
-      </span>
+    <>
+      <BaseDay
+        noBorderRight={props.noBorderRight}
+        onClick={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const cartesianX = e.clientX - rect.left;
+          const cartesianY = rect.bottom - e.clientY;
+          const isTopLeft = cartesianY > cartesianX;
+          return props.onDayClick?.(props.date(), props.day, isTopLeft);
+        }}
+        style={{ background: getColorForMode(topCategory()?.color) }}
+      >
+        <span class={clsx((isTopSelected() ?? isHalfSelected()) && 'font-bold')}>
+          {props.date().getUTCDate()}
+          {showMonth() && ' ' + props.date().toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' })}
+        </span>
 
-      <Show when={!props.hideLabel && topCategory()}>
-        <div class={clsx('mt-1 text-sm', isTopSelected() && 'font-bold')}>{topCategory()?.name}</div>
-      </Show>
+        <Show when={!props.hideLabel && topCategory()}>
+          <div class={clsx('mt-1 text-sm', isTopSelected() && 'font-bold')}>{topCategory()?.name}</div>
+        </Show>
 
-      <Show when={halfCategory()}>
-        {(category) => (
-          <>
-            <div
-              class="absolute right-0 bottom-0"
-              style={{
-                '--color': getColorForMode(category().color),
-                'border-bottom': 'solid var(--day-size) var(--color)',
-                'border-left': 'solid var(--day-size) transparent',
-              }}
-            />
-            {!props.hideHalfLabel && (
-              <div class={clsx('absolute right-1 bottom-1 pl-1 text-right text-sm', isHalfSelected() && 'font-bold')}>
-                {category().name}
-              </div>
-            )}
-          </>
-        )}
+        <Show when={halfCategory()}>
+          {(category) => (
+            <>
+              <div
+                class="absolute right-0 bottom-0"
+                style={{
+                  '--color': getColorForMode(category().color),
+                  'border-bottom': 'solid var(--day-size) var(--color)',
+                  'border-left': 'solid var(--day-size) transparent',
+                }}
+              />
+              {!props.hideHalfLabel && (
+                <div class={clsx('absolute right-1 bottom-1 pl-1 text-right text-sm', isHalfSelected() && 'font-bold')}>
+                  {category().name}
+                </div>
+              )}
+            </>
+          )}
+        </Show>
+
+        <Show when={props.day?.icon}>
+          <div class="absolute top-1/2 left-1/2 -translate-1/2 sm:text-3xl" title={props.day?.note}>
+            {props.day?.icon}
+          </div>
+        </Show>
+
+        <div
+          class="absolute top-0.5 right-0.5 cursor-pointer opacity-0 group-hover:opacity-100 hover:font-bold"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsShowingEditor(true);
+          }}
+        >
+          Edit
+        </div>
+      </BaseDay>
+
+      <Show when={isShowingEditor()}>
+        <Show when={props.day}>
+          {(day) => (
+            <Portal>
+              <DayEditor day={day} onClose={() => setIsShowingEditor(false)} />
+            </Portal>
+          )}
+        </Show>
       </Show>
-    </BaseDay>
+    </>
   );
 }
 
@@ -93,5 +132,48 @@ export function DayOfWeek(props: { color: string | undefined; index: number }) {
     >
       {getDayOfWeek(new Date(`2017-01-0${props.index + 1}T00:00:00+00:00`))}
     </div>
+  );
+}
+
+function DayEditor(props: { day: Accessor<Day>; onClose(): void }) {
+  return (
+    <Modal onClose={props.onClose} title="Edit Day">
+      <div class="flex flex-col gap-3 pb-4">
+        <div class="flex flex-wrap gap-2">
+          <For each={ICONS}>
+            {(icon) => (
+              <div
+                class={clsx(
+                  'flex size-10 cursor-pointer items-center justify-center rounded-full text-xl hover:font-bold',
+                  props.day().icon === icon && 'bg-slate-200',
+                )}
+                onClick={() => {
+                  const id = props.day().id;
+                  if (id) void db.transact(db.tx.days[id].update({ icon }));
+                }}
+              >
+                {icon}
+              </div>
+            )}
+          </For>
+          <IconButton
+            onClick={() => {
+              const id = props.day().id;
+              if (id) void db.transact(db.tx.days[id].update({ icon: null }));
+            }}
+          >
+            <TrashIcon />
+          </IconButton>
+        </div>
+        <Textarea
+          onBlur={(e) => {
+            const id = props.day().id;
+            if (id) void db.transact(db.tx.days[id].update({ note: e.target.value }));
+          }}
+          placeholder="Note"
+          value={props.day().note}
+        />
+      </div>
+    </Modal>
   );
 }

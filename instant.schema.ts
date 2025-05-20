@@ -20,6 +20,8 @@ const schema = i.schema({
       categoryId: i.string().optional(),
       date: i.string(),
       halfCategoryId: i.string().optional(),
+      icon: i.string().optional(),
+      note: i.string().optional(),
       ownerId: i.string(),
     }),
   },

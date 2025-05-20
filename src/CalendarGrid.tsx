@@ -1,6 +1,6 @@
 import type { Accessor } from 'solid-js';
 
-import { createMemo, createSignal, For, onCleanup, onMount, Show } from 'solid-js';
+import { createMemo, createSignal, Index, onCleanup, onMount, Show } from 'solid-js';
 
 import type { Calendar, CategoryWithColor, Day } from './types';
 
@@ -20,7 +20,7 @@ export function CalendarGrid(props: Props) {
   const range = createMemo(() =>
     dateRangeAlignWeek(new Date(props.calendar().startDate), new Date(props.calendar().endDate)).map((date) => ({
       date,
-      day: () => date && dayByDate()[toISODateString(date)],
+      day: date && dayByDate()[toISODateString(date)],
     })),
   );
   const [daySize, setDaySize] = createSignal(0);
@@ -47,29 +47,29 @@ export function CalendarGrid(props: Props) {
     >
       {Array.from({ length: 7 }, (_, index) => {
         const { day } = range()[index];
-        const topCategory = props.categories().find((c) => c.id === day()?.categoryId);
+        const topCategory = props.categories().find((c) => c.id === day?.categoryId);
         return <DayOfWeek color={topCategory?.color} index={index} />;
       })}
 
-      <For each={range()}>
-        {({ date, day }, i) => {
-          const prevDay = () => range()[i() - 1]?.day();
-          const nextDay = () => range()[i() + 1]?.day();
-          const isLastDayOfWeek = () => i() % 7 !== 6;
+      <Index each={range()}>
+        {(entry, i) => {
+          const prevDay = () => range()[i - 1]?.day;
+          const nextDay = () => range()[i + 1]?.day;
+          const isLastDayOfWeek = () => i % 7 !== 6;
           const nextCategoryId = () => nextDay()?.categoryId;
-          const thisCategoryId = () => day()?.halfCategoryId ?? day()?.categoryId;
+          const thisCategoryId = () => entry().day?.halfCategoryId ?? entry().day?.categoryId;
           const noBorderRight = () =>
             Boolean(isLastDayOfWeek() && thisCategoryId() && nextCategoryId() === thisCategoryId());
 
           return (
-            <Show fallback={<FillerDay />} when={date}>
+            <Show fallback={<FillerDay />} when={entry().date}>
               {(date) => (
                 <CalendarDay
                   categories={props.categories}
                   date={date}
-                  day={day}
-                  hideHalfLabel={nextCategoryId() === day()?.halfCategoryId}
-                  hideLabel={prevDay()?.categoryId === day()?.categoryId}
+                  day={entry().day}
+                  hideHalfLabel={nextCategoryId() === entry().day?.halfCategoryId}
+                  hideLabel={prevDay()?.categoryId === entry().day?.categoryId}
                   noBorderRight={noBorderRight()}
                   onDayClick={props.onDayClick}
                   startDate={() => props.calendar().startDate}
@@ -78,7 +78,7 @@ export function CalendarGrid(props: Props) {
             </Show>
           );
         }}
-      </For>
+      </Index>
     </div>
   );
 }
