@@ -157,18 +157,28 @@ export function Editor(props: Props) {
 
             <ul class="list-disc pl-4">
               <For each={daysWithNote()}>
-                {(day) => (
-                  <li class="group hover:bg-slate-200 dark:hover:bg-slate-800">
-                    <div class="flex">
-                      <span>
-                        <strong>{day.date}</strong> {day.icon} {day.note}
-                      </span>
-                      <IconButton class="ml-auto opacity-0 group-hover:opacity-100" onClick={() => setEditingDay(day)}>
-                        <EditIcon />
-                      </IconButton>
-                    </div>
-                  </li>
-                )}
+                {(day) => {
+                  const date = new Date(day.date);
+
+                  return (
+                    <li class="group hover:bg-slate-200 dark:hover:bg-slate-800">
+                      <div class="flex">
+                        <span>
+                          <strong>
+                            {getMonth(date)} {date.getUTCDate()} - {getDayOfWeek(date)}
+                          </strong>{' '}
+                          {day.icon} {day.note}
+                        </span>
+                        <IconButton
+                          class="ml-auto opacity-0 group-hover:opacity-100"
+                          onClick={() => setEditingDay(day)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                      </div>
+                    </li>
+                  );
+                }}
               </For>
             </ul>
           </div>
