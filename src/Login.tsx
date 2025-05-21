@@ -1,5 +1,5 @@
 import { useNavigate } from '@solidjs/router';
-import { batch, createSignal } from 'solid-js';
+import { batch, createSignal, Show } from 'solid-js';
 
 import { Button } from './components/Button';
 import { Input } from './components/Input';
@@ -7,7 +7,11 @@ import { db } from './db';
 
 export function Login() {
     const [sentEmail, setSentEmail] = createSignal('');
-    return <div>{!sentEmail() ? <Email setSentEmail={setSentEmail} /> : <MagicCode sentEmail={sentEmail()} />}</div>;
+    return (
+        <Show fallback={<MagicCode sentEmail={sentEmail()} />} when={!sentEmail()}>
+            <Email setSentEmail={setSentEmail} />
+        </Show>
+    );
 }
 
 function Email(props: { setSentEmail: (email: string) => void }) {
@@ -49,7 +53,9 @@ function Email(props: { setSentEmail: (email: string) => void }) {
                 <Button type="submit">Send Code</Button>
             </form>
 
-            {error() && <p class="text-red-500">{error()}</p>}
+            <Show when={error()}>
+                <p class="text-red-500">{error()}</p>
+            </Show>
         </div>
     );
 }
@@ -86,7 +92,9 @@ function MagicCode(props: { sentEmail: string }) {
                 <Button type="submit">Verify</Button>
             </form>
 
-            {error() && <p class="text-red-500">{error()}</p>}
+            <Show when={error()}>
+                <p class="text-red-500">{error()}</p>
+            </Show>
         </div>
     );
 }

@@ -110,7 +110,7 @@ export function Editor(props: Props) {
                                 </IconButton>
                             </h2>
 
-                            {isEditingTitle() && (
+                            <Show when={isEditingTitle()}>
                                 <Input
                                     class="inline w-auto"
                                     onBlur={updateTitle}
@@ -123,7 +123,7 @@ export function Editor(props: Props) {
                                     type="text"
                                     value={cal().title}
                                 />
-                            )}
+                            </Show>
                         </header>
 
                         <div class="flex gap-2">

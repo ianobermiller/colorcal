@@ -80,7 +80,7 @@ export function CalendarDay(props: Props) {
                                     'border-left': 'solid var(--day-size) transparent',
                                 }}
                             />
-                            {!props.hideHalfLabel && (
+                            <Show when={!props.hideHalfLabel}>
                                 <div
                                     classList={{
                                         'absolute right-1 bottom-1 pl-1 text-right text-sm': true,
@@ -89,7 +89,7 @@ export function CalendarDay(props: Props) {
                                 >
                                     {category().name}
                                 </div>
-                            )}
+                            </Show>
                         </>
                     )}
                 </Show>
