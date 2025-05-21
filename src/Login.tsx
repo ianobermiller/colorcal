@@ -1,5 +1,5 @@
 import { useNavigate } from '@solidjs/router';
-import { createSignal } from 'solid-js';
+import { batch, createSignal } from 'solid-js';
 
 import { Button } from './Button';
 import { db } from './db';
@@ -30,8 +30,10 @@ function Email(props: { setSentEmail: (email: string) => void }) {
             await db.auth.sendMagicCode({ email: email() });
           } catch (err: unknown) {
             console.error(err);
-            props.setSentEmail('');
-            setError('Unable to send code' + (err instanceof Error ? `: ${err.message}` : ''));
+            batch(() => {
+              props.setSentEmail('');
+              setError('Unable to send code' + (err instanceof Error ? `: ${err.message}` : ''));
+            });
           }
         }}
       >
@@ -72,8 +74,10 @@ function MagicCode(props: { sentEmail: string }) {
             navigate('/');
           } catch (err: unknown) {
             console.error(err);
-            setCode('');
-            setError('Unable to verify code' + (err instanceof Error ? `: ${err.message}` : ''));
+            batch(() => {
+              setCode('');
+              setError('Unable to verify code' + (err instanceof Error ? `: ${err.message}` : ''));
+            });
           }
         }}
       >

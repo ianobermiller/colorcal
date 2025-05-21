@@ -2,7 +2,7 @@ import type { InstaQLOptions, User } from '@instantdb/core';
 import type { Accessor } from 'solid-js';
 
 import { type InstaQLParams, type InstaQLResponse, type InstaQLSubscriptionState } from '@instantdb/core';
-import { createEffect, createSignal, onCleanup } from 'solid-js';
+import { batch, createEffect, createSignal, onCleanup } from 'solid-js';
 
 import type { Schema } from './db';
 
@@ -17,8 +17,10 @@ export function useAuth() {
 
   createEffect(() => {
     const unsubscribe = db.subscribeAuth((auth) => {
-      setUser(auth.user);
-      setLoading(!auth.user);
+      batch(() => {
+        setUser(auth.user);
+        setLoading(!auth.user);
+      });
     });
 
     onCleanup(() => {
@@ -51,10 +53,12 @@ export function useQuery<Q extends InstaQLParams<Schema>>(
     const unsubscribe = db.subscribeQuery(
       query(),
       (result: InstaQLSubscriptionState<Schema, Q>) => {
-        // @ts-expect-error Conflict between InstantDB an d SolidJS types
-        setData(result.data);
-        setError(result.error);
-        setLoading(false);
+        batch(() => {
+          // @ts-expect-error Conflict between InstantDB and SolidJS types
+          setData(result.data);
+          setError(result.error);
+          setLoading(false);
+        });
       },
       opts?.(),
     );
