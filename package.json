@@ -15,7 +15,6 @@
     "dependencies": {
         "@instantdb/core": "^0.18.3",
         "@solidjs/router": "^0.15.3",
-        "clsx": "^2.1.1",
         "history": "^5.3.0",
         "solid-js": "^1.9.7",
         "uuid-url": "^0.0.11",

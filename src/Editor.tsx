@@ -1,6 +1,5 @@
 import EditIcon from '~icons/feather/edit';
 import SettingsIcon from '~icons/feather/settings';
-import clsx from 'clsx';
 import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
 import { urlToUuid } from 'uuid-url';
 
@@ -100,7 +99,7 @@ export function Editor(props: Props) {
                 <div class="gap-4 lg:flex">
                     <div class="mb-6 flex flex-grow flex-col gap-4">
                         <header class="relative">
-                            <h2 class={clsx('text-lg', isEditingTitle() && 'opacity-0')}>
+                            <h2 classList={{ 'opacity-0': isEditingTitle(), 'text-lg': true }}>
                                 {cal().title}{' '}
                                 <IconButton
                                     onClick={() => {

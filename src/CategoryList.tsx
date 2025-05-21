@@ -1,6 +1,5 @@
 import MoreVerticalIcon from '~icons/feather/more-vertical';
 import PlusIcon from '~icons/feather/plus';
-import clsx from 'clsx';
 import { For } from 'solid-js';
 
 import type { CategoryWithColor } from './types';
@@ -78,12 +77,12 @@ function CategoryRow(props: {
     return (
         <div class="flex items-center gap-2">
             <button
-                class={clsx(
-                    'inline-flex size-8 items-center justify-center rounded-full border-2 border-solid font-bold text-white',
-                    selectedCategoryID() === props.category.id
-                        ? 'group border-slate-900 dark:border-white'
-                        : 'border-transparent',
-                )}
+                classList={{
+                    'border-transparent': selectedCategoryID() !== props.category.id,
+                    'group border-slate-900 dark:border-white': selectedCategoryID() === props.category.id,
+                    'inline-flex size-8 items-center justify-center rounded-full border-2 border-solid font-bold text-white':
+                        true,
+                }}
                 onClick={onColorClick}
                 style={{ background: getColorForMode(props.category.color) }}
             >

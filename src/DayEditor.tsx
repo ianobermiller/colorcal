@@ -1,5 +1,4 @@
 import TrashIcon from '~icons/feather/trash-2';
-import clsx from 'clsx';
 import { For } from 'solid-js';
 import { Portal } from 'solid-js/web';
 
@@ -21,10 +20,11 @@ export function DayEditor(props: { day: Day; onClose(): void }) {
                         <For each={ICONS}>
                             {(icon) => (
                                 <div
-                                    class={clsx(
-                                        'flex size-10 cursor-pointer items-center justify-center rounded-full text-xl hover:font-bold',
-                                        props.day.icon === icon && 'bg-slate-200',
-                                    )}
+                                    classList={{
+                                        'bg-slate-200': props.day.icon === icon,
+                                        'flex size-10 cursor-pointer items-center justify-center rounded-full text-xl hover:font-bold':
+                                            true,
+                                    }}
                                     onClick={() => {
                                         const id = props.day.id;
                                         if (id) void db.transact(db.tx.days[id].update({ icon }));

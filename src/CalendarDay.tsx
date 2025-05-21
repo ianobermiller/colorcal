@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import { type Accessor, createSignal, type JSX, Show, splitProps } from 'solid-js';
 
 import type { CategoryWithColor, Day } from './types';
@@ -23,10 +22,11 @@ export function BaseDay(props: { noBorderRight?: boolean } & JSX.HTMLAttributes<
     const [local, rest] = splitProps(props, ['noBorderRight']);
     return (
         <div
-            class={clsx(
-                !local.noBorderRight && 'border-r',
-                'group relative box-border size-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none dark:text-slate-100',
-            )}
+            classList={{
+                'border-r': !local.noBorderRight,
+                'group relative box-border size-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none dark:text-slate-100':
+                    true,
+            }}
             {...rest}
         />
     );
@@ -57,14 +57,16 @@ export function CalendarDay(props: Props) {
                 }}
                 style={{ background: getColorForMode(topCategory()?.color) }}
             >
-                <span class={clsx((isTopSelected() ?? isHalfSelected()) && 'font-bold')}>
+                <span classList={{ 'font-bold': Boolean(isTopSelected() ?? isHalfSelected()) }}>
                     {props.date().getUTCDate()}
                     {showMonth() &&
                         ' ' + props.date().toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' })}
                 </span>
 
                 <Show when={!props.hideLabel && topCategory()}>
-                    <div class={clsx('mt-1 text-sm', isTopSelected() && 'font-bold')}>{topCategory()?.name}</div>
+                    <div classList={{ 'font-bold': Boolean(isTopSelected()), 'mt-1 text-sm': true }}>
+                        {topCategory()?.name}
+                    </div>
                 </Show>
 
                 <Show when={halfCategory()}>
@@ -80,10 +82,10 @@ export function CalendarDay(props: Props) {
                             />
                             {!props.hideHalfLabel && (
                                 <div
-                                    class={clsx(
-                                        'absolute right-1 bottom-1 pl-1 text-right text-sm',
-                                        isHalfSelected() && 'font-bold',
-                                    )}
+                                    classList={{
+                                        'absolute right-1 bottom-1 pl-1 text-right text-sm': true,
+                                        'font-bold': Boolean(isHalfSelected()),
+                                    }}
                                 >
                                     {category().name}
                                 </div>
