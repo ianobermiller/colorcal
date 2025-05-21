@@ -7,11 +7,11 @@ import solidPlugin from 'vite-plugin-solid';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    solidPlugin(),
-    Icons({ autoInstall: true, compiler: 'solid' }),
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    tailwindcss(),
-    visualizer({ gzipSize: true }),
-  ],
+    plugins: [
+        solidPlugin(),
+        Icons({ autoInstall: true, compiler: 'solid' }),
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        tailwindcss(),
+        visualizer({ gzipSize: true }),
+    ],
 });
