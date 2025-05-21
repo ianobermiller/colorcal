@@ -6,7 +6,7 @@ import { ButtonLink, LinkButton } from './Button';
 import { CalendarList } from './CalendarList';
 import { db } from './db';
 import { Editor } from './Editor';
-import { useAuth } from './instantdb-solid';
+import { useAuth } from './db';
 import { Landing } from './Landing';
 import { Login } from './Login';
 

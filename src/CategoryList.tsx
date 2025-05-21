@@ -1,7 +1,7 @@
 import MoreVerticalIcon from '~icons/feather/more-vertical';
 import PlusIcon from '~icons/feather/plus';
 import clsx from 'clsx';
-import { For } from "solid-js";
+import { For } from 'solid-js';
 
 import type { CategoryWithColor } from './types';
 
@@ -9,7 +9,7 @@ import { Button, IconButton } from './Button';
 import { getColorForMode } from './colors';
 import { db, id } from './db';
 import { Input } from './Input';
-import { useAuth } from './instantdb-solid';
+import { useAuth } from './db';
 import { selectedCategoryID, setSelectedCategoryID } from './Store';
 
 interface Props {
@@ -41,9 +41,11 @@ export function CategoryList(props: Props) {
       <h3>Categories</h3>
 
       <ul class="flex flex-col gap-2">
-        <For each={props.categories}>{(category) => (
-          <CategoryRow category={category} count={props.countByCategory[category.id] ?? 0} onCopy={props.onCopy} />
-        )}</For>
+        <For each={props.categories}>
+          {(category) => (
+            <CategoryRow category={category} count={props.countByCategory[category.id] ?? 0} onCopy={props.onCopy} />
+          )}
+        </For>
       </ul>
 
       <div class="flex flex-wrap gap-2">
@@ -74,7 +76,9 @@ function CategoryRow(props: {
       <button
         class={clsx(
           'inline-flex size-8 items-center justify-center rounded-full border-2 border-solid font-bold text-white',
-          selectedCategoryID() === props.category.id ? 'group border-slate-900 dark:border-white' : 'border-transparent',
+          selectedCategoryID() === props.category.id
+            ? 'group border-slate-900 dark:border-white'
+            : 'border-transparent',
         )}
         onClick={onColorClick}
         style={{ background: getColorForMode(props.category.color) }}

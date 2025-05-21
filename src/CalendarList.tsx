@@ -6,7 +6,7 @@ import { Button } from './Button';
 import { toISODateString } from './dateUtils';
 import { db, id } from './db';
 import { Input } from './Input';
-import { useAuth, useQuery } from './instantdb-solid';
+import { useAuth, useQuery } from './db';
 
 export function CalendarList() {
   const { user } = useAuth();
