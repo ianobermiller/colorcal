@@ -7,7 +7,7 @@
         "build": "npm run ts && vite build",
         "dev": "vite",
         "format": "prettier --write .",
-        "lint": "eslint .",
+        "lint": "eslint --fix .",
         "preview": "vite preview",
         "ts": "tsc",
         "upload": "npm run build -- --base /cal && git push && rsync -avz dist/* iano@obermillers.com:~/public_html/obermillers/cal"

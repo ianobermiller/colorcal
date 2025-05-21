@@ -11,42 +11,46 @@ import { Modal } from './components/Modal';
 import { db } from './db';
 
 interface Props {
-  calendar: Accessor<Calendar>;
-  onClose(): void;
+    calendar: Accessor<Calendar>;
+    onClose(): void;
 }
 
 export function Settings(props: Props) {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const handleVisibilityChange = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    void db.transact(db.tx.calendars[props.calendar().id].update({ isPubliclyVisible: target.checked }));
-  };
+    const handleVisibilityChange = (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        void db.transact(db.tx.calendars[props.calendar().id].update({ isPubliclyVisible: target.checked }));
+    };
 
-  return (
-    <Modal onClose={props.onClose} title="Calendar Settings">
-      <div class="flex flex-col gap-3 pb-4">
-        <h3 class="font-bold">Visibility</h3>
+    return (
+        <Modal onClose={props.onClose} title="Calendar Settings">
+            <div class="flex flex-col gap-3 pb-4">
+                <h3 class="font-bold">Visibility</h3>
 
-        <label class="flex items-center gap-2">
-          <Input checked={props.calendar().isPubliclyVisible} onChange={handleVisibilityChange} type="checkbox" />{' '}
-          Anyone with the link can view
-        </label>
+                <label class="flex items-center gap-2">
+                    <Input
+                        checked={props.calendar().isPubliclyVisible}
+                        onChange={handleVisibilityChange}
+                        type="checkbox"
+                    />{' '}
+                    Anyone with the link can view
+                </label>
 
-        <h3 class="font-bold">Delete</h3>
+                <h3 class="font-bold">Delete</h3>
 
-        <Button
-          class="self-start"
-          onClick={() => {
-            if (confirm(`Delete calendar "${props.calendar().title}"?`)) {
-              void db.transact(db.tx.calendars[props.calendar().id].delete()).then(() => navigate('/'));
-            }
-          }}
-        >
-          <TrashIcon height="16" width="16" />
-          Delete Calendar
-        </Button>
-      </div>
-    </Modal>
-  );
+                <Button
+                    class="self-start"
+                    onClick={() => {
+                        if (confirm(`Delete calendar "${props.calendar().title}"?`)) {
+                            void db.transact(db.tx.calendars[props.calendar().id].delete()).then(() => navigate('/'));
+                        }
+                    }}
+                >
+                    <TrashIcon height="16" width="16" />
+                    Delete Calendar
+                </Button>
+            </div>
+        </Modal>
+    );
 }
