@@ -5,6 +5,8 @@ import { createMemo, createSignal, Index, onCleanup, onMount, Show } from 'solid
 import type { Calendar, CategoryWithColor, Day } from './types';
 
 import { CalendarDay, DayOfWeek, FillerDay } from './CalendarDay';
+import { db, id, transactCalendar, useAuth } from './db';
+import { selectedCategoryID } from './Store';
 import { dateRangeAlignWeek, toISODateString } from './utils/date';
 import { indexArray } from './utils/indexArray';
 
@@ -12,11 +14,12 @@ interface Props {
     calendar: Accessor<Calendar>;
     categories: Accessor<CategoryWithColor[]>;
     days: Accessor<Day[]>;
-    onDayClick?(date: Date, day: Day | undefined, isTopLeft: boolean): void;
     readonly: boolean;
 }
 
 export function CalendarGrid(props: Props) {
+    const { user } = useAuth();
+    const ownerId = () => user()?.id ?? '';
     const dayByDate = createMemo(() => indexArray(props.days(), (day) => day.date));
     const range = createMemo(() =>
         dateRangeAlignWeek(new Date(props.calendar().startDate), new Date(props.calendar().endDate)).map((date) => ({
@@ -25,6 +28,12 @@ export function CalendarGrid(props: Props) {
         })),
     );
     const [daySize, setDaySize] = createSignal(0);
+
+    const handleDayClick = (date: Date, day: Day | undefined, isTopLeft: boolean) => {
+        if (!props.readonly) {
+            void toggleDay(ownerId(), props.calendar().id, date, day, isTopLeft);
+        }
+    };
 
     let rootRef: HTMLDivElement | undefined;
     onMount(() => {
@@ -73,7 +82,7 @@ export function CalendarGrid(props: Props) {
                                     hideHalfLabel={nextCategoryId() === entry().day?.halfCategoryId}
                                     hideLabel={prevDay()?.categoryId === entry().day?.categoryId}
                                     noBorderRight={noBorderRight()}
-                                    onDayClick={props.onDayClick}
+                                    onDayClick={handleDayClick}
                                     readonly={props.readonly}
                                     startDate={() => props.calendar().startDate}
                                 />
@@ -84,4 +93,60 @@ export function CalendarGrid(props: Props) {
             </Index>
         </div>
     );
+}
+
+function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | undefined, isTopLeft: boolean) {
+    const categoryId = selectedCategoryID();
+
+    if (!day) {
+        const dayId = id();
+        void transactCalendar(
+            calendarId,
+            db.tx.days[dayId].update({
+                categoryId,
+                date: toISODateString(date),
+                halfCategoryId: null,
+                ownerId,
+            }),
+            db.tx.calendars[calendarId].link({ days: dayId }),
+        );
+        return;
+    }
+
+    const top = !day.categoryId ? 'empty' : day.categoryId === categoryId ? 'same' : 'different';
+    const half = !day.halfCategoryId ? 'empty' : day.halfCategoryId === categoryId ? 'same' : 'different';
+
+    if (
+        (top === 'same' && half === 'same') ||
+        (top === 'same' && half === 'empty') ||
+        (top === 'empty' && half === 'same')
+    ) {
+        return transactCalendar(calendarId, db.tx.days[day.id].update({ categoryId: null, halfCategoryId: null }));
+    }
+
+    if ((top === 'empty' && half === 'empty') || (top === 'empty' && half === 'different')) {
+        return transactCalendar(calendarId, db.tx.days[day.id].update({ categoryId: categoryId }));
+    }
+
+    if (top === 'same' && half === 'different') {
+        return transactCalendar(calendarId, db.tx.days[day.id].update({ halfCategoryId: categoryId }));
+    }
+
+    if (top === 'different' && half === 'same') {
+        return transactCalendar(calendarId, db.tx.days[day.id].update({ categoryId, halfCategoryId: null }));
+    }
+
+    if ((top === 'different' && half === 'empty') || (top === 'different' && half === 'different')) {
+        if (isTopLeft) {
+            return transactCalendar(
+                calendarId,
+                db.tx.days[day.id].update({
+                    categoryId,
+                    halfCategoryId: half === 'empty' ? day.categoryId : day.halfCategoryId,
+                }),
+            );
+        } else {
+            return transactCalendar(calendarId, db.tx.days[day.id].update({ halfCategoryId: categoryId }));
+        }
+    }
 }

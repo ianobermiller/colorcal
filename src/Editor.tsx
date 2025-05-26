@@ -10,13 +10,12 @@ import { CategoryList } from './CategoryList';
 import { IconButton } from './components/Button';
 import { Input } from './components/Input';
 import { DayEditor } from './DayEditor';
-import { db, id, transactCalendar } from './db';
+import { db, transactCalendar } from './db';
 import { useAuth, useQuery } from './db';
 import { Notes } from './Notes';
 import { Settings } from './Settings';
-import { selectedCategoryID } from './Store';
 import { autoColor } from './utils/autoColor';
-import { getDayOfWeek, getMonth, toISODateString } from './utils/date';
+import { getDayOfWeek, getMonth } from './utils/date';
 
 interface Props {
     id: string;
@@ -59,12 +58,6 @@ export function Editor(props: Props) {
             return acc;
         }, {});
     });
-
-    const onDayClick = (date: Date, day: Day | undefined, isTopLeft: boolean) => {
-        if (isOwner()) {
-            void toggleDay(ownerId(), id(), date, day, isTopLeft);
-        }
-    };
 
     const onCopy = (category: Category) => {
         const currentDays = days();
@@ -122,13 +115,7 @@ export function Editor(props: Props) {
                             </div>
                         </Show>
 
-                        <CalendarGrid
-                            calendar={cal}
-                            categories={categories}
-                            days={days}
-                            onDayClick={onDayClick}
-                            readonly={!isOwner()}
-                        />
+                        <CalendarGrid calendar={cal} categories={categories} days={days} readonly={!isOwner()} />
 
                         <Notes calendarId={id()} notes={cal().notes} readonly={!isOwner()} />
 
@@ -243,60 +230,4 @@ function sortBy<T>(array: T[], ...predicates: ((element: T) => number | string)[
         }
         return 0;
     });
-}
-
-function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | undefined, isTopLeft: boolean) {
-    const categoryId = selectedCategoryID();
-
-    if (!day) {
-        const dayId = id();
-        void transactCalendar(
-            calendarId,
-            db.tx.days[dayId].update({
-                categoryId,
-                date: toISODateString(date),
-                halfCategoryId: null,
-                ownerId,
-            }),
-            db.tx.calendars[calendarId].link({ days: dayId }),
-        );
-        return;
-    }
-
-    const top = !day.categoryId ? 'empty' : day.categoryId === categoryId ? 'same' : 'different';
-    const half = !day.halfCategoryId ? 'empty' : day.halfCategoryId === categoryId ? 'same' : 'different';
-
-    if (
-        (top === 'same' && half === 'same') ||
-        (top === 'same' && half === 'empty') ||
-        (top === 'empty' && half === 'same')
-    ) {
-        return transactCalendar(calendarId, db.tx.days[day.id].update({ categoryId: null, halfCategoryId: null }));
-    }
-
-    if ((top === 'empty' && half === 'empty') || (top === 'empty' && half === 'different')) {
-        return transactCalendar(calendarId, db.tx.days[day.id].update({ categoryId: categoryId }));
-    }
-
-    if (top === 'same' && half === 'different') {
-        return transactCalendar(calendarId, db.tx.days[day.id].update({ halfCategoryId: categoryId }));
-    }
-
-    if (top === 'different' && half === 'same') {
-        return transactCalendar(calendarId, db.tx.days[day.id].update({ categoryId, halfCategoryId: null }));
-    }
-
-    if ((top === 'different' && half === 'empty') || (top === 'different' && half === 'different')) {
-        if (isTopLeft) {
-            return transactCalendar(
-                calendarId,
-                db.tx.days[day.id].update({
-                    categoryId,
-                    halfCategoryId: half === 'empty' ? day.categoryId : day.halfCategoryId,
-                }),
-            );
-        } else {
-            return transactCalendar(calendarId, db.tx.days[day.id].update({ halfCategoryId: categoryId }));
-        }
-    }
 }
