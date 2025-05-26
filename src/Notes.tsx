@@ -4,6 +4,7 @@ import { db, transactCalendar } from './db';
 interface Props {
     calendarId: string;
     notes: string;
+    readonly?: boolean;
 }
 
 export function Notes(props: Props) {
@@ -17,6 +18,7 @@ export function Notes(props: Props) {
                         db.tx.calendars[props.calendarId].update({ notes: e.currentTarget.value }),
                     );
                 }}
+                readonly={props.readonly}
                 rows={5}
             >
                 {props.notes}

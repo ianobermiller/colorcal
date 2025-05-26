@@ -13,6 +13,7 @@ interface Props {
     categories: Accessor<CategoryWithColor[]>;
     days: Accessor<Day[]>;
     onDayClick?(date: Date, day: Day | undefined, isTopLeft: boolean): void;
+    readonly: boolean;
 }
 
 export function CalendarGrid(props: Props) {
@@ -73,6 +74,7 @@ export function CalendarGrid(props: Props) {
                                     hideLabel={prevDay()?.categoryId === entry().day?.categoryId}
                                     noBorderRight={noBorderRight()}
                                     onDayClick={props.onDayClick}
+                                    readonly={props.readonly}
                                     startDate={() => props.calendar().startDate}
                                 />
                             )}

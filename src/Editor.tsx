@@ -34,6 +34,7 @@ export function Editor(props: Props) {
         () => ({ ruleParams: { knownCalendarId: id() } }),
     );
     const calendar = () => data()?.calendars[0];
+    const isOwner = () => calendar()?.ownerId === ownerId();
     const days = createMemo(() => {
         const calendarDays = calendar()?.days;
         return calendarDays ? [...calendarDays].sort((a, b) => a.date.localeCompare(b.date)) : [];
@@ -75,7 +76,9 @@ export function Editor(props: Props) {
     });
 
     const onDayClick = (date: Date, day: Day | undefined, isTopLeft: boolean) => {
-        void toggleDay(ownerId(), id(), date, day, isTopLeft);
+        if (isOwner()) {
+            void toggleDay(ownerId(), id(), date, day, isTopLeft);
+        }
     };
 
     const onCopy = (category: Category) => {
@@ -101,13 +104,15 @@ export function Editor(props: Props) {
                         <header class="relative">
                             <h2 classList={{ 'opacity-0': isEditingTitle(), 'text-lg': true }}>
                                 {cal().title}{' '}
-                                <IconButton
-                                    onClick={() => {
-                                        setIsEditingTitle(true);
-                                    }}
-                                >
-                                    <EditIcon height="16" width="16" />
-                                </IconButton>
+                                <Show when={isOwner()}>
+                                    <IconButton
+                                        onClick={() => {
+                                            setIsEditingTitle(true);
+                                        }}
+                                    >
+                                        <EditIcon height="16" width="16" />
+                                    </IconButton>
+                                </Show>
                             </h2>
 
                             <Show when={isEditingTitle()}>
@@ -126,39 +131,47 @@ export function Editor(props: Props) {
                             </Show>
                         </header>
 
-                        <div class="flex gap-2">
-                            <Input
-                                onChange={(e) => {
-                                    void transactCalendar(
-                                        id(),
-                                        db.tx.calendars[id()].update({ startDate: e.currentTarget.value }),
-                                    );
-                                }}
-                                type="date"
-                                value={cal().startDate}
-                            />
-                            <Input
-                                onChange={(e) => {
-                                    void transactCalendar(
-                                        id(),
-                                        db.tx.calendars[id()].update({ endDate: e.currentTarget.value }),
-                                    );
-                                }}
-                                type="date"
-                                value={cal().endDate}
-                            />
-                            <IconButton
-                                onClick={() => {
-                                    setIsShowingSettings(true);
-                                }}
-                            >
-                                <SettingsIcon height="16" width="16" />
-                            </IconButton>
-                        </div>
+                        <Show when={isOwner()}>
+                            <div class="flex gap-2">
+                                <Input
+                                    onChange={(e) => {
+                                        void transactCalendar(
+                                            id(),
+                                            db.tx.calendars[id()].update({ startDate: e.currentTarget.value }),
+                                        );
+                                    }}
+                                    readonly={!isOwner()}
+                                    type="date"
+                                    value={cal().startDate}
+                                />
+                                <Input
+                                    onChange={(e) => {
+                                        void transactCalendar(
+                                            id(),
+                                            db.tx.calendars[id()].update({ endDate: e.currentTarget.value }),
+                                        );
+                                    }}
+                                    readonly={!isOwner()}
+                                    type="date"
+                                    value={cal().endDate}
+                                />
+                                <Show when={isOwner()}>
+                                    <IconButton onClick={() => setIsShowingSettings(true)}>
+                                        <SettingsIcon height="16" width="16" />
+                                    </IconButton>
+                                </Show>
+                            </div>
+                        </Show>
 
-                        <CalendarGrid calendar={cal} categories={categories} days={days} onDayClick={onDayClick} />
+                        <CalendarGrid
+                            calendar={cal}
+                            categories={categories}
+                            days={days}
+                            onDayClick={onDayClick}
+                            readonly={!isOwner()}
+                        />
 
-                        <Notes calendarId={id()} notes={cal().notes} />
+                        <Notes calendarId={id()} notes={cal().notes} readonly={!isOwner()} />
 
                         <ul class="list-disc pl-4">
                             <For each={daysWithNote()}>
@@ -174,12 +187,14 @@ export function Editor(props: Props) {
                                                     </strong>{' '}
                                                     {day.icon} {day.note}
                                                 </span>
-                                                <IconButton
-                                                    class="ml-auto opacity-0 group-hover:opacity-100"
-                                                    onClick={() => setEditingDay(day)}
-                                                >
-                                                    <EditIcon />
-                                                </IconButton>
+                                                <Show when={isOwner()}>
+                                                    <IconButton
+                                                        class="ml-auto opacity-0 group-hover:opacity-100"
+                                                        onClick={() => setEditingDay(day)}
+                                                    >
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                </Show>
                                             </div>
                                         </li>
                                     );
@@ -188,15 +203,17 @@ export function Editor(props: Props) {
                         </ul>
                     </div>
 
-                    <div>
-                        <CategoryList
-                            calendarId={id()}
-                            categories={categories()}
-                            countByCategory={countByCategory()}
-                            onCopy={onCopy}
-                            onCopyAll={onCopyAll}
-                        />
-                    </div>
+                    <Show when={isOwner()}>
+                        <div>
+                            <CategoryList
+                                calendarId={id()}
+                                categories={categories()}
+                                countByCategory={countByCategory()}
+                                onCopy={onCopy}
+                                onCopyAll={onCopyAll}
+                            />
+                        </div>
+                    </Show>
 
                     <Show when={isShowingSettings()}>
                         <Settings

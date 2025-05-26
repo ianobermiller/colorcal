@@ -16,6 +16,7 @@ interface Props {
     hideLabel: boolean;
     noBorderRight?: boolean;
     onDayClick?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
+    readonly: boolean;
     startDate: Accessor<string>;
 }
 
@@ -101,16 +102,18 @@ export function CalendarDay(props: Props) {
                     </div>
                 </Show>
 
-                <div
-                    class="absolute top-0.5 right-0.5 cursor-pointer opacity-0 group-hover:opacity-100 hover:font-bold"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setIsShowingEditor(true);
-                    }}
-                >
-                    Edit
-                </div>
+                <Show when={!props.readonly}>
+                    <div
+                        class="absolute top-0.5 right-0.5 cursor-pointer opacity-0 group-hover:opacity-100 hover:font-bold"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setIsShowingEditor(true);
+                        }}
+                    >
+                        Edit
+                    </div>
+                </Show>
             </BaseDay>
 
             <Show when={isShowingEditor()}>
