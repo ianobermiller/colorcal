@@ -141,12 +141,28 @@ export function CalendarGrid(props: Props) {
         onCleanup(() => window.removeEventListener('resize', listener));
     });
 
-    const isInDragRange = (date: Date) => {
+    const getEffectiveCategory = (date: Date, originalCategoryId: null | string | undefined, isFirstDay: boolean) => {
         const current = dragState();
-        if (!current) return false;
+        if (!current) return categoryById()[originalCategoryId ?? ''];
+
         const startDate = current.startDate < current.currentDate ? current.startDate : current.currentDate;
         const endDate = current.startDate < current.currentDate ? current.currentDate : current.startDate;
-        return date >= startDate && date <= endDate;
+
+        if (date < startDate || date > endDate) return categoryById()[originalCategoryId ?? ''];
+
+        const isEdgeDay = date.getTime() === (isFirstDay ? startDate : endDate).getTime();
+        const relevantIsTopLeft = isFirstDay
+            ? current.startDate < current.currentDate
+                ? current.startIsTopLeft
+                : current.currentIsTopLeft
+            : current.startDate < current.currentDate
+              ? current.currentIsTopLeft
+              : current.startIsTopLeft;
+
+        if (!isEdgeDay || (isFirstDay ? relevantIsTopLeft : !relevantIsTopLeft)) {
+            return categoryById()[selectedCategoryID() ?? ''];
+        }
+        return categoryById()[originalCategoryId ?? ''];
     };
 
     return (
@@ -180,17 +196,16 @@ export function CalendarGrid(props: Props) {
                                         calendarId={props.calendar().id}
                                         date={date}
                                         day={entry().day}
-                                        halfCategory={categoryById()[entry().day?.halfCategoryId ?? '']}
+                                        halfCategory={getEffectiveCategory(date(), entry().day?.halfCategoryId, false)}
                                         hideHalfLabel={nextCategoryId() === entry().day?.halfCategoryId}
                                         hideLabel={prevDay()?.categoryId === entry().day?.categoryId}
-                                        isInDragRange={isInDragRange(date())}
                                         noBorderRight={noBorderRight()}
                                         onDayClick={handleDayClick}
                                         onPointerDown={handlePointerDown}
                                         onPointerMove={handlePointerMove}
                                         readonly={props.readonly}
                                         startDate={() => props.calendar().startDate}
-                                        topCategory={categoryById()[entry().day?.categoryId ?? '']}
+                                        topCategory={getEffectiveCategory(date(), entry().day?.categoryId, true)}
                                     />
                                 );
                             }}
