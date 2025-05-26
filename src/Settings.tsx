@@ -1,72 +1,56 @@
-import type { JSX } from 'preact';
+import type { Accessor } from 'solid-js';
 
-import { route } from 'preact-router';
-import { useCallback } from 'preact/hooks';
-import { FiTrash2, FiX } from 'react-icons/fi';
+import { useNavigate } from '@solidjs/router';
+import TrashIcon from '~icons/feather/trash-2';
 
 import type { Calendar } from './types';
 
-import { Button, IconButton } from './Button';
+import { Button } from './components/Button';
+import { Input } from './components/Input';
+import { Modal } from './components/Modal';
 import { db } from './db';
-import { Input } from './Input';
 
 interface Props {
-  calendar: Calendar;
-  onClose(): void;
+    calendar: Accessor<Calendar>;
+    onClose(): void;
 }
 
-export function Settings({ calendar, onClose }: Props) {
-  const handleScrimClick = useCallback(
-    (e: MouseEvent) => {
-      if (e.target !== e.currentTarget) {
-        return;
-      }
+export function Settings(props: Props) {
+    const navigate = useNavigate();
 
-      onClose();
-    },
-    [onClose],
-  );
+    const handleVisibilityChange = (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        void db.transact(db.tx.calendars[props.calendar().id].update({ isPubliclyVisible: target.checked }));
+    };
 
-  const handleVisibilityChange = useCallback(
-    (e: JSX.TargetedEvent<HTMLInputElement>) => {
-      void db.transact(db.tx.calendars[calendar.id].update({ isPubliclyVisible: e.currentTarget.checked }));
-    },
-    [calendar.id],
-  );
+    return (
+        <Modal onClose={props.onClose} title="Calendar Settings">
+            <div class="flex flex-col gap-3 pb-4">
+                <h3 class="font-bold">Visibility</h3>
 
-  return (
-    <div className="fixed inset-0 flex items-start justify-center bg-black/50 px-4 pt-12" onClick={handleScrimClick}>
-      <div className="flex w-full flex-col gap-4 rounded border-slate-300 bg-white px-6 py-2 shadow-lg md:max-w-lg dark:bg-slate-800">
-        <header className="flex items-center justify-between border-b border-slate-400 py-3">
-          <h2 className="text-lg font-bold">Calendar Settings</h2>
-          <IconButton onClick={onClose}>
-            <FiX />
-          </IconButton>
-        </header>
-        <div className="flex flex-col gap-3 pb-4">
-          <h3 className="font-bold">Visibility</h3>
+                <label class="flex items-center gap-2">
+                    <Input
+                        checked={props.calendar().isPubliclyVisible}
+                        onChange={handleVisibilityChange}
+                        type="checkbox"
+                    />{' '}
+                    Anyone with the link can view
+                </label>
 
-          <label className="flex items-center gap-2">
-            <Input checked={calendar.isPubliclyVisible} onChange={handleVisibilityChange} type="checkbox" /> Anyone with
-            the link can view
-          </label>
+                <h3 class="font-bold">Delete</h3>
 
-          <h3 className="font-bold">Delete</h3>
-
-          <Button
-            className="self-start"
-            onClick={async () => {
-              if (confirm(`Delete calendar "${calendar.title}"?`)) {
-                await db.transact(db.tx.calendars[calendar.id].delete());
-                route('/');
-              }
-            }}
-          >
-            <FiTrash2 />
-            Delete Calendar
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
+                <Button
+                    class="self-start"
+                    onClick={() => {
+                        if (confirm(`Delete calendar "${props.calendar().title}"?`)) {
+                            void db.transact(db.tx.calendars[props.calendar().id].delete()).then(() => navigate('/'));
+                        }
+                    }}
+                >
+                    <TrashIcon height="16" width="16" />
+                    Delete Calendar
+                </Button>
+            </div>
+        </Modal>
+    );
 }

@@ -1,11 +1,5 @@
-import { create } from 'zustand';
+import { createSignal } from 'solid-js';
 
-interface State {
-  selectCategory(id: null | string): void;
-  selectedCategoryID: null | string;
-}
+const [selectedCategoryID, setSelectedCategoryID] = createSignal<null | string>(null);
 
-export const useStore = create<State>((set) => ({
-  selectCategory: (id: string) => set(() => ({ selectedCategoryID: id })),
-  selectedCategoryID: null,
-}));
+export { selectedCategoryID, setSelectedCategoryID };
