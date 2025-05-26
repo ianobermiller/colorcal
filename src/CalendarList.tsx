@@ -5,12 +5,12 @@ import { uuidToUrl } from 'uuid-url';
 import { Button } from './components/Button';
 import { Input } from './components/Input';
 import { db, id } from './db';
-import { useAuth, useQuery } from './db';
+import { useQuery } from './db';
+import { useOwnerId } from './hooks/useOwnerId';
 import { toISODateString } from './utils/date';
 
 export function CalendarList() {
-    const { user } = useAuth();
-    const ownerId = () => user()?.id ?? '';
+    const ownerId = useOwnerId();
 
     const { data } = useQuery(() => ({ calendars: { $: { where: { ownerId: ownerId() } } } }));
     const calendars = createMemo(() => (data()?.calendars ?? []).sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1)));

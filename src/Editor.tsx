@@ -11,7 +11,8 @@ import { IconButton } from './components/Button';
 import { Input } from './components/Input';
 import { DayEditor } from './DayEditor';
 import { db, transactCalendar } from './db';
-import { useAuth, useQuery } from './db';
+import { useQuery } from './db';
+import { useOwnerId } from './hooks/useOwnerId';
 import { Notes } from './Notes';
 import { Settings } from './Settings';
 import { autoColor } from './utils/autoColor';
@@ -22,9 +23,7 @@ interface Props {
 }
 
 export function Editor(props: Props) {
-    const { user } = useAuth();
-    const ownerId = () => user()?.id ?? '';
-
+    const ownerId = useOwnerId();
     const id = () => urlToUuid(props.id);
     const [isShowingSettings, setIsShowingSettings] = createSignal(false);
     const { data } = useQuery(

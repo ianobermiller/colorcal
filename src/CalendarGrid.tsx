@@ -5,7 +5,8 @@ import { createMemo, createSignal, Index, onCleanup, onMount, Show } from 'solid
 import type { Calendar, CategoryWithColor, Day } from './types';
 
 import { CalendarDay, DayOfWeek, FillerDay } from './CalendarDay';
-import { db, id, transactCalendar, useAuth } from './db';
+import { db, id, transactCalendar } from './db';
+import { useOwnerId } from './hooks/useOwnerId';
 import { selectedCategoryID } from './Store';
 import { dateRangeAlignWeek, toISODateString } from './utils/date';
 import { indexArray } from './utils/indexArray';
@@ -18,8 +19,7 @@ interface Props {
 }
 
 export function CalendarGrid(props: Props) {
-    const { user } = useAuth();
-    const ownerId = () => user()?.id ?? '';
+    const ownerId = useOwnerId();
     const dayByDate = createMemo(() => indexArray(props.days(), (day) => day.date));
     const range = createMemo(() =>
         dateRangeAlignWeek(new Date(props.calendar().startDate), new Date(props.calendar().endDate)).map((date) => ({

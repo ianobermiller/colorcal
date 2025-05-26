@@ -7,7 +7,7 @@ import type { CategoryWithColor } from './types';
 import { Button, IconButton } from './components/Button';
 import { Input } from './components/Input';
 import { db, id, transactCalendar } from './db';
-import { useAuth } from './db';
+import { useOwnerId } from './hooks/useOwnerId';
 import { selectedCategoryID, setSelectedCategoryID } from './Store';
 import { getColorForMode } from './utils/colors';
 
@@ -20,8 +20,7 @@ interface Props {
 }
 
 export function CategoryList(props: Props) {
-    const { user } = useAuth();
-    const ownerId = () => user()?.id ?? '';
+    const ownerId = useOwnerId();
 
     const addCategory = async () => {
         const categoryId = id();
