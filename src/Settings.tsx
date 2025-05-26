@@ -26,11 +26,30 @@ export function Settings(props: Props) {
         );
     };
 
+    const updateTitle = (e: { currentTarget: { value: string } }) => {
+        void transactCalendar(
+            props.calendar().id,
+            db.tx.calendars[props.calendar().id].update({ title: e.currentTarget.value }),
+        );
+    };
+
     return (
         <Modal onClose={props.onClose} title="Calendar Settings">
             <div class="flex flex-col gap-3 pb-4">
-                <h3 class="font-bold">Visibility</h3>
+                <h3 class="font-bold">Calendar Name</h3>
+                <Input
+                    class="w-full"
+                    onBlur={updateTitle}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            updateTitle(e);
+                        }
+                    }}
+                    type="text"
+                    value={props.calendar().title}
+                />
 
+                <h3 class="font-bold">Visibility</h3>
                 <label class="flex items-center gap-2">
                     <Input
                         checked={props.calendar().isPubliclyVisible}
@@ -41,7 +60,6 @@ export function Settings(props: Props) {
                 </label>
 
                 <h3 class="font-bold">Delete</h3>
-
                 <Button
                     class="self-start"
                     onClick={() => {

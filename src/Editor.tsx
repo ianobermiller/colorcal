@@ -1,6 +1,6 @@
 import EditIcon from '~icons/feather/edit';
 import SettingsIcon from '~icons/feather/settings';
-import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
+import { createMemo, createSignal, For, Show } from 'solid-js';
 import { urlToUuid } from 'uuid-url';
 
 import type { Category, Day } from './types';
@@ -27,7 +27,6 @@ export function Editor(props: Props) {
     const ownerId = () => user()?.id ?? '';
 
     const id = () => urlToUuid(props.id);
-    const [isEditingTitle, setIsEditingTitle] = createSignal(false);
     const [isShowingSettings, setIsShowingSettings] = createSignal(false);
     const { data } = useQuery(
         () => ({ calendars: { $: { where: { id: id() } }, categories: {}, days: {} } }),
@@ -61,20 +60,6 @@ export function Editor(props: Props) {
         }, {});
     });
 
-    const updateTitle = (e: { currentTarget: { value: string } }) => {
-        setIsEditingTitle(false);
-        void transactCalendar(id(), db.tx.calendars[id()].update({ title: e.currentTarget.value }));
-    };
-
-    let titleInputRef: HTMLInputElement | undefined;
-
-    createEffect(() => {
-        if (isEditingTitle()) {
-            titleInputRef?.focus();
-            titleInputRef?.select();
-        }
-    });
-
     const onDayClick = (date: Date, day: Day | undefined, isTopLeft: boolean) => {
         if (isOwner()) {
             void toggleDay(ownerId(), id(), date, day, isTopLeft);
@@ -102,33 +87,7 @@ export function Editor(props: Props) {
                 <div class="gap-4 lg:flex">
                     <div class="mb-6 flex flex-grow flex-col gap-4">
                         <header class="relative">
-                            <h2 classList={{ 'opacity-0': isEditingTitle(), 'text-lg': true }}>
-                                {cal().title}{' '}
-                                <Show when={isOwner()}>
-                                    <IconButton
-                                        onClick={() => {
-                                            setIsEditingTitle(true);
-                                        }}
-                                    >
-                                        <EditIcon height="16" width="16" />
-                                    </IconButton>
-                                </Show>
-                            </h2>
-
-                            <Show when={isEditingTitle()}>
-                                <Input
-                                    class="inline w-auto"
-                                    onBlur={updateTitle}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            updateTitle(e);
-                                        }
-                                    }}
-                                    ref={titleInputRef}
-                                    type="text"
-                                    value={cal().title}
-                                />
-                            </Show>
+                            <h2 class="text-lg">{cal().title} </h2>
                         </header>
 
                         <Show when={isOwner()}>
