@@ -28,6 +28,7 @@ interface Props {
 export function CalendarGrid(props: Props) {
     const ownerId = useOwnerId();
     const dayByDate = createMemo(() => indexArray(props.days(), (day) => day.date));
+    const categoryById = createMemo(() => indexArray(props.categories(), (cat) => cat.id));
     const range = createMemo(() =>
         dateRangeAlignWeek(new Date(props.calendar().startDate), new Date(props.calendar().endDate)).map((date) => ({
             date,
@@ -156,7 +157,8 @@ export function CalendarGrid(props: Props) {
         >
             {Array.from({ length: 7 }, (_, index) => {
                 const { day } = range()[index];
-                const topCategory = props.categories().find((c) => c.id === day?.categoryId);
+                const categories = categoryById();
+                const topCategory = day?.categoryId ? categories[day.categoryId] : undefined;
                 return <DayOfWeek color={topCategory?.color} index={index} />;
             })}
 
@@ -172,23 +174,26 @@ export function CalendarGrid(props: Props) {
 
                     return (
                         <Show fallback={<FillerDay />} when={entry().date}>
-                            {(date) => (
-                                <CalendarDay
-                                    calendarId={props.calendar().id}
-                                    categories={props.categories}
-                                    date={date}
-                                    day={entry().day}
-                                    hideHalfLabel={nextCategoryId() === entry().day?.halfCategoryId}
-                                    hideLabel={prevDay()?.categoryId === entry().day?.categoryId}
-                                    isInDragRange={isInDragRange(date())}
-                                    noBorderRight={noBorderRight()}
-                                    onDayClick={handleDayClick}
-                                    onMouseDown={handleMouseDown}
-                                    onMouseMove={handleMouseMove}
-                                    readonly={props.readonly}
-                                    startDate={() => props.calendar().startDate}
-                                />
-                            )}
+                            {(date) => {
+                                return (
+                                    <CalendarDay
+                                        calendarId={props.calendar().id}
+                                        date={date}
+                                        day={entry().day}
+                                        halfCategory={categoryById()[entry().day?.halfCategoryId ?? '']}
+                                        hideHalfLabel={nextCategoryId() === entry().day?.halfCategoryId}
+                                        hideLabel={prevDay()?.categoryId === entry().day?.categoryId}
+                                        isInDragRange={isInDragRange(date())}
+                                        noBorderRight={noBorderRight()}
+                                        onDayClick={handleDayClick}
+                                        onMouseDown={handleMouseDown}
+                                        onMouseMove={handleMouseMove}
+                                        readonly={props.readonly}
+                                        startDate={() => props.calendar().startDate}
+                                        topCategory={categoryById()[entry().day?.categoryId ?? '']}
+                                    />
+                                );
+                            }}
                         </Show>
                     );
                 }}

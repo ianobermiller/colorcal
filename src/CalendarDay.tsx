@@ -6,13 +6,12 @@ import { DayEditor } from './DayEditor';
 import { selectedCategoryID } from './Store';
 import { getColorForMode } from './utils/colors';
 import { getDayOfWeek, toISODateString } from './utils/date';
-import { getIsTopLeft } from './utils/mouse';
 
 interface Props {
     calendarId: string;
-    categories: Accessor<CategoryWithColor[]>;
     date: Accessor<Date>;
     day: Day | null | undefined;
+    halfCategory: CategoryWithColor | undefined;
     hideHalfLabel: boolean;
     hideLabel: boolean;
     isInDragRange?: boolean;
@@ -22,6 +21,7 @@ interface Props {
     onMouseMove?(date: Date, isTopLeft: boolean): void;
     readonly: boolean;
     startDate: Accessor<string>;
+    topCategory: CategoryWithColor | undefined;
 }
 
 function BaseDay(
@@ -49,9 +49,6 @@ export function CalendarDay(props: Props) {
     const isHalfSelected = () => props.day?.halfCategoryId && selectedCategoryID() === props.day.halfCategoryId;
     const showMonth = () => toISODateString(props.date()) === props.startDate() || props.date().getUTCDate() === 1;
 
-    const topCategory = () => props.categories().find((c) => c.id === props.day?.categoryId);
-    const halfCategory = () => props.categories().find((c) => c.id === props.day?.halfCategoryId);
-
     const [isShowingEditor, setIsShowingEditor] = createSignal(false);
 
     const handleMouseEvent = (e: MouseEvent, handler?: (date: Date, isTopLeft: boolean) => void) => {
@@ -75,7 +72,7 @@ export function CalendarDay(props: Props) {
                     return props.onMouseDown?.(props.date(), props.day, isTopLeft);
                 }}
                 onMouseMove={(e) => handleMouseEvent(e, props.onMouseMove)}
-                style={{ background: getColorForMode(topCategory()?.color) }}
+                style={{ background: getColorForMode(props.topCategory?.color) }}
             >
                 <span classList={{ 'font-bold': Boolean(isTopSelected() ?? isHalfSelected()) }}>
                     {props.date().getUTCDate()}
@@ -83,13 +80,13 @@ export function CalendarDay(props: Props) {
                         ' ' + props.date().toLocaleDateString(undefined, { month: 'short', timeZone: 'UTC' })}
                 </span>
 
-                <Show when={!props.hideLabel && topCategory()}>
+                <Show when={!props.hideLabel && props.topCategory}>
                     <div classList={{ 'font-bold': Boolean(isTopSelected()), 'mt-1 text-sm': true }}>
-                        {topCategory()?.name}
+                        {props.topCategory?.name}
                     </div>
                 </Show>
 
-                <Show when={halfCategory()}>
+                <Show when={props.halfCategory}>
                     {(category) => (
                         <>
                             <div
@@ -158,4 +155,11 @@ export function DayOfWeek(props: { color: string | undefined; index: number }) {
             {getDayOfWeek(new Date(`2017-01-0${props.index + 1}T00:00:00+00:00`))}
         </div>
     );
+}
+
+function getIsTopLeft(e: MouseEvent, element: HTMLElement): boolean {
+    const rect = element.getBoundingClientRect();
+    const cartesianX = e.clientX - rect.left;
+    const cartesianY = rect.bottom - e.clientY;
+    return cartesianY > cartesianX;
 }
