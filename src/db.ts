@@ -2,7 +2,12 @@ import type { InstaQLOptions, User } from '@instantdb/core';
 import type { Accessor } from 'solid-js';
 
 import { id, init } from '@instantdb/core';
-import { type InstaQLParams, type InstaQLResponse, type InstaQLSubscriptionState } from '@instantdb/core';
+import {
+    type InstaQLParams,
+    type InstaQLResponse,
+    type InstaQLSubscriptionState,
+    type TransactionChunk,
+} from '@instantdb/core';
 import { batch, createEffect, createSignal, onCleanup } from 'solid-js';
 
 import schema from '../instant.schema';
@@ -12,6 +17,17 @@ const APP_ID = 'ade8f44c-d755-45dd-b985-15ee77d3eb87';
 
 export { id };
 export const db = init({ appId: APP_ID, schema });
+
+/**
+ * Executes a transaction that automatically updates calendar.updatedAt when calendar-related entities are modified
+ */
+export async function transactCalendar(
+    calendarId: string,
+    ...operations: TransactionChunk<Schema, keyof Schema['entities']>[]
+) {
+    const timestamp = new Date().toISOString();
+    return db.transact([...operations, db.tx.calendars[calendarId].update({ updatedAt: timestamp })]);
+}
 
 /**
  * SolidJS hook to access InstantDB authentication

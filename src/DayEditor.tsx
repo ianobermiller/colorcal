@@ -7,8 +7,7 @@ import type { Day } from './types';
 import { IconButton } from './components/Button';
 import { Modal } from './components/Modal';
 import { Textarea } from './components/Textarea';
-import { db } from './db';
-import { touchCalendar } from './utils/touchCalendar';
+import { db, transactCalendar } from './db';
 
 const ICONS = ['✈️', '🚆', '🚙', '🚍'];
 
@@ -29,10 +28,7 @@ export function DayEditor(props: { calendarId: string; day: Day; onClose(): void
                                     onClick={() => {
                                         const id = props.day.id;
                                         if (id)
-                                            void db.transact([
-                                                db.tx.days[id].update({ icon }),
-                                                touchCalendar(props.calendarId),
-                                            ]);
+                                            void transactCalendar(props.calendarId, db.tx.days[id].update({ icon }));
                                     }}
                                 >
                                     {icon}
@@ -42,11 +38,7 @@ export function DayEditor(props: { calendarId: string; day: Day; onClose(): void
                         <IconButton
                             onClick={() => {
                                 const id = props.day.id;
-                                if (id)
-                                    void db.transact([
-                                        db.tx.days[id].update({ icon: null }),
-                                        touchCalendar(props.calendarId),
-                                    ]);
+                                if (id) void transactCalendar(props.calendarId, db.tx.days[id].update({ icon: null }));
                             }}
                         >
                             <TrashIcon />
@@ -57,10 +49,10 @@ export function DayEditor(props: { calendarId: string; day: Day; onClose(): void
                         onBlur={(e) => {
                             const id = props.day.id;
                             if (id)
-                                void db.transact([
+                                void transactCalendar(
+                                    props.calendarId,
                                     db.tx.days[id].update({ note: e.target.value }),
-                                    touchCalendar(props.calendarId),
-                                ]);
+                                );
                         }}
                         placeholder="Note"
                         value={props.day.note}

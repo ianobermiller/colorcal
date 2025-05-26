@@ -1,6 +1,5 @@
 import { Textarea } from './components/Textarea';
-import { db } from './db';
-import { touchCalendar } from './utils/touchCalendar';
+import { db, transactCalendar } from './db';
 
 interface Props {
     calendarId: string;
@@ -13,10 +12,10 @@ export function Notes(props: Props) {
             <h3>Notes</h3>
             <Textarea
                 onBlur={(e) => {
-                    void db.transact([
+                    void transactCalendar(
+                        props.calendarId,
                         db.tx.calendars[props.calendarId].update({ notes: e.currentTarget.value }),
-                        touchCalendar(props.calendarId),
-                    ]);
+                    );
                 }}
                 rows={5}
             >
