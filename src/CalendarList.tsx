@@ -88,7 +88,7 @@ async function createCalendar(ownerId: string, title: string) {
     endDate.setDate(endDate.getDate() + 7);
 
     const calendarId = id();
-    await db.transact(
+    await db.transact([
         db.tx.calendars[calendarId].update({
             endDate: toISODateString(endDate),
             isPubliclyVisible: false,
@@ -96,9 +96,9 @@ async function createCalendar(ownerId: string, title: string) {
             ownerId,
             startDate: toISODateString(startDate),
             title,
-            updatedAt: Date.now(),
+            updatedAt: new Date().toISOString(),
         }),
-    );
+    ]);
     navigate(`/${uuidToUrl(calendarId)}`);
 }
 

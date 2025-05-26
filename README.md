@@ -17,3 +17,5 @@ A travel planning tool that lets you color code and label the days of your trip.
 ## TODO
 
 - Allow locking locations that are already booked
+- Day editing mode vs filling in details mode
+- Click and drag to add days

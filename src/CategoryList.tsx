@@ -10,6 +10,7 @@ import { db, id } from './db';
 import { useAuth } from './db';
 import { selectedCategoryID, setSelectedCategoryID } from './Store';
 import { getColorForMode } from './utils/colors';
+import { touchCalendar } from './utils/touchCalendar';
 
 interface Props {
     calendarId: string;
@@ -31,6 +32,7 @@ export function CategoryList(props: Props) {
                 ownerId: ownerId(),
             }),
             db.tx.calendars[props.calendarId].link({ categories: categoryId }),
+            touchCalendar(props.calendarId),
         ]);
         setSelectedCategoryID(categoryId);
     };
@@ -43,6 +45,7 @@ export function CategoryList(props: Props) {
                 <For each={props.categories}>
                     {(category) => (
                         <CategoryRow
+                            calendarId={props.calendarId}
                             category={category}
                             count={props.countByCategory[category.id] ?? 0}
                             onCopy={props.onCopy}
@@ -63,13 +66,17 @@ export function CategoryList(props: Props) {
 }
 
 function CategoryRow(props: {
+    calendarId: string;
     category: CategoryWithColor;
     count: number;
     onCopy: (category: CategoryWithColor) => void;
 }) {
     const onNameChange = (e: Event) => {
         const target = e.target as HTMLInputElement;
-        void db.transact(db.tx.categories[props.category.id].update({ name: target.value }));
+        void db.transact([
+            db.tx.categories[props.category.id].update({ name: target.value }),
+            touchCalendar(props.calendarId),
+        ]);
     };
 
     const onColorClick = () => setSelectedCategoryID(props.category.id);
@@ -113,7 +120,10 @@ function CategoryRow(props: {
                     <button
                         class="rounded px-4 py-2 text-left hover:bg-slate-100 dark:hover:bg-slate-600"
                         onClick={() => {
-                            void db.transact(db.tx.categories[props.category.id].delete());
+                            void db.transact([
+                                db.tx.categories[props.category.id].delete(),
+                                touchCalendar(props.calendarId),
+                            ]);
                         }}
                     >
                         Delete

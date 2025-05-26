@@ -9,6 +9,7 @@ import { Button } from './components/Button';
 import { Input } from './components/Input';
 import { Modal } from './components/Modal';
 import { db } from './db';
+import { touchCalendar } from './utils/touchCalendar';
 
 interface Props {
     calendar: Accessor<Calendar>;
@@ -20,7 +21,10 @@ export function Settings(props: Props) {
 
     const handleVisibilityChange = (e: Event) => {
         const target = e.target as HTMLInputElement;
-        void db.transact(db.tx.calendars[props.calendar().id].update({ isPubliclyVisible: target.checked }));
+        void db.transact([
+            db.tx.calendars[props.calendar().id].update({ isPubliclyVisible: target.checked }),
+            touchCalendar(props.calendar().id),
+        ]);
     };
 
     return (

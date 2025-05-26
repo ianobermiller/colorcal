@@ -8,10 +8,11 @@ import { IconButton } from './components/Button';
 import { Modal } from './components/Modal';
 import { Textarea } from './components/Textarea';
 import { db } from './db';
+import { touchCalendar } from './utils/touchCalendar';
 
 const ICONS = ['✈️', '🚆', '🚙', '🚍'];
 
-export function DayEditor(props: { day: Day; onClose(): void }) {
+export function DayEditor(props: { calendarId: string; day: Day; onClose(): void }) {
     return (
         <Portal>
             <Modal onClose={props.onClose} title="Edit Day">
@@ -27,7 +28,11 @@ export function DayEditor(props: { day: Day; onClose(): void }) {
                                     }}
                                     onClick={() => {
                                         const id = props.day.id;
-                                        if (id) void db.transact(db.tx.days[id].update({ icon }));
+                                        if (id)
+                                            void db.transact([
+                                                db.tx.days[id].update({ icon }),
+                                                touchCalendar(props.calendarId),
+                                            ]);
                                     }}
                                 >
                                     {icon}
@@ -37,16 +42,25 @@ export function DayEditor(props: { day: Day; onClose(): void }) {
                         <IconButton
                             onClick={() => {
                                 const id = props.day.id;
-                                if (id) void db.transact(db.tx.days[id].update({ icon: null }));
+                                if (id)
+                                    void db.transact([
+                                        db.tx.days[id].update({ icon: null }),
+                                        touchCalendar(props.calendarId),
+                                    ]);
                             }}
                         >
                             <TrashIcon />
                         </IconButton>
                     </div>
+
                     <Textarea
                         onBlur={(e) => {
                             const id = props.day.id;
-                            if (id) void db.transact(db.tx.days[id].update({ note: e.target.value }));
+                            if (id)
+                                void db.transact([
+                                    db.tx.days[id].update({ note: e.target.value }),
+                                    touchCalendar(props.calendarId),
+                                ]);
                         }}
                         placeholder="Note"
                         value={props.day.note}

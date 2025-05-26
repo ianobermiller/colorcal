@@ -17,6 +17,7 @@ import { Settings } from './Settings';
 import { selectedCategoryID } from './Store';
 import { autoColor } from './utils/autoColor';
 import { getDayOfWeek, getMonth, toISODateString } from './utils/date';
+import { touchCalendar } from './utils/touchCalendar';
 
 interface Props {
     id: string;
@@ -62,7 +63,7 @@ export function Editor(props: Props) {
 
     const updateTitle = (e: { currentTarget: { value: string } }) => {
         setIsEditingTitle(false);
-        void db.transact(db.tx.calendars[id()].update({ title: e.currentTarget.value }));
+        void db.transact([db.tx.calendars[id()].update({ title: e.currentTarget.value }), touchCalendar(id())]);
     };
 
     let titleInputRef: HTMLInputElement | undefined;
@@ -129,16 +130,20 @@ export function Editor(props: Props) {
                         <div class="flex gap-2">
                             <Input
                                 onChange={(e) => {
-                                    void db.transact(
+                                    void db.transact([
                                         db.tx.calendars[id()].update({ startDate: e.currentTarget.value }),
-                                    );
+                                        touchCalendar(id()),
+                                    ]);
                                 }}
                                 type="date"
                                 value={cal().startDate}
                             />
                             <Input
                                 onChange={(e) => {
-                                    void db.transact(db.tx.calendars[id()].update({ endDate: e.currentTarget.value }));
+                                    void db.transact([
+                                        db.tx.calendars[id()].update({ endDate: e.currentTarget.value }),
+                                        touchCalendar(id()),
+                                    ]);
                                 }}
                                 type="date"
                                 value={cal().endDate}
@@ -204,7 +209,7 @@ export function Editor(props: Props) {
                     </Show>
 
                     <Show when={editingDay()}>
-                        {(day) => <DayEditor day={day()} onClose={() => setEditingDay(undefined)} />}
+                        {(day) => <DayEditor calendarId={id()} day={day()} onClose={() => setEditingDay(undefined)} />}
                     </Show>
                 </div>
             )}
@@ -278,6 +283,7 @@ function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | u
                 ownerId,
             }),
             db.tx.calendars[calendarId].link({ days: dayId }),
+            touchCalendar(calendarId),
         ]);
         return;
     }
@@ -290,31 +296,38 @@ function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | u
         (top === 'same' && half === 'empty') ||
         (top === 'empty' && half === 'same')
     ) {
-        return db.transact(db.tx.days[day.id].update({ categoryId: null, halfCategoryId: null }));
+        return db.transact([
+            db.tx.days[day.id].update({ categoryId: null, halfCategoryId: null }),
+            touchCalendar(calendarId),
+        ]);
     }
 
     if ((top === 'empty' && half === 'empty') || (top === 'empty' && half === 'different')) {
-        return db.transact(db.tx.days[day.id].update({ categoryId: categoryId }));
+        return db.transact([db.tx.days[day.id].update({ categoryId: categoryId }), touchCalendar(calendarId)]);
     }
 
     if (top === 'same' && half === 'different') {
-        return db.transact(db.tx.days[day.id].update({ halfCategoryId: categoryId }));
+        return db.transact([db.tx.days[day.id].update({ halfCategoryId: categoryId }), touchCalendar(calendarId)]);
     }
 
     if (top === 'different' && half === 'same') {
-        return db.transact(db.tx.days[day.id].update({ categoryId, halfCategoryId: null }));
+        return db.transact([
+            db.tx.days[day.id].update({ categoryId, halfCategoryId: null }),
+            touchCalendar(calendarId),
+        ]);
     }
 
     if ((top === 'different' && half === 'empty') || (top === 'different' && half === 'different')) {
         if (isTopLeft) {
-            return db.transact(
+            return db.transact([
                 db.tx.days[day.id].update({
                     categoryId,
                     halfCategoryId: half === 'empty' ? day.categoryId : day.halfCategoryId,
                 }),
-            );
+                touchCalendar(calendarId),
+            ]);
         } else {
-            return db.transact(db.tx.days[day.id].update({ halfCategoryId: categoryId }));
+            return db.transact([db.tx.days[day.id].update({ halfCategoryId: categoryId }), touchCalendar(calendarId)]);
         }
     }
 }

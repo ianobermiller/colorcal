@@ -8,6 +8,7 @@ import { getColorForMode } from './utils/colors';
 import { getDayOfWeek, toISODateString } from './utils/date';
 
 interface Props {
+    calendarId: string;
     categories: Accessor<CategoryWithColor[]>;
     date: Accessor<Date>;
     day: Day | null | undefined;
@@ -114,7 +115,13 @@ export function CalendarDay(props: Props) {
 
             <Show when={isShowingEditor()}>
                 <Show when={props.day}>
-                    {(day) => <DayEditor day={day()} onClose={() => setIsShowingEditor(false)} />}
+                    {(day) => (
+                        <DayEditor
+                            calendarId={props.calendarId}
+                            day={day()}
+                            onClose={() => setIsShowingEditor(false)}
+                        />
+                    )}
                 </Show>
             </Show>
         </>

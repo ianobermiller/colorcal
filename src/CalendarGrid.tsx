@@ -65,6 +65,7 @@ export function CalendarGrid(props: Props) {
                         <Show fallback={<FillerDay />} when={entry().date}>
                             {(date) => (
                                 <CalendarDay
+                                    calendarId={props.calendar().id}
                                     categories={props.categories}
                                     date={date}
                                     day={entry().day}
