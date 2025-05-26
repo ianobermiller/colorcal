@@ -39,6 +39,3 @@ const schema = i.schema({
 });
 
 export default schema;
-
-// This helps Typescript display nicer intellisense
-export type AppSchema = typeof schema;

@@ -1,0 +1,6 @@
+{
+    "ignore": ["instant.perms.ts"],
+    "paths": {
+        "~icons/*": ["node_modules/unplugin-icons/types/solid.d.ts"]
+    }
+}

@@ -18,7 +18,7 @@ interface Props {
     startDate: Accessor<string>;
 }
 
-export function BaseDay(props: { noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>) {
+function BaseDay(props: { noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>) {
     const [local, rest] = splitProps(props, ['noBorderRight']);
     return (
         <div
