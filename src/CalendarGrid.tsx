@@ -78,7 +78,7 @@ export function CalendarGrid(props: Props) {
         void transactCalendar(props.calendar().id, ...operations);
     };
 
-    const handleMouseDown = (date: Date, day: Day | undefined, isTopLeft: boolean) => {
+    const handlePointerDown = (date: Date, day: Day | undefined, isTopLeft: boolean) => {
         if (props.readonly) return;
 
         setDragState({
@@ -88,12 +88,12 @@ export function CalendarGrid(props: Props) {
             startIsTopLeft: isTopLeft,
         });
 
-        const handleGlobalMouseUp = (e: MouseEvent) => {
+        const handleGlobalPointerUp = (e: PointerEvent) => {
             const current = dragState();
             if (current) {
                 if (rootRef) {
                     const rect = rootRef.getBoundingClientRect();
-                    // Only apply if mouse up is inside the grid
+                    // Only apply if pointer up is inside the grid
                     if (
                         e.clientX >= rect.left &&
                         e.clientX <= rect.right &&
@@ -108,15 +108,15 @@ export function CalendarGrid(props: Props) {
                 setDragState(null);
             }
 
-            window.removeEventListener('mouseup', handleGlobalMouseUp);
+            window.removeEventListener('pointerup', handleGlobalPointerUp);
         };
 
-        window.addEventListener('mouseup', handleGlobalMouseUp);
+        window.addEventListener('pointerup', handleGlobalPointerUp);
 
-        onCleanup(() => window.removeEventListener('mouseup', handleGlobalMouseUp));
+        onCleanup(() => window.removeEventListener('pointerup', handleGlobalPointerUp));
     };
 
-    const handleMouseMove = (date: Date, isTopLeft: boolean) => {
+    const handlePointerMove = (date: Date, isTopLeft: boolean) => {
         const current = dragState();
         if (current) {
             setDragState({
@@ -186,8 +186,8 @@ export function CalendarGrid(props: Props) {
                                         isInDragRange={isInDragRange(date())}
                                         noBorderRight={noBorderRight()}
                                         onDayClick={handleDayClick}
-                                        onMouseDown={handleMouseDown}
-                                        onMouseMove={handleMouseMove}
+                                        onPointerDown={handlePointerDown}
+                                        onPointerMove={handlePointerMove}
                                         readonly={props.readonly}
                                         startDate={() => props.calendar().startDate}
                                         topCategory={categoryById()[entry().day?.categoryId ?? '']}

@@ -2,6 +2,7 @@ import { type Accessor, createSignal, type JSX, Show, splitProps } from 'solid-j
 
 import type { CategoryWithColor, Day } from './types';
 
+import { Tooltip } from './components/Tooltip';
 import { DayEditor } from './DayEditor';
 import { selectedCategoryID } from './Store';
 import { getColorForMode } from './utils/colors';
@@ -17,8 +18,8 @@ interface Props {
     isInDragRange?: boolean;
     noBorderRight?: boolean;
     onDayClick?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
-    onMouseDown?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
-    onMouseMove?(date: Date, isTopLeft: boolean): void;
+    onPointerDown?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
+    onPointerMove?(date: Date, isTopLeft: boolean): void;
     readonly: boolean;
     startDate: Accessor<string>;
     topCategory: CategoryWithColor | undefined;
@@ -51,7 +52,7 @@ export function CalendarDay(props: Props) {
 
     const [isShowingEditor, setIsShowingEditor] = createSignal(false);
 
-    const handleMouseEvent = (e: MouseEvent, handler?: (date: Date, isTopLeft: boolean) => void) => {
+    const handlePointerEvent = (e: PointerEvent, handler?: (date: Date, isTopLeft: boolean) => void) => {
         if (handler) {
             handler(props.date(), getIsTopLeft(e, e.currentTarget as HTMLElement));
         }
@@ -67,11 +68,11 @@ export function CalendarDay(props: Props) {
                     const isTopLeft = getIsTopLeft(e, e.currentTarget);
                     return props.onDayClick?.(props.date(), props.day, isTopLeft);
                 }}
-                onMouseDown={(e) => {
+                onPointerDown={(e) => {
                     const isTopLeft = getIsTopLeft(e, e.currentTarget);
-                    return props.onMouseDown?.(props.date(), props.day, isTopLeft);
+                    return props.onPointerDown?.(props.date(), props.day, isTopLeft);
                 }}
-                onMouseMove={(e) => handleMouseEvent(e, props.onMouseMove)}
+                onPointerMove={(e) => handlePointerEvent(e, props.onPointerMove)}
                 style={{ background: getColorForMode(props.topCategory?.color) }}
             >
                 <span classList={{ 'font-bold': Boolean(isTopSelected() ?? isHalfSelected()) }}>
@@ -112,9 +113,9 @@ export function CalendarDay(props: Props) {
                 </Show>
 
                 <Show when={props.day?.icon}>
-                    <div class="absolute top-1/2 left-1/2 -translate-1/2 sm:text-3xl" title={props.day?.note}>
+                    <Tooltip class="absolute top-1/2 left-1/2 -translate-1/2 sm:text-3xl" content={props.day?.note}>
                         {props.day?.icon}
-                    </div>
+                    </Tooltip>
                 </Show>
 
                 <Show when={!props.readonly}>
@@ -157,7 +158,7 @@ export function DayOfWeek(props: { color: string | undefined; index: number }) {
     );
 }
 
-function getIsTopLeft(e: MouseEvent, element: HTMLElement): boolean {
+function getIsTopLeft(e: MouseEvent | PointerEvent, element: HTMLElement): boolean {
     const rect = element.getBoundingClientRect();
     const cartesianX = e.clientX - rect.left;
     const cartesianY = rect.bottom - e.clientY;
