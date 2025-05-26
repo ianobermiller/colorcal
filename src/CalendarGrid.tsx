@@ -8,8 +8,15 @@ import { CalendarDay, DayOfWeek, FillerDay } from './CalendarDay';
 import { db, id, transactCalendar } from './db';
 import { useOwnerId } from './hooks/useOwnerId';
 import { selectedCategoryID } from './Store';
-import { dateRangeAlignWeek, toISODateString } from './utils/date';
+import { dateRange, dateRangeAlignWeek, toISODateString } from './utils/date';
 import { indexArray } from './utils/indexArray';
+
+interface DragState {
+    currentDate: Date;
+    currentIsTopLeft: boolean;
+    startDate: Date;
+    startIsTopLeft: boolean;
+}
 
 interface Props {
     calendar: Accessor<Calendar>;
@@ -28,10 +35,94 @@ export function CalendarGrid(props: Props) {
         })),
     );
     const [daySize, setDaySize] = createSignal(0);
+    const [dragState, setDragState] = createSignal<DragState | null>(null);
 
     const handleDayClick = (date: Date, day: Day | undefined, isTopLeft: boolean) => {
         if (!props.readonly) {
             void toggleDay(ownerId(), props.calendar().id, date, day, isTopLeft);
+        }
+    };
+
+    const finishDrag = (current: DragState) => {
+        const isForward = current.startDate < current.currentDate;
+        const startDate = isForward ? current.startDate : current.currentDate;
+        const endDate = isForward ? current.currentDate : current.startDate;
+        const startIsTopLeft = isForward ? current.startIsTopLeft : current.currentIsTopLeft;
+        const endIsTopLeft = isForward ? current.currentIsTopLeft : current.startIsTopLeft;
+
+        const dates = dateRange(startDate, endDate);
+        const operations = dates.flatMap((date, index) => {
+            const isFirstDay = index === 0;
+            const isLastDay = index === dates.length - 1;
+
+            const selectedCategoryId = selectedCategoryID();
+            const categoryId = !isFirstDay || startIsTopLeft ? selectedCategoryId : undefined;
+            const halfCategoryId = !isLastDay || !endIsTopLeft ? selectedCategoryId : undefined;
+
+            const day = dayByDate()[toISODateString(date)];
+            if (!day) {
+                return createDay({
+                    calendarId: props.calendar().id,
+                    categoryId: categoryId ?? null,
+                    date,
+                    halfCategoryId: halfCategoryId ?? null,
+                    ownerId: ownerId(),
+                });
+            }
+
+            return db.tx.days[day.id].update({ categoryId, halfCategoryId });
+        });
+
+        // Execute all operations in a single transaction
+        void transactCalendar(props.calendar().id, ...operations);
+    };
+
+    const handleMouseDown = (date: Date, day: Day | undefined, isTopLeft: boolean) => {
+        if (props.readonly) return;
+
+        setDragState({
+            currentDate: date,
+            currentIsTopLeft: isTopLeft,
+            startDate: date,
+            startIsTopLeft: isTopLeft,
+        });
+
+        const handleGlobalMouseUp = (e: MouseEvent) => {
+            const current = dragState();
+            if (current) {
+                if (rootRef) {
+                    const rect = rootRef.getBoundingClientRect();
+                    // Only apply if mouse up is inside the grid
+                    if (
+                        e.clientX >= rect.left &&
+                        e.clientX <= rect.right &&
+                        e.clientY >= rect.top &&
+                        e.clientY <= rect.bottom
+                    ) {
+                        if (current.currentDate.getTime() !== current.startDate.getTime()) {
+                            finishDrag(current);
+                        }
+                    }
+                }
+                setDragState(null);
+            }
+
+            window.removeEventListener('mouseup', handleGlobalMouseUp);
+        };
+
+        window.addEventListener('mouseup', handleGlobalMouseUp);
+
+        onCleanup(() => window.removeEventListener('mouseup', handleGlobalMouseUp));
+    };
+
+    const handleMouseMove = (date: Date, isTopLeft: boolean) => {
+        const current = dragState();
+        if (current) {
+            setDragState({
+                ...current,
+                currentDate: date,
+                currentIsTopLeft: isTopLeft,
+            });
         }
     };
 
@@ -48,6 +139,14 @@ export function CalendarGrid(props: Props) {
         window.addEventListener('resize', listener);
         onCleanup(() => window.removeEventListener('resize', listener));
     });
+
+    const isInDragRange = (date: Date) => {
+        const current = dragState();
+        if (!current) return false;
+        const startDate = current.startDate < current.currentDate ? current.startDate : current.currentDate;
+        const endDate = current.startDate < current.currentDate ? current.currentDate : current.startDate;
+        return date >= startDate && date <= endDate;
+    };
 
     return (
         <div
@@ -81,8 +180,11 @@ export function CalendarGrid(props: Props) {
                                     day={entry().day}
                                     hideHalfLabel={nextCategoryId() === entry().day?.halfCategoryId}
                                     hideLabel={prevDay()?.categoryId === entry().day?.categoryId}
+                                    isInDragRange={isInDragRange(date())}
                                     noBorderRight={noBorderRight()}
                                     onDayClick={handleDayClick}
+                                    onMouseDown={handleMouseDown}
+                                    onMouseMove={handleMouseMove}
                                     readonly={props.readonly}
                                     startDate={() => props.calendar().startDate}
                                 />
@@ -95,20 +197,38 @@ export function CalendarGrid(props: Props) {
     );
 }
 
+function createDay(params: {
+    calendarId: string;
+    categoryId: null | string;
+    date: Date;
+    halfCategoryId: null | string;
+    ownerId: string;
+}): Parameters<typeof transactCalendar>[1][] {
+    const dayId = id();
+    return [
+        db.tx.days[dayId].update({
+            categoryId: params.categoryId,
+            date: toISODateString(params.date),
+            halfCategoryId: params.halfCategoryId,
+            ownerId: params.ownerId,
+        }),
+        db.tx.calendars[params.calendarId].link({ days: dayId }),
+    ];
+}
+
 function toggleDay(ownerId: string, calendarId: string, date: Date, day: Day | undefined, isTopLeft: boolean) {
     const categoryId = selectedCategoryID();
 
     if (!day) {
-        const dayId = id();
         void transactCalendar(
             calendarId,
-            db.tx.days[dayId].update({
+            ...createDay({
+                calendarId,
                 categoryId,
-                date: toISODateString(date),
+                date,
                 halfCategoryId: null,
                 ownerId,
             }),
-            db.tx.calendars[calendarId].link({ days: dayId }),
         );
         return;
     }

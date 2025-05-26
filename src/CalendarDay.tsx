@@ -6,6 +6,7 @@ import { DayEditor } from './DayEditor';
 import { selectedCategoryID } from './Store';
 import { getColorForMode } from './utils/colors';
 import { getDayOfWeek, toISODateString } from './utils/date';
+import { getIsTopLeft } from './utils/mouse';
 
 interface Props {
     calendarId: string;
@@ -14,21 +15,28 @@ interface Props {
     day: Day | null | undefined;
     hideHalfLabel: boolean;
     hideLabel: boolean;
+    isInDragRange?: boolean;
     noBorderRight?: boolean;
     onDayClick?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
+    onMouseDown?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
+    onMouseMove?(date: Date, isTopLeft: boolean): void;
     readonly: boolean;
     startDate: Accessor<string>;
 }
 
-function BaseDay(props: { noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>) {
-    const [local, rest] = splitProps(props, ['noBorderRight']);
+function BaseDay(
+    props: { date?: Date; isInDragRange?: boolean; noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>,
+) {
+    const [local, rest] = splitProps(props, ['noBorderRight', 'isInDragRange', 'date']);
     return (
         <div
             classList={{
                 'border-r': !local.noBorderRight,
                 'group relative box-border size-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none dark:text-slate-100':
                     true,
+                'opacity-50': local.isInDragRange,
             }}
+            data-date={local.date?.toISOString()}
             {...rest}
         />
     );
@@ -46,17 +54,27 @@ export function CalendarDay(props: Props) {
 
     const [isShowingEditor, setIsShowingEditor] = createSignal(false);
 
+    const handleMouseEvent = (e: MouseEvent, handler?: (date: Date, isTopLeft: boolean) => void) => {
+        if (handler) {
+            handler(props.date(), getIsTopLeft(e, e.currentTarget as HTMLElement));
+        }
+    };
+
     return (
         <>
             <BaseDay
+                date={props.date()}
+                isInDragRange={props.isInDragRange}
                 noBorderRight={props.noBorderRight}
                 onClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const cartesianX = e.clientX - rect.left;
-                    const cartesianY = rect.bottom - e.clientY;
-                    const isTopLeft = cartesianY > cartesianX;
+                    const isTopLeft = getIsTopLeft(e, e.currentTarget);
                     return props.onDayClick?.(props.date(), props.day, isTopLeft);
                 }}
+                onMouseDown={(e) => {
+                    const isTopLeft = getIsTopLeft(e, e.currentTarget);
+                    return props.onMouseDown?.(props.date(), props.day, isTopLeft);
+                }}
+                onMouseMove={(e) => handleMouseEvent(e, props.onMouseMove)}
                 style={{ background: getColorForMode(topCategory()?.color) }}
             >
                 <span classList={{ 'font-bold': Boolean(isTopSelected() ?? isHalfSelected()) }}>

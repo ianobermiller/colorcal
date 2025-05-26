@@ -1,3 +1,16 @@
+export function dateRange(tryStart: Date, tryEnd: Date): Date[] {
+    const [start, end] = tryStart < tryEnd ? [tryStart, tryEnd] : [tryEnd, tryStart];
+
+    const dates: Date[] = [];
+    let current = start;
+    while (current <= end) {
+        dates.push(current);
+        current = new Date(current);
+        current.setUTCDate(current.getUTCDate() + 1);
+    }
+    return dates;
+}
+
 export function dateRangeAlignWeek(start: Date, end: Date): (Date | null)[] {
     const dates: (Date | null)[] = dateRange(start, end);
 
@@ -21,17 +34,4 @@ export function getMonth(date: Date): string {
 
 export function toISODateString(date: Date): string {
     return date.toISOString().slice(0, 10);
-}
-
-function dateRange(tryStart: Date, tryEnd: Date): Date[] {
-    const [start, end] = tryStart < tryEnd ? [tryStart, tryEnd] : [tryEnd, tryStart];
-
-    const dates: Date[] = [];
-    let current = start;
-    while (current <= end) {
-        dates.push(current);
-        current = new Date(current);
-        current.setUTCDate(current.getUTCDate() + 1);
-    }
-    return dates;
 }
