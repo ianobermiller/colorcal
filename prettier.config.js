@@ -4,5 +4,6 @@ export default {
     semi: true,
     singleQuote: true,
     tabWidth: 4,
+    tailwindStylesheet: './src/index.css',
     trailingComma: 'all',
 };
