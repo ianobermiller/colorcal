@@ -58,6 +58,9 @@ export function CategoryList(props: Props) {
                     Add
                 </Button>
                 <Button onClick={props.onCopyAll}>Copy all</Button>
+                <Button disabled={!selectedCategoryID()} onClick={() => setSelectedCategoryID(null)}>
+                    Deselect
+                </Button>
             </div>
         </div>
     );
