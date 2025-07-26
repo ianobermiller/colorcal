@@ -15,6 +15,7 @@ interface Props {
     halfCategory: CategoryWithColor | undefined;
     hideHalfLabel: boolean;
     hideLabel: boolean;
+    isCalendarInPast: boolean;
     noBorderRight?: boolean;
     onDayClick?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
     onPointerDown?(date: Date, day: Day | null | undefined, isTopLeft: boolean): void;
@@ -24,7 +25,9 @@ interface Props {
     topCategory: CategoryWithColor | undefined;
 }
 
-function BaseDay(props: { date?: Date; noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>) {
+function BaseDay(
+    props: { date?: Date; isCalendarInPast: boolean; noBorderRight?: boolean } & JSX.HTMLAttributes<HTMLDivElement>,
+) {
     const [local, rest] = splitProps(props, ['noBorderRight', 'date']);
     return (
         <div
@@ -32,6 +35,9 @@ function BaseDay(props: { date?: Date; noBorderRight?: boolean } & JSX.HTMLAttri
                 'border-r': !local.noBorderRight,
                 'group relative box-border size-[var(--day-size)] touch-manipulation border-b border-slate-400 p-0.5 select-none dark:text-slate-100':
                     true,
+                // Dim if this day has passed, unless the entire calendar is in the past
+                'opacity-60 hover:opacity-100':
+                    props.date && toISODateString(props.date) < toISODateString(new Date()) && !props.isCalendarInPast,
             }}
             data-date={local.date?.toISOString()}
             {...rest}
@@ -58,6 +64,7 @@ export function CalendarDay(props: Props) {
         <>
             <BaseDay
                 date={props.date()}
+                isCalendarInPast={props.isCalendarInPast}
                 noBorderRight={props.noBorderRight}
                 onClick={(e) => {
                     const isTopLeft = getIsTopLeft(e, e.currentTarget);

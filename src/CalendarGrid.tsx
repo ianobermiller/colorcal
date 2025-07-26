@@ -35,6 +35,7 @@ export function CalendarGrid(props: Props) {
             day: date && dayByDate()[toISODateString(date)],
         })),
     );
+    const isCalendarInPast = () => toISODateString(new Date()) > toISODateString(new Date(props.calendar().endDate));
     const [daySize, setDaySize] = createSignal(0);
     const [dragState, setDragState] = createSignal<DragState | null>(null);
 
@@ -189,7 +190,7 @@ export function CalendarGrid(props: Props) {
                         Boolean(isLastDayOfWeek() && thisCategoryId() && nextCategoryId() === thisCategoryId());
 
                     return (
-                        <Show fallback={<FillerDay />} when={entry().date}>
+                        <Show fallback={<FillerDay isCalendarInPast={isCalendarInPast()} />} when={entry().date}>
                             {(date) => {
                                 return (
                                     <CalendarDay
@@ -199,6 +200,7 @@ export function CalendarGrid(props: Props) {
                                         halfCategory={getEffectiveCategory(date(), entry().day?.halfCategoryId, false)}
                                         hideHalfLabel={nextCategoryId() === entry().day?.halfCategoryId}
                                         hideLabel={prevDay()?.categoryId === entry().day?.categoryId}
+                                        isCalendarInPast={isCalendarInPast()}
                                         noBorderRight={noBorderRight()}
                                         onDayClick={handleDayClick}
                                         onPointerDown={handlePointerDown}
