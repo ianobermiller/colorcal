@@ -12,6 +12,7 @@ import { db, transactCalendar } from './db';
 
 interface Props {
     calendar: Accessor<Calendar>;
+    isReadOnly: Accessor<boolean>;
     onClose(): void;
 }
 
@@ -33,12 +34,21 @@ export function Settings(props: Props) {
         );
     };
 
+    const handleReadOnlyChange = (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        void transactCalendar(
+            props.calendar().id,
+            db.tx.calendars[props.calendar().id].update({ isReadOnly: target.checked }),
+        );
+    };
+
     return (
         <Modal onClose={props.onClose} title="Calendar Settings">
             <div class="flex flex-col gap-3 pb-4">
                 <h3 class="font-bold">Calendar Name</h3>
                 <Input
                     class="w-full"
+                    disabled={props.isReadOnly()}
                     onBlur={updateTitle}
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
@@ -53,15 +63,23 @@ export function Settings(props: Props) {
                 <label class="flex items-center gap-2">
                     <Input
                         checked={props.calendar().isPubliclyVisible}
+                        disabled={props.isReadOnly()}
                         onChange={handleVisibilityChange}
                         type="checkbox"
                     />{' '}
                     Anyone with the link can view
                 </label>
 
+                <h3 class="font-bold">Lock Calendar</h3>
+                <label class="flex items-center gap-2">
+                    <Input checked={props.calendar().isReadOnly} onChange={handleReadOnlyChange} type="checkbox" />{' '}
+                    Prevent any changes to the calendar
+                </label>
+
                 <h3 class="font-bold">Delete</h3>
                 <Button
                     class="self-start"
+                    disabled={props.isReadOnly()}
                     onClick={() => {
                         if (confirm(`Delete calendar "${props.calendar().title}"?`)) {
                             void db.transact(db.tx.calendars[props.calendar().id].delete()).then(() => navigate('/'));

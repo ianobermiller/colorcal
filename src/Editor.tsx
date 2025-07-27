@@ -32,6 +32,7 @@ export function Editor(props: Props) {
     );
     const calendar = () => data()?.calendars[0];
     const isOwner = () => calendar()?.ownerId === ownerId();
+    const isReadOnly = () => !isOwner() || Boolean(calendar()?.isReadOnly);
     const days = createMemo(() => {
         const calendarDays = calendar()?.days;
         return calendarDays ? [...calendarDays].sort((a, b) => a.date.localeCompare(b.date)) : [];
@@ -91,7 +92,7 @@ export function Editor(props: Props) {
                                             db.tx.calendars[id()].update({ startDate: e.currentTarget.value }),
                                         );
                                     }}
-                                    readonly={!isOwner()}
+                                    readonly={isReadOnly()}
                                     type="date"
                                     value={cal().startDate}
                                 />
@@ -102,21 +103,20 @@ export function Editor(props: Props) {
                                             db.tx.calendars[id()].update({ endDate: e.currentTarget.value }),
                                         );
                                     }}
-                                    readonly={!isOwner()}
+                                    readonly={isReadOnly()}
                                     type="date"
                                     value={cal().endDate}
                                 />
-                                <Show when={isOwner()}>
-                                    <IconButton onClick={() => setIsShowingSettings(true)}>
-                                        <SettingsIcon height="16" width="16" />
-                                    </IconButton>
-                                </Show>
+
+                                <IconButton onClick={() => setIsShowingSettings(true)}>
+                                    <SettingsIcon height="16" width="16" />
+                                </IconButton>
                             </div>
                         </Show>
 
-                        <CalendarGrid calendar={cal} categories={categories} days={days} readonly={!isOwner()} />
+                        <CalendarGrid calendar={cal} categories={categories} days={days} readonly={isReadOnly()} />
 
-                        <Notes calendarId={id()} notes={cal().notes} readonly={!isOwner()} />
+                        <Notes calendarId={id()} notes={cal().notes} readonly={isReadOnly()} />
 
                         <ul class="list-disc pl-4">
                             <For each={daysWithNote()}>
@@ -132,7 +132,7 @@ export function Editor(props: Props) {
                                                     </strong>{' '}
                                                     {day.icon} {day.note}
                                                 </span>
-                                                <Show when={isOwner()}>
+                                                <Show when={!isReadOnly()}>
                                                     <IconButton
                                                         class="ml-auto opacity-0 group-hover:opacity-100"
                                                         onClick={() => setEditingDay(day)}
@@ -148,7 +148,7 @@ export function Editor(props: Props) {
                         </ul>
                     </div>
 
-                    <Show when={isOwner()}>
+                    <Show when={!isReadOnly()}>
                         <div>
                             <CategoryList
                                 calendarId={id()}
@@ -163,6 +163,7 @@ export function Editor(props: Props) {
                     <Show when={isShowingSettings()}>
                         <Settings
                             calendar={cal}
+                            isReadOnly={isReadOnly}
                             onClose={() => {
                                 setIsShowingSettings(false);
                             }}

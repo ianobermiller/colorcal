@@ -9,6 +9,7 @@ const schema = i.schema({
         calendars: i.entity({
             endDate: i.string(),
             isPubliclyVisible: i.boolean(),
+            isReadOnly: i.boolean().optional(),
             notes: i.string(),
             ownerId: i.string(),
             startDate: i.string(),

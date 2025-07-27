@@ -10,6 +10,7 @@
         "knip": "knip --fix",
         "lint": "eslint --fix .",
         "preview": "vite preview",
+        "schema": "npx instant-cli push",
         "ts": "tsc",
         "upload": "npm run build -- --base /cal && git push && rsync -avz dist/* iano@obermillers.com:~/public_html/obermillers/cal"
     },
