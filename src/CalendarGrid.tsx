@@ -1,6 +1,6 @@
 import type { Accessor } from 'solid-js';
 
-import { createMemo, createSignal, Index, onCleanup, onMount, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, Index, onCleanup, onMount, Show } from 'solid-js';
 
 import type { Calendar, CategoryWithColor, Day } from './types';
 
@@ -22,7 +22,7 @@ interface Props {
     calendar: Accessor<Calendar>;
     categories: Accessor<CategoryWithColor[]>;
     days: Accessor<Day[]>;
-    readonly: boolean;
+    isReadOnly: Accessor<boolean>;
 }
 
 export function CalendarGrid(props: Props) {
@@ -40,7 +40,7 @@ export function CalendarGrid(props: Props) {
     const [dragState, setDragState] = createSignal<DragState | null>(null);
 
     const handleDayClick = (date: Date, day: Day | undefined, isTopLeft: boolean) => {
-        if (!props.readonly) {
+        if (!props.isReadOnly()) {
             void toggleDay(ownerId(), props.calendar().id, date, day, isTopLeft);
         }
     };
@@ -80,7 +80,7 @@ export function CalendarGrid(props: Props) {
     };
 
     const handlePointerDown = (date: Date, day: Day | undefined, isTopLeft: boolean) => {
-        if (props.readonly) return;
+        if (props.isReadOnly()) return;
 
         setDragState({
             currentDate: date,
@@ -129,7 +129,10 @@ export function CalendarGrid(props: Props) {
     };
 
     let rootRef: HTMLDivElement | undefined;
-    onMount(() => {
+    createEffect(() => {
+        // Force a re-measure when the read-only state changes
+        props.isReadOnly();
+
         // Subtract one to account for the border on the calendar itself
         const listener = () => {
             if (rootRef) {
@@ -205,7 +208,7 @@ export function CalendarGrid(props: Props) {
                                         onDayClick={handleDayClick}
                                         onPointerDown={handlePointerDown}
                                         onPointerMove={handlePointerMove}
-                                        readonly={props.readonly}
+                                        readonly={props.isReadOnly()}
                                         startDate={() => props.calendar().startDate}
                                         topCategory={getEffectiveCategory(date(), entry().day?.categoryId, true)}
                                     />

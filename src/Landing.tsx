@@ -15,7 +15,7 @@ export function Landing() {
                     calendar={() => exampleData.calendar}
                     categories={() => exampleData.categories}
                     days={() => exampleData.days}
-                    readonly
+                    isReadOnly
                 />
             </div>
         </div>

@@ -114,7 +114,7 @@ export function Editor(props: Props) {
                             </div>
                         </Show>
 
-                        <CalendarGrid calendar={cal} categories={categories} days={days} readonly={isReadOnly()} />
+                        <CalendarGrid calendar={cal} categories={categories} days={days} isReadOnly={isReadOnly} />
 
                         <Notes calendarId={id()} notes={cal().notes} readonly={isReadOnly()} />
 
