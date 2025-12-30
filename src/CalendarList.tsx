@@ -11,15 +11,17 @@ import { toISODateString } from './utils/date';
 
 export function CalendarList() {
     const ownerId = useOwnerId();
+    const navigate = useNavigate();
 
     const { data } = useQuery(() => ({ calendars: { $: { where: { ownerId: ownerId() } } } }));
     const calendars = createMemo(() => (data()?.calendars ?? []).sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1)));
 
     let inputRef: HTMLInputElement | undefined;
 
-    const onCreate = () => {
+    const onCreate = async () => {
         const title = inputRef?.value ?? 'Untitled Calendar';
-        void createCalendar(ownerId(), title);
+        const calendarId = await createCalendar(ownerId(), title);
+        navigate(`/${uuidToUrl(calendarId)}`);
     };
 
     return (
@@ -30,7 +32,7 @@ export function CalendarList() {
                 <Input
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                            onCreate();
+                            void onCreate();
                             e.currentTarget.value = '';
                         }
                     }}
@@ -82,7 +84,6 @@ export function CalendarList() {
 }
 
 async function createCalendar(ownerId: string, title: string) {
-    const navigate = useNavigate();
     const startDate = new Date();
     const endDate = new Date(startDate);
     endDate.setDate(endDate.getDate() + 7);
@@ -99,7 +100,7 @@ async function createCalendar(ownerId: string, title: string) {
             updatedAt: new Date().toISOString(),
         }),
     ]);
-    navigate(`/${uuidToUrl(calendarId)}`);
+    return calendarId;
 }
 
 function formatDate(date: Date | string): string {

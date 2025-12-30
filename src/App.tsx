@@ -39,7 +39,7 @@ export function App() {
                     path="/"
                 />
                 <Route component={({ params }) => <Editor id={params.id} />} path="/:id" />
-                <Route component={Login} path=" /login" />
+                <Route component={Login} path="/login" />
             </HashRouter>
         </div>
     );
